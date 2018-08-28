@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Scryer</string>
+    <string name="app_name" translatable="false">Scryer</string>
 
     <!-- Label used for buttons to create new collection, e.g. in dialogs-->
     <string name="action_create">Create new</string>

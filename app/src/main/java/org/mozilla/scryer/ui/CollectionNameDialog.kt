@@ -11,9 +11,12 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.EditText
 import android.widget.TextView
+import kotlinx.coroutines.experimental.DefaultDispatcher
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.experimental.withContext
 import org.mozilla.scryer.R
 import org.mozilla.scryer.persistence.CollectionModel
-import org.mozilla.scryer.util.ThreadUtils
 import org.mozilla.scryer.viewmodel.ScreenshotViewModel
 
 class CollectionNameDialog(private val context: Context,
@@ -22,21 +25,16 @@ class CollectionNameDialog(private val context: Context,
 
     companion object {
         fun createNewCollection(context: Context, viewModel: ScreenshotViewModel) {
-            ThreadUtils.postToBackgroundThread {
-                val collections = viewModel.getCollectionList()
-                ThreadUtils.postToMainThread {
-                    createNewCollection(context, viewModel, collections)
-                }
+            launch(UI) {
+                createNewCollection(context, viewModel, getCollectionList(viewModel))
             }
         }
 
         fun renameCollection(context: Context, viewModel: ScreenshotViewModel, collectionId: String?) {
-            ThreadUtils.postToBackgroundThread {
-                val collections = viewModel.getCollectionList()
+            launch(UI) {
+                val collections = getCollectionList(viewModel)
                 collections.find { it.id == collectionId }?.let {
-                    ThreadUtils.postToMainThread {
-                        renameCollection(context, viewModel, it, collections)
-                    }
+                    renameCollection(context, viewModel, it, collections)
                 }
             }
         }
@@ -94,6 +92,12 @@ class CollectionNameDialog(private val context: Context,
             typedArray.recycle()
 
             return color
+        }
+
+        private suspend fun getCollectionList(viewModel: ScreenshotViewModel): List<CollectionModel> {
+            return withContext(DefaultDispatcher) {
+                viewModel.getCollectionList()
+            }
         }
     }
 

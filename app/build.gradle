@@ -39,6 +39,7 @@ dependencies {
     implementation "com.android.support:recyclerview-v7:${Versions.support}"
     implementation "com.android.support:transition:${Versions.support}"
     implementation "com.android.support:preference-v14:${Versions.support}"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:${Versions.kotlin_coroutine}"
 
     implementation "com.android.support.constraint:constraint-layout:${Versions.constraint_layout}"
 

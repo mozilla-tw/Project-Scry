@@ -1,5 +1,6 @@
 object Versions {
     // Android
+    val android_gradle_plugin = "3.1.3"
     val support = "27.1.1"
     val constraint_layout = "1.1.2"
     val arch_lifecycle = "1.1.1"
@@ -10,7 +11,9 @@ object Versions {
     val firebase = "16.0.1"
     val firebase_ml = "16.0.0"
 
-    val kotlin = "1.2.51"
+    // Kotlin
+    val kotlin = "1.2.60"
+    val kotlin_coroutine = "0.24.0"
 
     // Test
     val junit = "4.12"

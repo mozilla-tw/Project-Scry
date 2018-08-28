@@ -13,7 +13,6 @@ import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.view.View
-import android.widget.TextView
 import android.widget.Toast
 import org.mozilla.scryer.Observer
 import org.mozilla.scryer.R

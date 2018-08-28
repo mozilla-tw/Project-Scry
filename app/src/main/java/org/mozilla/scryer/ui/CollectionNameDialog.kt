@@ -12,40 +12,15 @@ import android.view.WindowManager
 import android.widget.EditText
 import android.widget.TextView
 import org.mozilla.scryer.R
-import org.mozilla.scryer.ScryerApplication
 import org.mozilla.scryer.persistence.CollectionModel
 import org.mozilla.scryer.util.ThreadUtils
 import org.mozilla.scryer.viewmodel.ScreenshotViewModel
 
-class CollectionNameDialog(private val context: Context, private val delegate: Delegate) {
+class CollectionNameDialog(private val context: Context,
+                           collections: List<CollectionModel>,
+                           private val delegate: Delegate) {
 
     companion object {
-        fun renameCollection(context: Context, viewModel: ScreenshotViewModel, collectionId: String?) {
-            ThreadUtils.postToBackgroundThread {
-                viewModel.getCollectionList().find { it.id == collectionId }?.let {
-                    ThreadUtils.postToMainThread {
-                        renameCollection(context, viewModel, it)
-                    }
-                }
-            }
-        }
-
-        private fun renameCollection(context: Context, viewModel: ScreenshotViewModel, collection: CollectionModel) {
-
-            val dialog = CollectionNameDialog(context, object : CollectionNameDialog.Delegate {
-                override fun onPositiveAction(dialog: CollectionNameDialog.Interface) {
-                    collection.name = dialog.getInputText()
-                    viewModel.updateCollection(collection)
-                }
-
-                override fun onNegativeAction(dialog: CollectionNameDialog.Interface) {}
-            })
-
-            dialog.initialCollectionName = collection.name
-            dialog.title = context.resources.getText(R.string.dialogue_rename_title_rename).toString()
-            dialog.show()
-        }
-
         fun createNewCollection(context: Context, viewModel: ScreenshotViewModel) {
             ThreadUtils.postToBackgroundThread {
                 val collections = viewModel.getCollectionList()
@@ -55,8 +30,20 @@ class CollectionNameDialog(private val context: Context, private val delegate: D
             }
         }
 
-        private fun createNewCollection(context: Context, viewModel: ScreenshotViewModel, collections: List<CollectionModel>) {
-            val dialog = CollectionNameDialog(context, object : CollectionNameDialog.Delegate {
+        fun renameCollection(context: Context, viewModel: ScreenshotViewModel, collectionId: String?) {
+            ThreadUtils.postToBackgroundThread {
+                val collections = viewModel.getCollectionList()
+                collections.find { it.id == collectionId }?.let {
+                    ThreadUtils.postToMainThread {
+                        renameCollection(context, viewModel, it, collections)
+                    }
+                }
+            }
+        }
+
+        private fun createNewCollection(context: Context, viewModel: ScreenshotViewModel,
+                                        collections: List<CollectionModel>) {
+            val dialog = CollectionNameDialog(context, collections, object : CollectionNameDialog.Delegate {
                 override fun onPositiveAction(dialog: CollectionNameDialog.Interface) {
                     val color = findColorForNewCollection(context, collections)
                     val model = CollectionModel(dialog.getInputText(), System.currentTimeMillis(), color)
@@ -67,6 +54,24 @@ class CollectionNameDialog(private val context: Context, private val delegate: D
             })
 
             dialog.title = context.resources.getText(R.string.dialogue_title_collection).toString()
+            dialog.show()
+        }
+
+        private fun renameCollection(context: Context, viewModel: ScreenshotViewModel,
+                                     collection: CollectionModel,
+                                     collections: List<CollectionModel>) {
+
+            val dialog = CollectionNameDialog(context, collections, object : CollectionNameDialog.Delegate {
+                override fun onPositiveAction(dialog: CollectionNameDialog.Interface) {
+                    collection.name = dialog.getInputText()
+                    viewModel.updateCollection(collection)
+                }
+
+                override fun onNegativeAction(dialog: CollectionNameDialog.Interface) {}
+            })
+
+            dialog.initialCollectionName = collection.name
+            dialog.title = context.resources.getText(R.string.dialogue_rename_title_rename).toString()
             dialog.show()
         }
 
@@ -99,8 +104,6 @@ class CollectionNameDialog(private val context: Context, private val delegate: D
     private var dialogInterface: Interface
 
     var initialCollectionName = ""
-
-    private val collections = mutableListOf<CollectionModel>()
 
     val validIcon: Drawable? by lazy {
         null
@@ -189,18 +192,7 @@ class CollectionNameDialog(private val context: Context, private val delegate: D
     }
 
     fun show() {
-        if (collections.isEmpty()) {
-            ThreadUtils.postToBackgroundThread {
-                val list = ScryerApplication.getScreenshotRepository().getCollectionList()
-                ThreadUtils.postToMainThread {
-                    collections.addAll(list)
-                    showImmediately()
-                }
-            }
-
-        } else {
-            showImmediately()
-        }
+        showImmediately()
     }
 
     private fun showImmediately() {

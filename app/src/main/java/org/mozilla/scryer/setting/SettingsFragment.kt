@@ -73,11 +73,12 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
         if (preference == enableCaptureService) {
             val enable = newValue as Boolean
             val intent = Intent(activity, ScryerService::class.java)
-            if (enable) {
-                activity?.startService(intent)
+            intent.action = if (enable) {
+                ScryerService.ACTION_ENABLE_SERVICE
             } else {
-                activity?.stopService(intent)
+                ScryerService.ACTION_STOP
             }
+            activity?.startService(intent)
 
             repository.serviceEnabled = enable
 

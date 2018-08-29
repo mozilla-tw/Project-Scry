@@ -18,6 +18,7 @@ import android.os.Looper
 import android.support.v4.app.NotificationCompat
 import android.support.v4.content.LocalBroadcastManager
 import android.text.TextUtils
+import android.widget.Toast
 import org.mozilla.scryer.capture.SortingPanelActivity
 import org.mozilla.scryer.capture.RequestCaptureActivity
 import org.mozilla.scryer.capture.ScreenCaptureListener
@@ -28,6 +29,7 @@ import org.mozilla.scryer.overlay.CaptureButtonController
 import org.mozilla.scryer.permission.PermissionHelper
 import org.mozilla.scryer.persistence.CollectionModel
 import org.mozilla.scryer.persistence.ScreenshotModel
+import org.mozilla.scryer.ui.ScryerToast
 
 
 class ScryerService : Service(), CaptureButtonController.ClickListener, ScreenCaptureListener {
@@ -36,9 +38,14 @@ class ScryerService : Service(), CaptureButtonController.ClickListener, ScreenCa
         private const val ID_FOREGROUND = 9487
         private const val ID_SCREENSHOT_DETECTED = 9488
 
-        private const val ACTION_CAPTURE_SCREEN = "action_capture"
-        private const val ACTION_STOP = "action_stop"
-        private const val ACTION_LAUNCH_APP = "action_launch_app"
+        const val ACTION_CAPTURE_SCREEN = "action_capture"
+        const val ACTION_STOP = "action_stop"
+
+        /** Action used to launch the main activity */
+        const val ACTION_LAUNCH_APP = "action_launch_app"
+
+        /** Action indicating user has explicitly enabled the service */
+        const val ACTION_ENABLE_SERVICE = "action_enable_service"
 
         private const val DELAY_CAPTURE_NOTIFICATION = 1000L
         private const val DELAY_CAPTURE_FAB = 0L
@@ -54,6 +61,10 @@ class ScryerService : Service(), CaptureButtonController.ClickListener, ScreenCa
     private var screenCaptureManager: ScreenCaptureManager? = null
     private lateinit var requestCaptureFilter: IntentFilter
     private lateinit var requestCaptureReceiver: BroadcastReceiver
+
+    private val toast: ScryerToast by lazy {
+        ScryerToast(this)
+    }
 
     private val fileMonitor: FileMonitor by lazy {
         //FileMonitor(FileObserverDelegate(Handler(Looper.getMainLooper())))
@@ -72,28 +83,20 @@ class ScryerService : Service(), CaptureButtonController.ClickListener, ScreenCa
             return Service.START_NOT_STICKY
         }
 
-        if (!ScryerApplication.getSettingsRepository().serviceEnabled) {
-            stopSelf()
-            return Service.START_NOT_STICKY
-        }
+        if (isRunning) {
+            return dispatchOnStartCommandAction(intent)
 
-        if (!isRunning) {
-            isRunning = true
-            startForeground(getForegroundNotificationId(), getForegroundNotification())
-            initFileMonitors()
-
-        } else when (intent.action) {
-            ACTION_CAPTURE_SCREEN -> postTakeScreenshot(DELAY_CAPTURE_NOTIFICATION)
-            ACTION_STOP -> {
-                ScryerApplication.getSettingsRepository().serviceEnabled = false
-                stopSelf()
-                sendBroadcast(Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS))
+        } else {
+            val serviceEnabled = ScryerApplication.getSettingsRepository().serviceEnabled
+            if (serviceEnabled) {
+                isRunning = true
+                val startedByUser = (intent.action == ACTION_ENABLE_SERVICE)
+                startScryerService(startedByUser)
+                return START_STICKY
             }
         }
 
-        initFloatingButton()
-
-        return START_STICKY
+        return super.onStartCommand(intent, flags, startId)
     }
 
     override fun onDestroy() {
@@ -103,6 +106,34 @@ class ScryerService : Service(), CaptureButtonController.ClickListener, ScreenCa
             fileMonitor.stopMonitor()
         }
         super.onDestroy()
+    }
+
+    private fun dispatchOnStartCommandAction(intent: Intent): Int {
+        when (intent.action) {
+            ACTION_STOP -> {
+                stopScryerService()
+                return START_NOT_STICKY
+            }
+
+            ACTION_CAPTURE_SCREEN -> postTakeScreenshot(DELAY_CAPTURE_NOTIFICATION)
+        }
+        return START_STICKY
+    }
+
+    private fun startScryerService(startedExplicitly: Boolean) {
+        if (startedExplicitly) {
+            toast.show(getString(R.string.snackbar_enable), Toast.LENGTH_SHORT)
+        }
+        startForeground(getForegroundNotificationId(), getForegroundNotification())
+        initFileMonitors()
+        initFloatingButton()
+    }
+
+    private fun stopScryerService() {
+        toast.show(getString(R.string.snackbar_disable), Toast.LENGTH_SHORT)
+        ScryerApplication.getSettingsRepository().serviceEnabled = false
+        stopSelf()
+        sendBroadcast(Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS))
     }
 
     private fun initFloatingButton() {

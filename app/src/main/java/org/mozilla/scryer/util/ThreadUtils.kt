@@ -3,65 +3,42 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.scryer.util;
+package org.mozilla.scryer.util
 
-import android.os.Handler;
-import android.os.Looper;
+import android.os.Looper
+import kotlinx.coroutines.experimental.asCoroutineDispatcher
+import java.util.concurrent.Executors
+import java.util.concurrent.ThreadFactory
+import java.util.concurrent.atomic.AtomicInteger
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.atomic.AtomicInteger;
+object ThreadUtils {
+    private val backgroundExecutorService = Executors.newSingleThreadExecutor(ioPrioritisedFactory)
+    private val uiThread = Looper.getMainLooper().thread
 
-public class ThreadUtils {
-    private static final ExecutorService backgroundExecutorService = Executors.newSingleThreadExecutor(getIoPrioritisedFactory());
-    private static final Handler handler = new Handler(Looper.getMainLooper());
-    private static final Thread uiThread = Looper.getMainLooper().getThread();
+    private val ioPrioritisedFactory: ThreadFactory
+        get() = CustomThreadFactory("pool-io-background", Thread.NORM_PRIORITY - 1)
 
-    public static void postToBackgroundThread(final Runnable runnable) {
-        backgroundExecutorService.submit(runnable);
-    }
+    val singleThreadDispatcher = backgroundExecutorService.asCoroutineDispatcher()
 
-    public static void postToMainThread(final Runnable runnable) {
-        handler.post(runnable);
-    }
-
-    public static void postToMainThreadDelayed(final Runnable runnable, long delayMillis) {
-        handler.postDelayed(runnable, delayMillis);
-    }
-
-    public static void assertOnUiThread() {
-        final Thread currentThread = Thread.currentThread();
-        final long currentThreadId = currentThread.getId();
-        final long expectedThreadId = uiThread.getId();
+    fun assertOnUiThread() {
+        val currentThread = Thread.currentThread()
+        val currentThreadId = currentThread.id
+        val expectedThreadId = uiThread.id
 
         if (currentThreadId == expectedThreadId) {
-            return;
+            return
         }
 
-        throw new IllegalThreadStateException("Expected UI thread, but running on " + currentThread.getName());
+        throw IllegalThreadStateException("Expected UI thread, but running on " + currentThread.name)
     }
 
-    private static ThreadFactory getIoPrioritisedFactory() {
-        return new CustomThreadFactory("pool-io-background", Thread.NORM_PRIORITY - 1);
-    }
+    private class CustomThreadFactory(private val threadName: String, private val threadPriority: Int) : ThreadFactory {
+        private val mNumber = AtomicInteger()
 
-    private static class CustomThreadFactory implements ThreadFactory {
-        private final String threadName;
-        private final int threadPriority;
-        private final AtomicInteger mNumber = new AtomicInteger();
-
-        public CustomThreadFactory(String threadName, int threadPriority) {
-            super();
-            this.threadName = threadName;
-            this.threadPriority = threadPriority;
-        }
-
-        @Override
-        public Thread newThread(Runnable r) {
-            Thread thread = new Thread(r, threadName + "-" + mNumber.getAndIncrement());
-            thread.setPriority(threadPriority);
-            return thread;
+        override fun newThread(r: Runnable): Thread {
+            val thread = Thread(r, threadName + "-" + mNumber.getAndIncrement())
+            thread.priority = threadPriority
+            return thread
         }
     }
 }

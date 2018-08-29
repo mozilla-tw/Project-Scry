@@ -152,7 +152,7 @@ class CaptureButtonController(private val context: Context) {
                     animator.interpolator = AccelerateInterpolator()
                     animator.setListener(object : AnimatorListenerAdapter() {
                         override fun onAnimationEnd(animation: Animator?) {
-                            clickListener?.onScreenshotButtonLongClicked()
+                            clickListener?.onScreenshotButtonDismissed()
                         }
                     })
 
@@ -224,6 +224,7 @@ class CaptureButtonController(private val context: Context) {
 
     interface ClickListener {
         fun onScreenshotButtonClicked()
-        fun onScreenshotButtonLongClicked()
+        fun onScreenshotButtonLongClicked() {}
+        fun onScreenshotButtonDismissed() {}
     }
 }

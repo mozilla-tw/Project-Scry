@@ -133,8 +133,8 @@ class ScryerService : Service(), CaptureButtonController.ClickListener, ScreenCa
         postTakeScreenshot(DELAY_CAPTURE_FAB)
     }
 
-    override fun onScreenshotButtonLongClicked() {
-        stopSelf()
+    override fun onScreenshotButtonDismissed() {
+        ScryerApplication.getSettingsRepository().floatingEnable = false
     }
 
     private fun postTakeScreenshot(delayed: Long) {

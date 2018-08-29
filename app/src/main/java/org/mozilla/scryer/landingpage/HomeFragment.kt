@@ -39,6 +39,7 @@ import org.mozilla.scryer.extension.dpToPx
 import org.mozilla.scryer.filemonitor.ScreenshotFetcher
 import org.mozilla.scryer.overlay.OverlayPermission
 import org.mozilla.scryer.permission.PermissionFlow
+import org.mozilla.scryer.permission.PermissionHelper
 import org.mozilla.scryer.permission.PermissionViewModel
 import org.mozilla.scryer.persistence.CollectionModel
 import org.mozilla.scryer.persistence.ScreenshotModel
@@ -270,13 +271,7 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
     }
 
     override fun requestOverlayPermission() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            return
-        }
-        activity?.let {
-            val intent = OverlayPermission.createPermissionIntent(it)
-            it.startActivityForResult(intent, MainActivity.REQUEST_CODE_OVERLAY_PERMISSION)
-        }
+        PermissionHelper.requestOverlayPermission(activity, MainActivity.REQUEST_CODE_OVERLAY_PERMISSION)
     }
 
     override fun launchSystemSettingPage() {
@@ -292,8 +287,6 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
         setSupportActionBar(activity, view!!.findViewById(R.id.toolbar))
         getSupportActionBar(activity).displayOptions = ActionBar.DISPLAY_SHOW_CUSTOM
         getSupportActionBar(activity).setCustomView(R.layout.view_home_toolbar)
-//        getSupportActionBar(activity).setDisplayHomeAsUpEnabled(false)
-//        getSupportActionBar(activity).setDisplayShowTitleEnabled(false)
     }
 
     private fun initPermissionFlow() {

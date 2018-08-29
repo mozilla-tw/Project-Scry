@@ -47,6 +47,8 @@ class ScryerService : Service(), CaptureButtonController.ClickListener, ScreenCa
         /** Action indicating user has explicitly enabled the service */
         const val ACTION_ENABLE_SERVICE = "action_enable_service"
 
+        const val ACTION_ENABLE_CAPTURE_BUTTON = "actino_enable_capture_button"
+
         private const val DELAY_CAPTURE_NOTIFICATION = 1000L
         private const val DELAY_CAPTURE_FAB = 0L
 
@@ -116,6 +118,7 @@ class ScryerService : Service(), CaptureButtonController.ClickListener, ScreenCa
             }
 
             ACTION_CAPTURE_SCREEN -> postTakeScreenshot(DELAY_CAPTURE_NOTIFICATION)
+            ACTION_ENABLE_CAPTURE_BUTTON -> initFloatingButton()
         }
         return START_STICKY
     }

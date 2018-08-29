@@ -7,6 +7,7 @@ package org.mozilla.scryer.permission
 
 import android.Manifest
 import android.annotation.TargetApi
+import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
@@ -27,6 +28,16 @@ class PermissionHelper {
         fun hasOverlayPermission(context: Context): Boolean {
             return Build.VERSION.SDK_INT < Build.VERSION_CODES.M
                     || OverlayPermission.hasPermission(context)
+        }
+
+        fun requestOverlayPermission(activity: Activity?, requestCode: Int) {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                return
+            }
+            activity?.let {
+                val intent = OverlayPermission.createPermissionIntent(it)
+                it.startActivityForResult(intent, requestCode)
+            }
         }
     }
 }

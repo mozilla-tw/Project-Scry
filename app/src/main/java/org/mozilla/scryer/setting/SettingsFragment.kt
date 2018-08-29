@@ -13,11 +13,8 @@ import android.support.v7.preference.SwitchPreferenceCompat
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Button
-import org.mozilla.scryer.Observer
-import org.mozilla.scryer.R
-import org.mozilla.scryer.ScryerApplication
-import org.mozilla.scryer.ScryerService
-import org.mozilla.scryer.getSupportActionBar
+import org.mozilla.scryer.*
+import org.mozilla.scryer.permission.PermissionHelper
 
 class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChangeListener, Preference.OnPreferenceClickListener {
 
@@ -53,8 +50,13 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
         })
 
         enableFloatingScreenshotButton.onPreferenceChangeListener = this
-        ScryerApplication.getSettingsRepository().floatingEnableObservable.observe(this, Observer {
-            enableFloatingScreenshotButton.isChecked = it
+        ScryerApplication.getSettingsRepository().floatingEnableObservable.observe(this, Observer { enabled ->
+            enableFloatingScreenshotButton.isChecked = enabled
+            activity?.let {
+                if (enabled && !PermissionHelper.hasOverlayPermission(it)) {
+                    PermissionHelper.requestOverlayPermission(it, MainActivity.REQUEST_CODE_OVERLAY_PERMISSION)
+                }
+            }
         })
 
         enableAddToCollectionButton.onPreferenceChangeListener = this
@@ -65,6 +67,13 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
         giveFeedbackPreference.onPreferenceClickListener = this
         shareWithFriendsPreference.onPreferenceClickListener = this
         aboutPreference.onPreferenceClickListener = this
+    }
+
+    override fun onResume() {
+        super.onResume()
+        context?.let {
+            checkOverlayPermission(it)
+        }
     }
 
     override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
@@ -154,5 +163,19 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             context.startActivity(intent)
         }
+    }
+
+    private fun checkOverlayPermission(context: Context) {
+        val allowed = PermissionHelper.hasOverlayPermission(context)
+        ScryerApplication.getSettingsRepository().floatingEnable = allowed
+        if (allowed) {
+            enableCaptureButton()
+        }
+    }
+
+    private fun enableCaptureButton() {
+        val intent = Intent(activity, ScryerService::class.java)
+        intent.action = ScryerService.ACTION_ENABLE_CAPTURE_BUTTON
+        activity?.startService(intent)
     }
 }

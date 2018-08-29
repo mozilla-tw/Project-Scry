@@ -26,9 +26,7 @@ class WindowController internal constructor(private val windowManager: WindowMan
         }
 
         val params = WindowManager.LayoutParams(width, height, windowType,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-                        or WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
-                        or touchableFlag,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or touchableFlag,
                 PixelFormat.TRANSLUCENT)
 
         params.gravity = Gravity.TOP or Gravity.START

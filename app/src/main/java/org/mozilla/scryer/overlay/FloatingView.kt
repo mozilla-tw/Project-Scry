@@ -101,18 +101,25 @@ class FloatingView(context: Context) : FrameLayout(context) {
             }
 
             override fun onDrag(x: Float, y: Float) {
+                val restrictedY = restrictY(y)
                 if (!stickToCurrentPosition) {
                     val self = this@FloatingView
-                    point.set(x, y)
+                    point.set(x, restrictedY)
                     convertToOrigin(point, self)
+
                     self.x = point.x
                     self.y = point.y
                 }
-                dragListener?.onDrag(x, y)
+                dragListener?.onDrag(x, restrictedY)
             }
 
             override fun onRelease(x: Float, y: Float) {
-                dragListener?.onRelease(x, y)
+                dragListener?.onRelease(x, restrictY(y))
+            }
+
+            private fun restrictY(centerY: Float): Float {
+                val radius = height / 2f
+                return Math.min(Math.max(radius, centerY), ((parent as View).height - radius))
             }
         }
         this.dragger.attachToWindow()

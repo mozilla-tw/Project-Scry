@@ -61,8 +61,11 @@ class SortingPanelActivity : AppCompatActivity() {
     private val unsortedScreenshots = LinkedList<ScreenshotModel>()
     private val sortedScreenshots = LinkedList<ScreenshotModel>()
     private var currentScreenshot: ScreenshotModel? = null
+    private val screenshotCount: Int
+        get() = unsortedScreenshots.size + sortedScreenshots.size
 
     private val collections = mutableListOf<CollectionModel>()
+    private var unsortedCollection: CollectionModel? = null
 
     private val collectionColors = mutableListOf<Int>()
 
@@ -112,6 +115,7 @@ class SortingPanelActivity : AppCompatActivity() {
     }
 
     private fun flushToUnsortedCollection() {
+        showAddedToast(unsortedCollection)
         for (model in unsortedScreenshots) {
             model.collectionId = CollectionModel.CATEGORY_NONE
             // TODO: Batch
@@ -134,6 +138,7 @@ class SortingPanelActivity : AppCompatActivity() {
         collectionData.observe(this, Observer {
             collections.clear()
             collections.addAll(it)
+            unsortedCollection = collections.find { it.id == CollectionModel.CATEGORY_NONE }
         })
 
         sortingPanel.collectionSource = collectionData
@@ -228,6 +233,7 @@ class SortingPanelActivity : AppCompatActivity() {
         }
 
         sortingPanel.setActionCallback {
+            showAddedToast(unsortedCollection)
             onNewModelAvailable()
         }
 
@@ -239,16 +245,24 @@ class SortingPanelActivity : AppCompatActivity() {
         onNewModelAvailable()
     }
 
+    private fun showAddedToast(model: CollectionModel?) {
+        model?.let {
+            toast.show(getString(R.string.snackbar_addto, it.name), Toast.LENGTH_SHORT)
+        }
+    }
+
     private fun onLoadScreenshotsFailed() {
         finishAndRemoveTask()
     }
 
     private fun onCollectionClicked(collection: CollectionModel) {
-        toast.show(getString(R.string.snackbar_addto, collection.name), Toast.LENGTH_SHORT)
-
         currentScreenshot?.let {
             it.collectionId = collection.id
             screenshotViewModel.addScreenshot(listOf(it))
+
+            if (screenshotCount == 1) {
+                showAddedToast(collection)
+            }
         }
         onNewModelAvailable()
     }

@@ -167,7 +167,7 @@ class CollectionFragment : Fragment() {
                 screenshotAdapter.setScreenshotList(sorted)
                 screenshotAdapter.notifyDataSetChanged()
                 val shotCount: Int = sorted.size
-                subtitleView.text = getString(R.string.collection_separator_shots, shotCount)
+                subtitleView.text = resources.getQuantityString(R.plurals.collection_separator_shots, shotCount, shotCount)
             }
         })
 

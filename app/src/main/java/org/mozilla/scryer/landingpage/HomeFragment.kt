@@ -32,6 +32,10 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.navigation.Navigation
+import kotlinx.coroutines.experimental.DefaultDispatcher
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.experimental.withContext
 import org.mozilla.scryer.*
 import org.mozilla.scryer.capture.SortingPanelActivity
 import org.mozilla.scryer.detailpage.DetailPageActivity
@@ -46,7 +50,6 @@ import org.mozilla.scryer.setting.SettingsActivity
 import org.mozilla.scryer.ui.BottomDialogFactory
 import org.mozilla.scryer.ui.GridItemDecoration
 import org.mozilla.scryer.ui.ScryerToast
-import org.mozilla.scryer.util.ThreadUtils
 import org.mozilla.scryer.viewmodel.ScreenshotViewModel
 import java.io.File
 import java.util.*
@@ -520,18 +523,17 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
             results.add(externalModel)
         }
 
-        ThreadUtils.postToBackgroundThread {
-            // Remaining entries are those that exist only in our database, but not in the external storage
-            for (entry in localModels) {
-                val model = entry.value
-                val file = File(model.absolutePath)
-                if (!file.exists()) {
-                    viewModel.deleteScreenshot(model)
+        launch(UI) {
+            withContext(DefaultDispatcher) {
+                for (entry in localModels) {
+                    val model = entry.value
+                    val file = File(model.absolutePath)
+                    if (!file.exists()) {
+                        viewModel.deleteScreenshot(model)
+                    }
                 }
             }
-            ThreadUtils.postToMainThread {
-                mainAdapter.notifyDataSetChanged()
-            }
+            mainAdapter.notifyDataSetChanged()
         }
 
         viewModel.addScreenshot(results)

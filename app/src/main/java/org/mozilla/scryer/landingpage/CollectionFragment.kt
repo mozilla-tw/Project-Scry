@@ -25,6 +25,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.navigation.Navigation
 import com.bumptech.glide.Glide
+import kotlinx.coroutines.experimental.launch
 import org.mozilla.scryer.*
 import org.mozilla.scryer.Observer
 import org.mozilla.scryer.capture.SortingPanelActivity
@@ -33,7 +34,6 @@ import org.mozilla.scryer.persistence.CollectionModel
 import org.mozilla.scryer.persistence.ScreenshotModel
 import org.mozilla.scryer.ui.CollectionNameDialog
 import org.mozilla.scryer.ui.ScryerToast
-import org.mozilla.scryer.util.ThreadUtils
 import org.mozilla.scryer.viewmodel.ScreenshotViewModel
 import java.io.File
 import java.text.DecimalFormat
@@ -371,19 +371,17 @@ fun showDeleteScreenshotDialog(context: Context, screenshotModel: ScreenshotMode
             .setMessage(context.getString(R.string.dialogue_delete_content_cantundo))
             .setNegativeButton(context.getString(android.R.string.cancel)) { dialog: DialogInterface?, _: Int -> dialog?.dismiss() }
             .setPositiveButton(context.getString(R.string.action_delete)) { dialog: DialogInterface?, _: Int ->
-                run {
-                    ThreadUtils.postToBackgroundThread {
-                        ScryerApplication.getScreenshotRepository().deleteScreenshot(screenshotModel)
-                        File(screenshotModel.absolutePath).delete()
-                    }
-                    dialog?.dismiss()
+                launch {
+                    ScryerApplication.getScreenshotRepository().deleteScreenshot(screenshotModel)
+                    File(screenshotModel.absolutePath).delete()
                 }
+                dialog?.dismiss()
             }
             .show()
 }
 
 fun showShareScreenshotDialog(context: Context, screenshotModel: ScreenshotModel) {
-    ThreadUtils.postToBackgroundThread {
+    launch {
         val authorities = BuildConfig.APPLICATION_ID + ".provider.fileprovider"
         val file = File(screenshotModel.absolutePath)
         val fileUri: Uri?

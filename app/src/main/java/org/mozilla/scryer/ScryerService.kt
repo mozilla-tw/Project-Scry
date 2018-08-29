@@ -211,6 +211,13 @@ class ScryerService : Service(), CaptureButtonController.ClickListener, ScreenCa
         tapIntent.setClass(this, ScryerService::class.java)
         val tapPendingIntent = PendingIntent.getService(this, 0, tapIntent, 0)
 
+        val openAppIntent = Intent(ACTION_LAUNCH_APP)
+        openAppIntent.setClass(this, MainActivity::class.java)
+        val openAppPendingIntent = PendingIntent.getActivity(this, 0, openAppIntent, 0)
+        val openAppAction = NotificationCompat.Action(android.R.drawable.ic_menu_close_clear_cancel,
+                getString(R.string.notification_action_open),
+                openAppPendingIntent)
+
         val stopIntent = Intent(ACTION_STOP)
         stopIntent.setClass(this, ScryerService::class.java)
         val stopPendingIntent = PendingIntent.getService(this, 0, stopIntent, 0)
@@ -227,6 +234,7 @@ class ScryerService : Service(), CaptureButtonController.ClickListener, ScreenCa
                 .setContentText(getString(R.string.notification_action_capture))
                 .setContentIntent(tapPendingIntent)
                 .setStyle(style)
+                .addAction(openAppAction)
                 .addAction(stopAction)
                 .build()
     }

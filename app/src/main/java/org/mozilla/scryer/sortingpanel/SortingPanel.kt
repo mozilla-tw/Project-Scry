@@ -76,7 +76,7 @@ class SortingPanel : FrameLayout, DefaultLifecycleObserver {
             this.adapter.callback = value
         }
 
-    var showAddToCollection: Boolean = true
+    var showCollectionPanel: Boolean = true
         set(value) {
             if (value) {
                 coordinatorLayout.visibility = View.VISIBLE

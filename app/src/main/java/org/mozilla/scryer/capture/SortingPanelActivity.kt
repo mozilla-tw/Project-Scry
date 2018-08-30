@@ -12,6 +12,7 @@ import android.os.Handler
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import org.mozilla.scryer.Observer
@@ -142,7 +143,7 @@ class SortingPanelActivity : AppCompatActivity() {
         })
 
         sortingPanel.collectionSource = collectionData
-        sortingPanel.showAddToCollection = intent.getBooleanExtra(EXTRA_SHOW_ADD_TO_COLLECTION, true)
+        sortingPanel.showCollectionPanel = shouldShowCollectionPanel
         sortingPanel.callback = object : SortingPanel.Callback {
             override fun onClick(collection: CollectionModel) {
                 onCollectionClicked(collection)
@@ -170,6 +171,10 @@ class SortingPanelActivity : AppCompatActivity() {
     }
 
     private fun onScreenshotViewed(screenshot: ScreenshotModel) {
+        if (!shouldShowCollectionPanel) {
+            return
+        }
+
         if (screenshot.collectionId == CollectionModel.UNCATEGORIZED) {
             screenshot.collectionId = CollectionModel.CATEGORY_NONE
             screenshotViewModel.updateScreenshot(screenshot)
@@ -216,6 +221,14 @@ class SortingPanelActivity : AppCompatActivity() {
         }
     }
 
+    private val shouldShowCollectionPanel: Boolean
+        get() = if (intent.hasExtra(EXTRA_SHOW_ADD_TO_COLLECTION)) {
+            intent.getBooleanExtra(EXTRA_SHOW_ADD_TO_COLLECTION, true)
+
+        } else {
+            true
+        }
+
     private fun onLoadScreenshotsSuccess(screenshots: List<ScreenshotModel>) {
         this.sortedScreenshots.clear()
 
@@ -237,8 +250,7 @@ class SortingPanelActivity : AppCompatActivity() {
             onNewModelAvailable()
         }
 
-        if (intent.hasExtra(EXTRA_SHOW_ADD_TO_COLLECTION)
-                && !intent.getBooleanExtra(EXTRA_SHOW_ADD_TO_COLLECTION, true)) {
+        if (!shouldShowCollectionPanel) {
             Handler().postDelayed({ finishAndRemoveTask() }, 1000)
         }
 
@@ -274,7 +286,7 @@ class SortingPanelActivity : AppCompatActivity() {
     private fun createNewScreenshot(intent: Intent): ScreenshotModel? {
         val path = getFilePath(intent)
         if (path.isNotEmpty()) {
-            return ScreenshotModel(path, System.currentTimeMillis(), CollectionModel.CATEGORY_NONE)
+            return ScreenshotModel(path, System.currentTimeMillis(), CollectionModel.UNCATEGORIZED)
         }
         return null
     }

@@ -24,9 +24,10 @@ class CollectionNameDialog(private val context: Context,
                            private val delegate: Delegate) {
 
     companion object {
-        fun createNewCollection(context: Context, viewModel: ScreenshotViewModel) {
+        fun createNewCollection(context: Context, viewModel: ScreenshotViewModel,
+                                callback: (collection: CollectionModel) -> Unit) {
             launch(UI) {
-                createNewCollection(context, viewModel, getCollectionList(viewModel))
+                createNewCollection(context, viewModel, getCollectionList(viewModel), callback)
             }
         }
 
@@ -40,12 +41,14 @@ class CollectionNameDialog(private val context: Context,
         }
 
         private fun createNewCollection(context: Context, viewModel: ScreenshotViewModel,
-                                        collections: List<CollectionModel>) {
+                                        collections: List<CollectionModel>,
+                                        callback: (collection: CollectionModel) -> Unit) {
             val dialog = CollectionNameDialog(context, collections, object : CollectionNameDialog.Delegate {
                 override fun onPositiveAction(dialog: CollectionNameDialog.Interface) {
                     val color = findColorForNewCollection(context, collections)
                     val model = CollectionModel(dialog.getInputText(), System.currentTimeMillis(), color)
                     viewModel.addCollection(model)
+                    callback(model)
                 }
 
                 override fun onNegativeAction(dialog: CollectionNameDialog.Interface) {}

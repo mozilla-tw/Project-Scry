@@ -280,7 +280,9 @@ class SortingPanelActivity : AppCompatActivity() {
     }
 
     private fun onNewCollectionClicked() {
-        CollectionNameDialog.createNewCollection(this, screenshotViewModel)
+        CollectionNameDialog.createNewCollection(this, screenshotViewModel) {
+            onCollectionClicked(it)
+        }
     }
 
     private fun createNewScreenshot(intent: Intent): ScreenshotModel? {

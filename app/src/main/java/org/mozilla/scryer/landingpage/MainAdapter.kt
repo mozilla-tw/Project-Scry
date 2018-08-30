@@ -131,7 +131,7 @@ class MainAdapter(private val fragment: Fragment?): RecyclerView.Adapter<Recycle
 
             }?.let { _ ->
                 fragment?.let {
-                    CollectionNameDialog.createNewCollection(parent.context, ScreenshotViewModel.get(it))
+                    CollectionNameDialog.createNewCollection(parent.context, ScreenshotViewModel.get(it)) {}
                 }
             }
         }

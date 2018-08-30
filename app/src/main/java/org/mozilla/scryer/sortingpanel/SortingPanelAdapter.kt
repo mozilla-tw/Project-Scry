@@ -22,10 +22,14 @@ class SortingPanelAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         private const val TYPE_COLLECTION_ITEM = 1
 
         private const val POSITION_NEW_COLLECTION = 0
+
+        private const val DURATION_SELECT_ANIMATION = 200L
     }
 
     var collections: List<CollectionModel>? = null
     var callback: SortingPanel.Callback? = null
+
+    private var selectedHolder: ItemHolder? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         when (viewType) {
@@ -62,6 +66,13 @@ class SortingPanelAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 DrawableCompat.setTint(holder.itemView.background, color)
             }
         }
+    }
+
+    fun onNewScreenshotReady() {
+        selectedHolder?.let {
+            setSelectState(it, false)
+        }
+        selectedHolder = null
     }
 
     private fun createNewCollectionHolder(parent: ViewGroup): RecyclerView.ViewHolder {
@@ -104,19 +115,14 @@ class SortingPanelAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     }
 
     private fun onCollectionClicked(model: CollectionModel, holder: ItemHolder) {
-        holder.itemView.isClickable = false
+        selectedHolder = selectedHolder?.let { return }?: holder
 
-        holder.checkIcon?.visibility = View.VISIBLE
-        holder.title?.visibility = View.INVISIBLE
+        setSelectState(holder, true)
 
         holder.itemView.postDelayed({
             callback?.onClick(model)
-            holder.itemView.isClickable = true
 
-            holder.checkIcon?.visibility = View.INVISIBLE
-            holder.title?.visibility = View.VISIBLE
-
-        }, 1000)
+        }, DURATION_SELECT_ANIMATION)
     }
 
     private class ItemHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -131,6 +137,16 @@ class SortingPanelAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private fun ensurePosition(holder: RecyclerView.ViewHolder, action: (Int) -> Unit) {
         if (holder.adapterPosition != RecyclerView.NO_POSITION) {
             action(holder.adapterPosition)
+        }
+    }
+
+    private fun setSelectState(holder: ItemHolder, isSelected: Boolean) {
+        if (isSelected) {
+            holder.checkIcon?.visibility = View.VISIBLE
+            holder.title?.visibility = View.INVISIBLE
+        } else {
+            holder.checkIcon?.visibility = View.INVISIBLE
+            holder.title?.visibility = View.VISIBLE
         }
     }
 }

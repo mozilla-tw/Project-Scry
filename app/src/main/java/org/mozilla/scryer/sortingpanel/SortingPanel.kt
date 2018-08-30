@@ -64,6 +64,7 @@ class SortingPanel : FrameLayout, DefaultLifecycleObserver {
             value?.let {
                 // TODO: Loading view
                 Glide.with(this).load(File(it.absolutePath)).into(imageView)
+                adapter.onNewScreenshotReady()
                 field = value
             }
         }

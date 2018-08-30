@@ -25,6 +25,8 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
     private val shareWithFriendsPreference: Preference by lazy { findPreference(getString(R.string.pref_key_share_with_friends)) }
     private val aboutPreference: Preference by lazy { findPreference(getString(R.string.pref_key_about)) }
 
+    private var overlayPermissionRequested = false
+
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         setupActionBar()
@@ -52,11 +54,7 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
         enableFloatingScreenshotButton.onPreferenceChangeListener = this
         ScryerApplication.getSettingsRepository().floatingEnableObservable.observe(this, Observer { enabled ->
             enableFloatingScreenshotButton.isChecked = enabled
-            activity?.let {
-                if (enabled && !PermissionHelper.hasOverlayPermission(it)) {
-                    PermissionHelper.requestOverlayPermission(it, MainActivity.REQUEST_CODE_OVERLAY_PERMISSION)
-                }
-            }
+            onFloatingEnableStateChanged(enabled)
         })
 
         enableAddToCollectionButton.onPreferenceChangeListener = this
@@ -71,9 +69,7 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
 
     override fun onResume() {
         super.onResume()
-        context?.let {
-            checkOverlayPermission(it)
-        }
+        checkOverlayPermission()
     }
 
     override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
@@ -165,11 +161,38 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
         }
     }
 
-    private fun checkOverlayPermission(context: Context) {
-        val allowed = PermissionHelper.hasOverlayPermission(context)
-        ScryerApplication.getSettingsRepository().floatingEnable = allowed
-        if (allowed) {
-            enableCaptureButton()
+    private fun checkOverlayPermission() {
+        val context = context?: return
+        val hasPermission = PermissionHelper.hasOverlayPermission(context)
+
+        if (hasPermission) {
+            if (overlayPermissionRequested) {
+                overlayPermissionRequested = false
+                // Since overlayPermissionRequested will only be set to true after user toggles on
+                // the switch without overlay permission, in which case the preference value has already
+                // been set to "true", no need to set it again here
+                enableCaptureButton()
+            }
+        } else {
+            // Permission disabled after resume => set false to repo
+            ScryerApplication.getSettingsRepository().floatingEnable = false
+        }
+    }
+
+    private fun onFloatingEnableStateChanged(enabled: Boolean) {
+        val activity = activity?: return
+
+        if (enabled) {
+            if (PermissionHelper.hasOverlayPermission(activity)) {
+                enableCaptureButton()
+            } else {
+                overlayPermissionRequested = true
+                PermissionHelper.requestOverlayPermission(activity, MainActivity.REQUEST_CODE_OVERLAY_PERMISSION)
+            }
+        } else {
+            val intent = Intent(activity, ScryerService::class.java)
+            intent.action = ScryerService.ACTION_DISABLE_CAPTURE_BUTTON
+            activity.startService(intent)
         }
     }
 

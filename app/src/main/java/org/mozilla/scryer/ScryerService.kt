@@ -19,10 +19,10 @@ import android.support.v4.app.NotificationCompat
 import android.support.v4.content.LocalBroadcastManager
 import android.text.TextUtils
 import android.widget.Toast
-import org.mozilla.scryer.capture.SortingPanelActivity
 import org.mozilla.scryer.capture.RequestCaptureActivity
 import org.mozilla.scryer.capture.ScreenCaptureListener
 import org.mozilla.scryer.capture.ScreenCaptureManager
+import org.mozilla.scryer.capture.SortingPanelActivity
 import org.mozilla.scryer.filemonitor.FileMonitor
 import org.mozilla.scryer.filemonitor.MediaProviderDelegate
 import org.mozilla.scryer.overlay.CaptureButtonController
@@ -47,7 +47,8 @@ class ScryerService : Service(), CaptureButtonController.ClickListener, ScreenCa
         /** Action indicating user has explicitly enabled the service */
         const val ACTION_ENABLE_SERVICE = "action_enable_service"
 
-        const val ACTION_ENABLE_CAPTURE_BUTTON = "actino_enable_capture_button"
+        const val ACTION_ENABLE_CAPTURE_BUTTON = "action_enable_capture_button"
+        const val ACTION_DISABLE_CAPTURE_BUTTON = "action_disable_capture_button"
 
         private const val DELAY_CAPTURE_NOTIFICATION = 1000L
         private const val DELAY_CAPTURE_FAB = 0L
@@ -104,7 +105,7 @@ class ScryerService : Service(), CaptureButtonController.ClickListener, ScreenCa
     override fun onDestroy() {
         if (isRunning) {
             isRunning = false
-            captureButtonController?.destroy()
+            destroyFloatingButton()
             fileMonitor.stopMonitor()
         }
         super.onDestroy()
@@ -118,7 +119,9 @@ class ScryerService : Service(), CaptureButtonController.ClickListener, ScreenCa
             }
 
             ACTION_CAPTURE_SCREEN -> postTakeScreenshot(DELAY_CAPTURE_NOTIFICATION)
+
             ACTION_ENABLE_CAPTURE_BUTTON -> initFloatingButton()
+            ACTION_DISABLE_CAPTURE_BUTTON -> destroyFloatingButton()
         }
         return START_STICKY
     }
@@ -140,7 +143,8 @@ class ScryerService : Service(), CaptureButtonController.ClickListener, ScreenCa
     }
 
     private fun initFloatingButton() {
-        if (!PermissionHelper.hasOverlayPermission(this)) {
+        val enabled = ScryerApplication.getSettingsRepository().floatingEnable
+        if (!enabled || !PermissionHelper.hasOverlayPermission(this)) {
             return
         }
 
@@ -149,6 +153,11 @@ class ScryerService : Service(), CaptureButtonController.ClickListener, ScreenCa
             captureButtonController?.setOnClickListener(this)
             captureButtonController?.init()
         }
+    }
+
+    private fun destroyFloatingButton() {
+        captureButtonController?.destroy()
+        captureButtonController = null
     }
 
     private fun initFileMonitors() {
@@ -168,6 +177,7 @@ class ScryerService : Service(), CaptureButtonController.ClickListener, ScreenCa
     }
 
     override fun onScreenshotButtonDismissed() {
+        destroyFloatingButton()
         ScryerApplication.getSettingsRepository().floatingEnable = false
     }
 

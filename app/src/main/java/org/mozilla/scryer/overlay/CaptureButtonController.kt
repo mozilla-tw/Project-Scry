@@ -15,9 +15,7 @@ import android.view.WindowManager
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.OvershootInterpolator
 import android.widget.RelativeLayout
-import org.mozilla.scryer.Observer
 import org.mozilla.scryer.R
-import org.mozilla.scryer.ScryerApplication
 import org.mozilla.scryer.extension.dpToPx
 
 class CaptureButtonController(private val context: Context) {
@@ -46,14 +44,6 @@ class CaptureButtonController(private val context: Context) {
     private val metrics = context.resources.displayMetrics
     private val buttonSize = BUTTON_SIZE_DP.dpToPx(metrics)
 
-    private val settingObserver = Observer<Boolean> {
-        if (it) {
-            show()
-        } else {
-            hide()
-        }
-    }
-
     fun init() {
         screen = Screen(context, windowController)
         sideDock = Dock(screen)
@@ -62,11 +52,6 @@ class CaptureButtonController(private val context: Context) {
 
         screen.onBoundaryUpdateListener = Runnable {
             buttonView.moveTo(sideDock)
-        }
-
-        ScryerApplication.getSettingsRepository().floatingEnableObservable.observeForever(settingObserver)
-        if (!ScryerApplication.getSettingsRepository().floatingEnable) {
-            hide()
         }
     }
 
@@ -83,7 +68,6 @@ class CaptureButtonController(private val context: Context) {
     }
 
     fun destroy() {
-        ScryerApplication.getSettingsRepository().floatingEnableObservable.removeObserver(settingObserver)
         buttonView.detachFromWindow()
         screen.detachFromWindow()
     }
@@ -224,7 +208,7 @@ class CaptureButtonController(private val context: Context) {
 
     interface ClickListener {
         fun onScreenshotButtonClicked()
-        fun onScreenshotButtonLongClicked() {}
+        //fun onScreenshotButtonLongClicked() {}
         fun onScreenshotButtonDismissed() {}
     }
 }

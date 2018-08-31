@@ -12,9 +12,12 @@ import android.os.Handler
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import android.view.View
 import android.widget.Toast
+import kotlinx.coroutines.experimental.DefaultDispatcher
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.experimental.withContext
 import org.mozilla.scryer.Observer
 import org.mozilla.scryer.R
 import org.mozilla.scryer.persistence.CollectionModel
@@ -65,7 +68,6 @@ class SortingPanelActivity : AppCompatActivity() {
     private val screenshotCount: Int
         get() = unsortedScreenshots.size + sortedScreenshots.size
 
-    private val collections = mutableListOf<CollectionModel>()
     private var unsortedCollection: CollectionModel? = null
 
     private val collectionColors = mutableListOf<Int>()
@@ -137,9 +139,7 @@ class SortingPanelActivity : AppCompatActivity() {
     private fun initSortingPanel() {
         val collectionData = screenshotViewModel.getCollections()
         collectionData.observe(this, Observer {
-            collections.clear()
-            collections.addAll(it)
-            unsortedCollection = collections.find { it.id == CollectionModel.CATEGORY_NONE }
+            unsortedCollection = it.find { it.id == CollectionModel.CATEGORY_NONE }
         })
 
         sortingPanel.collectionSource = collectionData
@@ -193,8 +193,12 @@ class SortingPanelActivity : AppCompatActivity() {
             intent.hasExtra(EXTRA_PATH) -> {
                 createNewScreenshot(intent)?.apply {
                     val result = listOf(this)
-                    viewModel.addScreenshot(result)
-                    onFinished.invoke(result)
+                    launch(UI) {
+                        withContext(DefaultDispatcher) {
+                            viewModel.addScreenshot(result)
+                        }
+                        onFinished.invoke(result)
+                    }
                 }?: onLoadScreenshotsFailed()
             }
 
@@ -212,8 +216,11 @@ class SortingPanelActivity : AppCompatActivity() {
                 } else {
                     listOf(id)
                 }
-                viewModel.getScreenshotList(idList) {
-                    onFinished.invoke(it)
+                launch(UI) {
+                    val screenshots = withContext(DefaultDispatcher) {
+                        viewModel.getScreenshotList(idList)
+                    }
+                    onFinished.invoke(screenshots)
                 }
             }
 
@@ -268,15 +275,27 @@ class SortingPanelActivity : AppCompatActivity() {
     }
 
     private fun onCollectionClicked(collection: CollectionModel) {
-        currentScreenshot?.let {
-            it.collectionId = collection.id
-            screenshotViewModel.addScreenshot(listOf(it))
+        launch(UI) {
+            currentScreenshot?.let { screenshot ->
+                if (CollectionModel.isSuggestCollection(collection)) {
+                    // Once the user selects a suggest collection, we update its id to
+                    // a random UUID, so that it will be treated as a normal collection from then on
+                    withContext(DefaultDispatcher) {
+                        screenshotViewModel.updateCollectionId(collection, UUID.randomUUID().toString())
+                    }
+                }
 
-            if (screenshotCount == 1) {
-                showAddedToast(collection)
+                screenshot.collectionId = collection.id
+                withContext(DefaultDispatcher) {
+                    screenshotViewModel.addScreenshot(listOf(screenshot))
+                }
+
+                if (screenshotCount == 1) {
+                    showAddedToast(collection)
+                }
             }
+            onNewModelAvailable()
         }
-        onNewModelAvailable()
     }
 
     private fun onNewCollectionClicked() {

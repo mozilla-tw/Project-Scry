@@ -9,7 +9,6 @@ import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.Transformations
 import android.content.Context
-import android.graphics.Color
 import android.os.Handler
 import android.os.Looper
 import org.mozilla.scryer.persistence.CollectionModel
@@ -26,9 +25,7 @@ class ScreenshotDatabaseRepository(private val database: ScreenshotDatabase) : S
     private val handler = Handler(Looper.getMainLooper())
 
     override fun addScreenshot(screenshots: List<ScreenshotModel>) {
-        executor.submit {
-            database.screenshotDao().addScreenshot(screenshots)
-        }
+        database.screenshotDao().addScreenshot(screenshots)
     }
 
     override fun updateScreenshot(screenshot: ScreenshotModel) {
@@ -88,13 +85,10 @@ class ScreenshotDatabaseRepository(private val database: ScreenshotDatabase) : S
 
     override fun setupDefaultContent(context: Context) {
         val none = CollectionModel(CollectionModel.CATEGORY_NONE, "Unsorted collection", 0, 0)
-        val shopping = CollectionModel("Shopping", System.currentTimeMillis(), Color.parseColor("#235dff"))
-        val music = CollectionModel("Music", System.currentTimeMillis(), Color.parseColor("#10c1b6"))
-        val secret = CollectionModel("Secret", System.currentTimeMillis(), Color.parseColor("#ffa6a8"))
         addCollection(none)
-        addCollection(shopping)
-        addCollection(music)
-        addCollection(secret)
+        for (collection in CollectionModel.suggestCollections) {
+            addCollection(collection)
+        }
     }
 
     override fun getScreenshotList(callback: (List<ScreenshotModel>) -> Unit) {
@@ -106,12 +100,15 @@ class ScreenshotDatabaseRepository(private val database: ScreenshotDatabase) : S
         }
     }
 
-    override fun getScreenshotList(collectionIds: List<String>, callback: (List<ScreenshotModel>) -> Unit) {
-        executor.execute {
-            val list = database.screenshotDao().getScreenshotList(collectionIds)
-            handler.post {
-                callback(list)
-            }
-        }
+    override fun getScreenshotList(collectionIds: List<String>): List<ScreenshotModel> {
+        return database.screenshotDao().getScreenshotList(collectionIds)
+    }
+
+    override fun deleteCollection(collection: CollectionModel) {
+        database.collectionDao().deleteCollection(collection)
+    }
+
+    override fun updateCollectionId(collection: CollectionModel, id: String) {
+        database.collectionDao().updateCollectionId(collection, id)
     }
 }

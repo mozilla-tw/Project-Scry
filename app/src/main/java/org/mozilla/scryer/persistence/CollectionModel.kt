@@ -9,11 +9,12 @@ import android.arch.persistence.room.ColumnInfo
 import android.arch.persistence.room.Entity
 import android.arch.persistence.room.Ignore
 import android.arch.persistence.room.PrimaryKey
+import android.graphics.Color
 import java.util.*
 
 @Entity(tableName = "collection")
 data class CollectionModel constructor(
-        @PrimaryKey(autoGenerate = false) val id: String,
+        @PrimaryKey(autoGenerate = false) var id: String,
         @ColumnInfo(name = "name") var name: String,
         @ColumnInfo(name = "date") val date: Long,
         @ColumnInfo(name = "color") val color: Int) {
@@ -28,5 +29,14 @@ data class CollectionModel constructor(
 
         /** Screenshots that had been reviewed by the users without categorizing it */
         const val CATEGORY_NONE = "category_none"
+
+        val suggestCollections = listOf(
+                CollectionModel("default1", "default1", 1, Color.parseColor("#235dff")),
+                CollectionModel("default2", "default2", 2, Color.parseColor("#10c1b6")),
+                CollectionModel("default3", "default3", 3, Color.parseColor("#ffa6a8")))
+
+        fun isSuggestCollection(collection: CollectionModel): Boolean {
+            return suggestCollections.any { it.id == collection.id }
+        }
     }
 }

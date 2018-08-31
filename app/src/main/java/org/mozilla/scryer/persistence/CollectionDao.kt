@@ -6,24 +6,31 @@
 package org.mozilla.scryer.persistence
 
 import android.arch.lifecycle.LiveData
-import android.arch.persistence.room.Dao
-import android.arch.persistence.room.Insert
+import android.arch.persistence.room.*
 import android.arch.persistence.room.OnConflictStrategy.REPLACE
-import android.arch.persistence.room.Query
-import android.arch.persistence.room.Update
 
 @Dao
-interface CollectionDao {
+abstract class CollectionDao {
 
     @Query("SELECT * FROM collection")
-    fun getCollections(): LiveData<List<CollectionModel>>
+    abstract fun getCollections(): LiveData<List<CollectionModel>>
 
     @Query("SELECT * FROM collection")
-    fun getCollectionList(): List<CollectionModel>
+    abstract fun getCollectionList(): List<CollectionModel>
 
     @Insert(onConflict = REPLACE)
-    fun addCollection(collection: CollectionModel)
+    abstract fun addCollection(collection: CollectionModel)
 
     @Update(onConflict = REPLACE)
-    fun updateCollection(collection: CollectionModel)
+    abstract fun updateCollection(collection: CollectionModel)
+
+    @Delete
+    abstract fun deleteCollection(collection: CollectionModel)
+
+    @Transaction
+    open fun updateCollectionId(collection: CollectionModel, id: String) {
+        deleteCollection(collection)
+        collection.id = id
+        addCollection(collection)
+    }
 }

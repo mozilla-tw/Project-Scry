@@ -19,6 +19,7 @@ import android.support.v4.app.NotificationCompat
 import android.support.v4.content.LocalBroadcastManager
 import android.text.TextUtils
 import android.widget.Toast
+import kotlinx.coroutines.experimental.launch
 import org.mozilla.scryer.capture.RequestCaptureActivity
 import org.mozilla.scryer.capture.ScreenCaptureListener
 import org.mozilla.scryer.capture.ScreenCaptureManager
@@ -167,7 +168,9 @@ class ScryerService : Service(), CaptureButtonController.ClickListener, ScreenCa
                 val model = ScreenshotModel(path,
                         System.currentTimeMillis(),
                         CollectionModel.UNCATEGORIZED)
-                ScryerApplication.getScreenshotRepository().addScreenshot(listOf(model))
+                launch {
+                    ScryerApplication.getScreenshotRepository().addScreenshot(listOf(model))
+                }
             }
         })
     }

@@ -53,6 +53,9 @@ class SortingPanel : FrameLayout, DefaultLifecycleObserver {
         it?.filter {
             it.id != CollectionModel.CATEGORY_NONE
 
+        }?.sortedBy {
+            it.date
+
         }?.let {
             this.adapter.collections = it
             this.adapter.notifyDataSetChanged()

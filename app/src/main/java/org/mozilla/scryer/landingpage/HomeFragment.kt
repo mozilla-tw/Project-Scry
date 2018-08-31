@@ -41,7 +41,6 @@ import org.mozilla.scryer.capture.SortingPanelActivity
 import org.mozilla.scryer.detailpage.DetailPageActivity
 import org.mozilla.scryer.extension.dpToPx
 import org.mozilla.scryer.filemonitor.ScreenshotFetcher
-import org.mozilla.scryer.overlay.OverlayPermission
 import org.mozilla.scryer.permission.PermissionFlow
 import org.mozilla.scryer.permission.PermissionHelper
 import org.mozilla.scryer.permission.PermissionViewModel
@@ -402,8 +401,14 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
         mainListView.addItemDecoration(MainAdapter.ItemDecoration(COLLECTION_COLUMN_COUNT, spaceOuter, spaceTop))
 
         viewModel.getCollections().observe(this, Observer { collections ->
-            collections?.let { newData ->
-                updateCollectionListView(newData)
+            collections?.filter {
+                !CollectionModel.isSuggestCollection(it)
+
+            }?.sortedBy {
+                it.date
+
+            }?.let {
+                updateCollectionListView(it)
             }
         })
 
@@ -529,7 +534,9 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
             mainAdapter.notifyDataSetChanged()
         }
 
-        viewModel.addScreenshot(results)
+        launch {
+            viewModel.addScreenshot(results)
+        }
         return results
     }
 

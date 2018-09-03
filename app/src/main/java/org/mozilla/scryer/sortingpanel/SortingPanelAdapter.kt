@@ -5,7 +5,6 @@
 
 package org.mozilla.scryer.sortingpanel
 
-import android.graphics.Color
 import android.support.v4.content.ContextCompat
 import android.support.v4.graphics.drawable.DrawableCompat
 import android.support.v7.widget.RecyclerView
@@ -22,12 +21,17 @@ class SortingPanelAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         private const val TYPE_NEW_COLLECTION = 0
         private const val TYPE_COLLECTION_ITEM = 1
 
-        private const val POSITION_NEW_COLLECTION = 0
-
         private const val DURATION_SELECT_ANIMATION = 200L
     }
 
     var collections: List<CollectionModel>? = null
+        set(value) {
+            newCollectionItemPosition = value?.size ?: 0
+            field = value
+        }
+
+    private var newCollectionItemPosition = 0
+
     var callback: SortingPanel.Callback? = null
 
     private var selectedHolder: ItemHolder? = null
@@ -46,34 +50,40 @@ class SortingPanelAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     }
 
     override fun getItemCount(): Int {
-        return 1 + (collections?.size ?: 0)
+        return (collections?.size ?: 0) + 1
     }
 
     override fun getItemViewType(position: Int): Int {
         return when (position) {
-            POSITION_NEW_COLLECTION -> TYPE_NEW_COLLECTION
+            newCollectionItemPosition -> TYPE_NEW_COLLECTION
             else -> TYPE_COLLECTION_ITEM
         }
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (position) {
-            POSITION_NEW_COLLECTION -> {
+            newCollectionItemPosition -> {
                 (holder as NewItemHolder).title?.text = holder.itemView.resources.getString(R.string.action_create)
             }
             else -> {
-                (holder as ItemHolder).title?.text = collections?.get(position - 1)?.name
-                val color = collections?.get(position - 1)?.color ?: Color.WHITE
-                DrawableCompat.setTint(holder.itemView.background, color)
+                getItem(position)?.let {
+                    (holder as ItemHolder).title?.text = it.name
+                    DrawableCompat.setTint(holder.itemView.background, it.color)
+                }
             }
         }
     }
+
 
     fun onNewScreenshotReady() {
         selectedHolder?.let {
             setSelectState(it, false)
         }
         selectedHolder = null
+    }
+
+    private fun getItem(position: Int): CollectionModel? {
+        return collections?.get(position)
     }
 
     private fun createNewCollectionHolder(parent: ViewGroup): RecyclerView.ViewHolder {
@@ -106,8 +116,8 @@ class SortingPanelAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
         holder.itemView.setOnClickListener { _ ->
             holder.getValidPosition { position ->
-                collections?.let {
-                    onCollectionClicked(it[position - 1], holder)
+                getItem(position)?.let {
+                    onCollectionClicked(it, holder)
                 }
             }
         }

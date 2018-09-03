@@ -18,65 +18,97 @@ import kotlinx.coroutines.experimental.withContext
 import org.mozilla.scryer.R
 import org.mozilla.scryer.persistence.CollectionModel
 import org.mozilla.scryer.viewmodel.ScreenshotViewModel
+import java.util.*
 
 class CollectionNameDialog(private val context: Context,
-                           collections: List<CollectionModel>,
                            private val delegate: Delegate) {
 
     companion object {
+        /**
+         * @param excludeSuggestion: whether to take suggest collection names into consideration when
+         * searching for conflict name
+         */
         fun createNewCollection(context: Context, viewModel: ScreenshotViewModel,
+                                excludeSuggestion: Boolean,
                                 callback: (collection: CollectionModel) -> Unit) {
             launch(UI) {
-                createNewCollection(context, viewModel, getCollectionList(viewModel), callback)
+                showNewCollectionDialog(context, viewModel, excludeSuggestion,
+                        queryCollectionList(viewModel), callback)
             }
         }
 
         fun renameCollection(context: Context, viewModel: ScreenshotViewModel, collectionId: String?) {
             launch(UI) {
-                val collections = getCollectionList(viewModel)
+                val collections = queryCollectionList(viewModel)
                 collections.find { it.id == collectionId }?.let {
-                    renameCollection(context, viewModel, it, collections)
+                    showRenameDialog(context, viewModel, it, collections)
                 }
             }
         }
 
-        private fun createNewCollection(context: Context, viewModel: ScreenshotViewModel,
-                                        collections: List<CollectionModel>,
-                                        callback: (collection: CollectionModel) -> Unit) {
-            val dialog = CollectionNameDialog(context, collections, object : CollectionNameDialog.Delegate {
-                override fun onPositiveAction(dialog: CollectionNameDialog.Interface) {
-                    val color = findColorForNewCollection(context, collections)
-                    val model = CollectionModel(dialog.getInputText(), System.currentTimeMillis(), color)
-                    viewModel.addCollection(model)
-                    callback(model)
+        private fun showNewCollectionDialog(context: Context, viewModel: ScreenshotViewModel,
+                                            excludeSuggestion: Boolean,
+                                            collections: List<CollectionModel>,
+                                            callback: (collection: CollectionModel) -> Unit) {
+            val dialog = CollectionNameDialog(context, object : CollectionNameDialog.Delegate {
+
+                override fun onPositiveAction(collectionName: String) {
+                    val result = updateOrInsertCollection(context, collectionName, viewModel, collections)
+                    callback(result)
                 }
 
-                override fun onNegativeAction(dialog: CollectionNameDialog.Interface) {}
+                override fun isNameConflict(name: String): Boolean {
+                    return isNameConflict(name, excludeSuggestion, collections)
+                }
             })
 
             dialog.title = context.resources.getText(R.string.dialogue_title_collection).toString()
             dialog.show()
         }
 
-        private fun renameCollection(context: Context, viewModel: ScreenshotViewModel,
+        private fun showRenameDialog(context: Context, viewModel: ScreenshotViewModel,
                                      collection: CollectionModel,
                                      collections: List<CollectionModel>) {
+            val originalName = collection.name
 
-            val dialog = CollectionNameDialog(context, collections, object : CollectionNameDialog.Delegate {
-                override fun onPositiveAction(dialog: CollectionNameDialog.Interface) {
-                    collection.name = dialog.getInputText()
+            val dialog = CollectionNameDialog(context, object : CollectionNameDialog.Delegate {
+                override fun onPositiveAction(collectionName: String) {
+                    collection.name = collectionName
                     viewModel.updateCollection(collection)
                 }
 
-                override fun onNegativeAction(dialog: CollectionNameDialog.Interface) {}
+                override fun isNameConflict(name: String): Boolean {
+                    val isOriginalName = name.compareTo(originalName, true) == 0
+                    return !isOriginalName && isNameConflict(name, true, collections)
+                }
             })
 
-            dialog.initialCollectionName = collection.name
             dialog.title = context.resources.getText(R.string.dialogue_rename_title_rename).toString()
+            dialog.originalName = originalName
             dialog.show()
         }
 
-        private fun findColorForNewCollection(context: Context, collections: List<CollectionModel>): Int {
+        private fun updateOrInsertCollection(context: Context, name: String,
+                                             viewModel: ScreenshotViewModel,
+                                             collections: List<CollectionModel>): CollectionModel {
+            return collections.find {
+                it.name == name
+
+            }?.let {
+                launch(DefaultDispatcher) {
+                    viewModel.updateCollectionId(it, UUID.randomUUID().toString())
+                }
+                it
+
+            }?: run {
+                val color = findNewCollectionColor(context, collections)
+                val model = CollectionModel(name, System.currentTimeMillis(), color)
+                viewModel.addCollection(model)
+                model
+            }
+        }
+
+        private fun findNewCollectionColor(context: Context, collections: List<CollectionModel>): Int {
             val lastColor = collections.last().color
             val defaultColor = ContextCompat.getColor(context, R.color.primaryTeal)
 
@@ -97,26 +129,50 @@ class CollectionNameDialog(private val context: Context,
             return color
         }
 
-        private suspend fun getCollectionList(viewModel: ScreenshotViewModel): List<CollectionModel> {
+        private fun isNameConflict(name: String, excludeSuggestion: Boolean,
+                                   collections: List<CollectionModel>): Boolean {
+            return collections.find {
+                name.compareTo(it.name, true) == 0
+
+            }?.let { conflictCollection ->
+                if (CollectionModel.isSuggestCollection(conflictCollection)) {
+                    !excludeSuggestion
+                } else {
+                    true
+                }
+
+            } ?: false
+        }
+
+        private suspend fun queryCollectionList(viewModel: ScreenshotViewModel): List<CollectionModel> {
             return withContext(DefaultDispatcher) {
                 viewModel.getCollectionList()
             }
         }
     }
 
-    var dialog: AlertDialog
-    var title: String = ""
+    private val dialog: AlertDialog
+    private val validator: InputValidator
 
-    private var editText: EditText
-    private var dialogInterface: Interface
+    private val dialogView: View by lazy {
+        View.inflate(context, R.layout.dialog_collection_name, null)
+    }
+    private val titleText: TextView by lazy { dialogView.findViewById<TextView>(R.id.title) }
+    private val editText: EditText by lazy { dialogView.findViewById<EditText>(R.id.edit_text) }
+    private val editTextBar: View by lazy { dialogView.findViewById<View>(R.id.edit_text_bar) }
+    private val errorIcon: View by lazy { dialogView.findViewById<View>(R.id.edit_text_icon) }
+    private val errorText: TextView by lazy { dialogView.findViewById<TextView>(R.id.error_text) }
 
-    var initialCollectionName = ""
+    private var title: String = ""
+    private var originalName = ""
+    private val inputName: String
+        get() = editText.text.toString()
 
-    val validIcon: Drawable? by lazy {
+    private val validIcon: Drawable? by lazy {
         null
     }
 
-    val invalidIcon: Drawable? by lazy {
+    private val invalidIcon: Drawable? by lazy {
         ContextCompat.getDrawable(context, R.drawable.error)?.let {
             val wrapped = DrawableCompat.wrap(it)
             DrawableCompat.setTint(wrapped, ContextCompat.getColor(context, R.color.errorRed))
@@ -125,35 +181,43 @@ class CollectionNameDialog(private val context: Context,
     }
 
     init {
-        val view = View.inflate(context, R.layout.dialog_collection_name, null)
-        val titleText = view.findViewById<TextView>(R.id.title)
-        val editTextBar = view.findViewById<View>(R.id.edit_text_bar)
+        dialog = createDialog()
+        validator = createValidator()
 
-        val errorText = view.findViewById<TextView>(R.id.error_text)
-        val errorIcon = view.findViewById<View>(R.id.edit_text_icon)
-
-        editText = view.findViewById(R.id.edit_text)
-        dialogInterface = object : Interface {
-            override fun getInputText(): String {
-                return editText.text.toString()
-            }
+        dialog.setOnShowListener {
+            initDialogContent()
         }
 
-        dialog = AlertDialog.Builder(context, R.style.Theme_AppCompat_Light_Dialog_Alert)
+        editText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                validator.validate(s.toString())
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+        })
+    }
+
+    private fun createDialog(): AlertDialog {
+        return AlertDialog.Builder(context, R.style.Theme_AppCompat_Light_Dialog_Alert)
                 .setPositiveButton(R.string.dialogue_action_add) { _, _ ->
-                    if (dialogInterface.getInputText() == initialCollectionName) {
-                        delegate.onNegativeAction(dialogInterface)
+                    if (inputName == originalName) {
+                        delegate.onNegativeAction()
                     } else {
-                        delegate.onPositiveAction(dialogInterface)
+                        delegate.onPositiveAction(inputName)
                     }
                 }
                 .setNegativeButton(android.R.string.cancel) { _, _ ->
-                    delegate.onNegativeAction(dialogInterface)
+                    delegate.onNegativeAction()
                 }
-                .setView(view)
+                .setView(dialogView)
                 .create()
+    }
 
-        val validator = InputValidator(context, object : InputValidator.ViewDelegate {
+    private fun createValidator(): InputValidator {
+        return InputValidator(context, object : InputValidator.ViewDelegate {
+
             override fun forbidContinue(forbid: Boolean) {
                 dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = !forbid
             }
@@ -170,31 +234,9 @@ class CollectionNameDialog(private val context: Context,
             }
 
             override fun isCollectionExist(name: String): Boolean {
-                return name.compareTo(initialCollectionName, true) != 0 &&
-                        collections.any { name.compareTo(it.name, true) == 0 }
+                return delegate.isNameConflict(name)
+
             }
-        })
-
-        dialog.setOnShowListener {
-            titleText.text = title
-            if (initialCollectionName.isNotEmpty()) {
-                editText.setText(initialCollectionName)
-                editText.setSelection(0, initialCollectionName.length)
-            }
-            validator.validate(dialogInterface.getInputText())
-            val colors = ContextCompat.getColorStateList(context, R.color.primary_text_button)
-            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(colors)
-            dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(colors)
-        }
-
-        editText.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                validator.validate(s.toString())
-            }
-
-            override fun afterTextChanged(s: Editable?) {}
         })
     }
 
@@ -208,8 +250,24 @@ class CollectionNameDialog(private val context: Context,
         dialog.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
     }
 
-    class InputValidator(private val context: Context, private val viewDelegate: ViewDelegate) {
-        private val lengthLimit = context.resources.getInteger(R.integer.collection_name_dialog_max_input_length)
+    private fun initDialogContent() {
+        titleText.text = title
+
+        if (originalName.isNotEmpty()) {
+            editText.setText(originalName)
+            editText.setSelection(0, originalName.length)
+        }
+
+        validator.validate(inputName)
+
+        val colors = ContextCompat.getColorStateList(context, R.color.primary_text_button)
+        this.dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(colors)
+        this.dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(colors)
+    }
+
+    private class InputValidator(private val context: Context, private val viewDelegate: ViewDelegate) {
+        private val lengthLimit = context.resources.getInteger(
+                R.integer.collection_name_dialog_max_input_length)
 
         fun validate(input: String) {
             when {
@@ -219,12 +277,14 @@ class CollectionNameDialog(private val context: Context,
 
                 input.length > lengthLimit -> {
                     viewDelegate.forbidContinue(true)
-                    viewDelegate.onErrorStatusUpdate(context.getString(R.string.dialogue_rename_error_maximum))
+                    viewDelegate.onErrorStatusUpdate(context.getString(
+                            R.string.dialogue_rename_error_maximum))
                 }
 
                 viewDelegate.isCollectionExist(input) -> {
                     viewDelegate.forbidContinue(true)
-                    viewDelegate.onErrorStatusUpdate(context.getString(R.string.dialogue_rename_error_duplicate))
+                    viewDelegate.onErrorStatusUpdate(context.getString(
+                            R.string.dialogue_rename_error_duplicate))
                 }
 
                 else -> {
@@ -241,12 +301,9 @@ class CollectionNameDialog(private val context: Context,
         }
     }
 
-    interface Interface {
-        fun getInputText(): String
-    }
-
     interface Delegate {
-        fun onPositiveAction(dialog: Interface)
-        fun onNegativeAction(dialog: Interface)
+        fun onPositiveAction(collectionName: String)
+        fun onNegativeAction() {}
+        fun isNameConflict(name: String): Boolean
     }
 }

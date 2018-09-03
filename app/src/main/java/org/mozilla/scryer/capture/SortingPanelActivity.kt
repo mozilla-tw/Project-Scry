@@ -299,7 +299,10 @@ class SortingPanelActivity : AppCompatActivity() {
     }
 
     private fun onNewCollectionClicked() {
-        CollectionNameDialog.createNewCollection(this, screenshotViewModel) {
+        // Since suggest collection is visible on sorting panel, it's reasonable to show error msg
+        // when user input a name identical to suggest collection, there's no need to exclude
+        // suggest collection when matching for conflict name, set excludeSuggestion to false
+        CollectionNameDialog.createNewCollection(this, screenshotViewModel, false) {
             onCollectionClicked(it)
         }
     }

@@ -126,7 +126,11 @@ class MainAdapter(private val fragment: Fragment?): RecyclerView.Adapter<Recycle
         itemView.setOnClickListener {
             holder.getValidPosition { _ ->
                 fragment?.let {
-                    CollectionNameDialog.createNewCollection(parent.context, ScreenshotViewModel.get(it)) {}
+                    // since suggest collection is not visible on home view, it is confusing to show
+                    // name-conflict error msg when user input a name identical to suggest collections,
+                    // so here we just make that suggest collection become an user-created collection
+                    // since we don't want to show name conflict error msg on the dialog, set excludeSuggestion to true
+                    CollectionNameDialog.createNewCollection(parent.context, ScreenshotViewModel.get(it), true) {}
                 }
             }
         }

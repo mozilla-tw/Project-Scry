@@ -114,7 +114,10 @@ class MainAdapter(private val fragment: Fragment?): RecyclerView.Adapter<Recycle
                     putString(CollectionFragment.ARG_COLLECTION_ID, model.id)
                     putString(CollectionFragment.ARG_COLLECTION_NAME, model.name)
                 }
-                Navigation.findNavController(parent).navigate(R.id.action_navigate_to_collection, bundle)
+                val navController = Navigation.findNavController(parent)
+                if (navController.currentDestination?.id == R.id.MainFragment) {
+                    navController.navigate(R.id.action_navigate_to_collection, bundle)
+                }
             }
         }
         return itemHolder

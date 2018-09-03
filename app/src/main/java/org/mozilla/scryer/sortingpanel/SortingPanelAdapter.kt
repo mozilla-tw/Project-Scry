@@ -14,6 +14,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import org.mozilla.scryer.R
+import org.mozilla.scryer.extension.getValidPosition
 import org.mozilla.scryer.persistence.CollectionModel
 
 class SortingPanelAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -85,7 +86,7 @@ class SortingPanelAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         holder.title?.setTextColor(ContextCompat.getColor(parent.context, R.color.grey90))
 
         holder.itemView.setOnClickListener { _ ->
-            ensurePosition(holder) {
+            holder.getValidPosition {
                 callback?.onNewCollectionClick()
             }
         }
@@ -104,7 +105,7 @@ class SortingPanelAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         holder.checkIcon = view.findViewById(R.id.check_icon)
 
         holder.itemView.setOnClickListener { _ ->
-            ensurePosition(holder) { position ->
+            holder.getValidPosition { position ->
                 collections?.let {
                     onCollectionClicked(it[position - 1], holder)
                 }
@@ -132,12 +133,6 @@ class SortingPanelAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private class NewItemHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var title: TextView? = null
-    }
-
-    private fun ensurePosition(holder: RecyclerView.ViewHolder, action: (Int) -> Unit) {
-        if (holder.adapterPosition != RecyclerView.NO_POSITION) {
-            action(holder.adapterPosition)
-        }
     }
 
     private fun setSelectState(holder: ItemHolder, isSelected: Boolean) {

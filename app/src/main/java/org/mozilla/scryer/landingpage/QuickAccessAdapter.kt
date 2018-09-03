@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import com.bumptech.glide.Glide
 import org.mozilla.scryer.R
 import org.mozilla.scryer.capture.SortingPanelActivity
+import org.mozilla.scryer.extension.getValidPosition
 import org.mozilla.scryer.persistence.ScreenshotModel
 import java.io.File
 
@@ -79,10 +80,7 @@ class QuickAccessAdapter(val context: Context?) : RecyclerView.Adapter<RecyclerV
         val holder = ScreenshotItemHolder(view, this)
         holder.image = view.findViewById(R.id.image_view)
         holder.itemView.setOnClickListener { _ ->
-            holder.adapterPosition.takeIf { position ->
-                position != RecyclerView.NO_POSITION
-
-            }?.let { position: Int ->
+            holder.getValidPosition { position: Int ->
                 clickListener?.onItemClick(list[position], holder)
             }
         }

@@ -20,6 +20,7 @@ import android.widget.TextView
 import androidx.navigation.Navigation
 import com.bumptech.glide.Glide
 import org.mozilla.scryer.R
+import org.mozilla.scryer.extension.getValidPosition
 import org.mozilla.scryer.persistence.CollectionModel
 import org.mozilla.scryer.persistence.ScreenshotModel
 import org.mozilla.scryer.ui.CollectionNameDialog
@@ -104,10 +105,7 @@ class MainAdapter(private val fragment: Fragment?): RecyclerView.Adapter<Recycle
         itemHolder.overlay = itemView.findViewById(R.id.overlay)
 
         itemView.setOnClickListener {_ ->
-            itemHolder.adapterPosition.takeIf { position ->
-                position != RecyclerView.NO_POSITION
-
-            }?.let { position: Int ->
+            itemHolder.getValidPosition { position: Int ->
                 val itemIndex = position - PREFIX_ITEM_COUNT
                 val bundle = Bundle().apply {
                     val model = collectionList[itemIndex]
@@ -126,10 +124,7 @@ class MainAdapter(private val fragment: Fragment?): RecyclerView.Adapter<Recycle
 
         val holder = StaticHolder(itemView)
         itemView.setOnClickListener {
-            holder.adapterPosition.takeIf { position ->
-                position != RecyclerView.NO_POSITION
-
-            }?.let { _ ->
+            holder.getValidPosition { _ ->
                 fragment?.let {
                     CollectionNameDialog.createNewCollection(parent.context, ScreenshotViewModel.get(it)) {}
                 }

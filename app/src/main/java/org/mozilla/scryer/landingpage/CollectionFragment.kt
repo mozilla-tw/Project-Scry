@@ -30,6 +30,7 @@ import org.mozilla.scryer.*
 import org.mozilla.scryer.Observer
 import org.mozilla.scryer.capture.SortingPanelActivity
 import org.mozilla.scryer.detailpage.DetailPageActivity
+import org.mozilla.scryer.extension.getValidPosition
 import org.mozilla.scryer.persistence.CollectionModel
 import org.mozilla.scryer.persistence.ScreenshotModel
 import org.mozilla.scryer.ui.CollectionNameDialog
@@ -197,10 +198,7 @@ open class ScreenshotAdapter(val context: Context?) : RecyclerView.Adapter<Recyc
         holder.title = view.findViewById(R.id.title)
         holder.image = view.findViewById(R.id.image_view)
         holder.itemView.setOnClickListener { _ ->
-            holder.adapterPosition.takeIf { position ->
-                position != RecyclerView.NO_POSITION
-
-            }?.let { position: Int ->
+            holder.getValidPosition{ position: Int ->
                 DetailPageActivity.showDetailPage(parent.context, screenshotList[position].absolutePath, holder.image)
             }
         }

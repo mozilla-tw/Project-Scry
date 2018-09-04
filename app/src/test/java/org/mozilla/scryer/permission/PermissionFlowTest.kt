@@ -6,6 +6,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.mockito.*
+import org.mockito.ArgumentMatchers.anyBoolean
 import org.mockito.ArgumentMatchers.anyString
 import org.mozilla.scryer.MainActivity
 import kotlin.reflect.KClass
@@ -101,7 +102,7 @@ class PermissionFlowTest {
     fun denyStorage_clickToRequestAgain() {
         // Setup: Deny permission
         denyStorage(flow, false)
-        verifyMethod().showStoragePermissionView(anyString(), capture(runnableCaptor))
+        verifyMethod().showStoragePermissionView(anyBoolean(), capture(runnableCaptor))
         runnableCaptor.value.run()
 
         // Test: Click action button to request again
@@ -112,7 +113,7 @@ class PermissionFlowTest {
     fun denyStorageForever_clickToLaunchSetting() {
         // Setup: Deny permission
         denyStorage(flow, true)
-        verifyMethod().showStoragePermissionView(anyString(), capture(runnableCaptor))
+        verifyMethod().showStoragePermissionView(anyBoolean(), capture(runnableCaptor))
         runnableCaptor.value.run()
 
         // Test: Click action button to launch setting

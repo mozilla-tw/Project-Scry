@@ -102,7 +102,7 @@ class PermissionFlow(private var permissionState: PermissionStateProvider,
     interface ViewDelegate {
         fun showWelcomePage(action: Runnable)
 
-        fun showStoragePermissionView(title: String, action: Runnable)
+        fun showStoragePermissionView(isRational: Boolean, action: Runnable)
         fun showOverlayPermissionView(action: Runnable, negativeAction: Runnable)
         fun showCapturePermissionView(action: Runnable, negativeAction: Runnable)
 
@@ -170,13 +170,8 @@ class PermissionFlow(private var permissionState: PermissionStateProvider,
         class NonFirstTimeRequest(private val flow: PermissionFlow) : StorageState(flow) {
             override fun execute(): State {
                 val shouldShowRational = flow.permissionState.shouldShowStorageRational()
-                val title = if (shouldShowRational) {
-                    "oops! something wrong"
-                } else {
-                    "go to setting and enable permission"
-                }
 
-                flow.viewDelegate.showStoragePermissionView(title, Runnable {
+                flow.viewDelegate.showStoragePermissionView(shouldShowRational, Runnable {
                     if (shouldShowRational) {
                         flow.viewDelegate.requestStoragePermission()
                     } else {

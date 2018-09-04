@@ -29,7 +29,6 @@ import android.support.v7.preference.PreferenceManager
 import android.support.v7.widget.*
 import android.util.Log
 import android.view.*
-import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.navigation.Navigation
@@ -82,6 +81,7 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
 
     private lateinit var permissionFlow: PermissionFlow
     private var storagePermissionView: View? = null
+    private var welcomeView: View? = null
 
     private var permissionDialog: BottomSheetDialog? = null
 
@@ -146,10 +146,47 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
     }
 
     override fun showWelcomePage(action: Runnable) {
-        showStoragePermissionView("welcome!!", action)
+        welcomeView = welcomeView?.let {
+            it.visibility = View.VISIBLE
+            it
+
+        }?: run {
+            val stub = view!!.findViewById<ViewStub>(R.id.welcome_stub)
+            stub.inflate()
+        }
+
+        welcomeView?.apply {
+            findViewById<TextView>(R.id.title).text = getString(R.string.onboarding_storage_title_welcome,
+                    getString(R.string.app_name))
+            showStoragePermissionView(this, action)
+        }
     }
 
-    override fun showStoragePermissionView(title: String, action: Runnable) {
+    override fun showStoragePermissionView(isRational: Boolean, action: Runnable) {
+        storagePermissionView = (storagePermissionView?.let {
+            it.visibility = View.VISIBLE
+            it
+
+        }?: run {
+            val stub = view!!.findViewById<ViewStub>(R.id.storage_permission_stub)
+            stub.inflate()
+
+        })?.apply {
+            val appName = getString(R.string.app_name)
+            val description = findViewById<TextView>(R.id.description)
+            val actionButton = findViewById<TextView>(R.id.action_button)
+            if (isRational) {
+                description.text = getString(R.string.onboarding_error_content_permission, appName)
+                actionButton.setText(R.string.onboarding_error_action_allow)
+            } else {
+                description.text = getString(R.string.onboarding_rareerror_content_permission, appName)
+                actionButton.setText(R.string.onboarding_rareerror_action_goto)
+            }
+            showStoragePermissionView(this, action)
+        }
+    }
+
+    private fun showStoragePermissionView(view: View, action: Runnable) {
         val activity = activity?: return
 
         val model = ViewModelProviders.of(activity).get(PermissionViewModel::class.java)
@@ -157,17 +194,7 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
             permissionFlow.onPermissionResult(MainActivity.REQUEST_CODE_WRITE_EXTERNAL_PERMISSION, it)
         })
 
-        storagePermissionView?.let {
-            it.visibility = View.VISIBLE
-
-        }?: apply {
-            val stub = view!!.findViewById<ViewStub>(R.id.storage_permission_stub)
-            val permissionView = stub.inflate()
-            storagePermissionView = permissionView
-        }
-
-        storagePermissionView?.findViewById<TextView>(R.id.title)?.text = title
-        storagePermissionView?.findViewById<View>(R.id.action_button)?.setOnClickListener {
+        view.findViewById<View>(R.id.action_button)?.setOnClickListener {
             action.run()
         }
     }
@@ -242,6 +269,7 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
 
     override fun onStorageGranted() {
         log(LOG_TAG, "onStorageGranted")
+        welcomeView?.visibility = View.GONE
         storagePermissionView?.visibility = View.GONE
 
         syncScreenshotsFromExternalStorage { newScreenshots ->

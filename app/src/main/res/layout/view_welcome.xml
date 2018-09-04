@@ -12,69 +12,50 @@
     android:background="@android:color/white"
     android:clickable="true">
 
-    <android.support.constraint.Guideline
-        android:id="@+id/image_top_guideline"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.33" />
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:background="#f9f9fa"
-        app:layout_constraintTop_toBottomOf="@id/image_top_guideline" />
-
     <TextView
         android:id="@+id/title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="40dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="48dp"
         android:layout_marginEnd="40dp"
-        android:gravity="center_horizontal"
         android:textColor="@color/grey90"
-        android:text="@string/onboarding_error_title_wrong"
+        android:text="@string/onboarding_storage_title_welcome"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="@id/image_top_guideline"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         style="@style/H2" />
-
-    <ImageView
-        android:id="@+id/error_image"
-        android:layout_width="wrap_content"
-        android:layout_height="156dp"
-        android:scaleType="fitCenter"
-        android:src="@drawable/image_error"
-        android:layout_marginBottom="16dp"
-        app:layout_constraintBottom_toTopOf="@id/title"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"/>
 
     <TextView
         android:id="@+id/description"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:gravity="center_horizontal"
         app:layout_constraintLeft_toLeftOf="@id/title"
         app:layout_constraintRight_toRightOf="@id/title"
         app:layout_constraintTop_toBottomOf="@id/title"
         android:textColor="@color/grey50"
-        android:text="@string/onboarding_rareerror_content_permission"
+        android:text="@string/onboarding_storage_content_permission"
         style="@style/Body2" />
 
     <TextView
         android:id="@+id/action_button"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:layout_below="@+id/title"
         android:layout_centerHorizontal="true"
-        android:padding="16dp"
-        style="@style/ButtonText"
-        android:text="@string/onboarding_rareerror_action_goto"
+        android:layout_marginTop="16dp"
+        style="@style/ContainedButton"
+        android:text="@string/onboarding_storage_action_confirm"
         app:layout_constraintTop_toBottomOf="@id/description"
-        app:layout_constraintLeft_toLeftOf="@id/description"
-        app:layout_constraintRight_toRightOf="@id/description"/>
+        app:layout_constraintLeft_toLeftOf="@id/description" />
 
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/image_welcome"
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
 </android.support.constraint.ConstraintLayout>

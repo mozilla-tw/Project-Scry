@@ -192,7 +192,7 @@ class MainAdapter(private val fragment: Fragment?): RecyclerView.Adapter<Recycle
         if (!path.isNullOrEmpty() && File(path).exists()) {
             Glide.with(holder.itemView).load(File(path)).into(holder.image!!)
         } else {
-            holder.image?.setImageBitmap(null)
+            holder.image?.setImageDrawable(ContextCompat.getDrawable(holder.itemView.context, R.drawable.image_emptyfolder))
         }
     }
 

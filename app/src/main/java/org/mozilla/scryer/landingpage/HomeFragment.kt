@@ -19,6 +19,7 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.support.annotation.RequiresApi
+import android.support.constraint.Group
 import android.support.design.widget.BottomSheetDialog
 import android.support.v4.app.ActivityCompat
 import android.support.v4.app.Fragment
@@ -66,6 +67,7 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
     }
 
     private lateinit var quickAccessContainer: ViewGroup
+    private lateinit var quickAccessEmptyView: Group
     private val quickAccessAdapter: QuickAccessAdapter by lazy {
         QuickAccessAdapter(context)
     }
@@ -97,6 +99,7 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
         val layout = inflater.inflate(R.layout.fragment_home, container, false)
         mainListView = layout.findViewById(R.id.main_list)
         quickAccessContainer = View.inflate(inflater.context, R.layout.view_quick_access, null) as ViewGroup
+        quickAccessEmptyView = quickAccessContainer.findViewById(R.id.empty_view_group)
         searchListView = layout.findViewById(R.id.search_list)
         return layout
     }
@@ -429,6 +432,12 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
     }
 
     private fun updateQuickAccessListView(screenshots: List<ScreenshotModel>) {
+        quickAccessEmptyView.visibility = if (screenshots.isEmpty()) {
+            View.VISIBLE
+        } else {
+            View.INVISIBLE
+        }
+
         quickAccessAdapter.list = screenshots
         quickAccessAdapter.notifyDataSetChanged()
     }

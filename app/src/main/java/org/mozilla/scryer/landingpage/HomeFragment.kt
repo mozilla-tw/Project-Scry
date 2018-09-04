@@ -167,7 +167,7 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
         }
 
         storagePermissionView?.findViewById<TextView>(R.id.title)?.text = title
-        storagePermissionView?.findViewById<Button>(R.id.action_button)?.setOnClickListener {
+        storagePermissionView?.findViewById<View>(R.id.action_button)?.setOnClickListener {
             action.run()
         }
     }

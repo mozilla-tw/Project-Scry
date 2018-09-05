@@ -18,6 +18,11 @@
         android:transitionName="shared_in"
         android:scaleType="centerInside"/>
 
+    <android.support.v4.view.ViewPager
+        android:id="@+id/view_pager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
     <org.mozilla.scryer.detailpage.GraphicOverlay
         android:id="@+id/graphic_overlay"
         android:layout_width="match_parent"

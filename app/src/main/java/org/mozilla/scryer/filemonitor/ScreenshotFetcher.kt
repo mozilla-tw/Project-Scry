@@ -1,29 +1,20 @@
 package org.mozilla.scryer.filemonitor
 
 import android.content.Context
-import android.os.Handler
-import android.os.Looper
 import android.provider.MediaStore
 import org.mozilla.scryer.persistence.CollectionModel
 import org.mozilla.scryer.persistence.ScreenshotModel
 import java.io.File
-import java.util.concurrent.Executors
 
 class ScreenshotFetcher {
-    private val executor = Executors.newSingleThreadExecutor()
-    private val mainHandler = Handler(Looper.getMainLooper())
 
-    fun fetchScreenshots(context: Context, callback: (List<ScreenshotModel>) -> Unit) {
-        executor.execute {
-            val folders = getFolders(context)
-            val screenshots = mutableListOf<ScreenshotModel>()
-            folders.forEach { folderPath ->
-                screenshots.addAll(fetchScreenshots(folderPath))
-            }
-            mainHandler.post {
-                callback(screenshots)
-            }
+    fun fetchScreenshots(context: Context): List<ScreenshotModel> {
+        val folders = getFolders(context)
+        val screenshots = mutableListOf<ScreenshotModel>()
+        folders.forEach { folderPath ->
+            screenshots.addAll(fetchScreenshots(folderPath))
         }
+        return screenshots
     }
 
     private fun getFolders(context: Context): List<String> {

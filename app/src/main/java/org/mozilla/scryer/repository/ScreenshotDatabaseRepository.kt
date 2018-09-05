@@ -91,13 +91,8 @@ class ScreenshotDatabaseRepository(private val database: ScreenshotDatabase) : S
         }
     }
 
-    override fun getScreenshotList(callback: (List<ScreenshotModel>) -> Unit) {
-        executor.execute {
-            val list = database.screenshotDao().getScreenshotList()
-            handler.post {
-                callback(list)
-            }
-        }
+    override fun getScreenshotList(): List<ScreenshotModel> {
+        return database.screenshotDao().getScreenshotList()
     }
 
     override fun getScreenshotList(collectionIds: List<String>): List<ScreenshotModel> {

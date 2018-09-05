@@ -30,25 +30,52 @@ import com.bumptech.glide.request.target.Target
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.text.FirebaseVisionText
+import kotlinx.coroutines.experimental.DefaultDispatcher
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.experimental.withContext
 import org.mozilla.scryer.R
+import org.mozilla.scryer.persistence.ScreenshotModel
+import org.mozilla.scryer.viewmodel.ScreenshotViewModel
 import java.io.File
 
 class DetailPageActivity : AppCompatActivity() {
 
-    private val mGraphicOverlay: GraphicOverlay by lazy { findViewById<GraphicOverlay>(R.id.graphic_overlay) }
-    private val toolbarGroup: Group by lazy { findViewById<Group>(R.id.toolbar_group) }
-
     companion object Launcher {
-        fun showDetailPage(context: Context, path: String, srcView: View?) {
+        private const val EXTRA_SCREENSHOT_ID = "screenshot_id"
+        private const val EXTRA_COLLECTION_ID = "collection_id"
+
+        fun showDetailPage(context: Context, screenshot: ScreenshotModel, srcView: View?,
+                           collectionId: String? = null) {
             val intent = Intent(context, DetailPageActivity::class.java)
             val bundle = srcView?.let {
                 val option = ActivityOptionsCompat.makeSceneTransitionAnimation(
                         context as Activity, srcView, ViewCompat.getTransitionName(it))
                 option.toBundle()
             }
-            intent.putExtra("path", path)
+            intent.putExtra(EXTRA_SCREENSHOT_ID, screenshot.id)
+            collectionId?.let {
+                intent.putExtra(EXTRA_COLLECTION_ID, collectionId)
+            }
             (context as AppCompatActivity).startActivity(intent, bundle)
         }
+    }
+
+    private val mGraphicOverlay: GraphicOverlay by lazy { findViewById<GraphicOverlay>(R.id.graphic_overlay) }
+    private val toolbarGroup: Group by lazy { findViewById<Group>(R.id.toolbar_group) }
+
+    /** Where did the user came from to this page **/
+    private val srcCollectionId: String? by lazy {
+        intent?.getStringExtra(EXTRA_COLLECTION_ID)
+    }
+
+    private val screenshotId: String by lazy {
+        val id = intent?.getStringExtra(EXTRA_SCREENSHOT_ID)
+        id ?: throw IllegalArgumentException("invalid screenshot id")
+    }
+
+    private val viewModel: ScreenshotViewModel by lazy {
+        ScreenshotViewModel.get(this)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,6 +83,7 @@ class DetailPageActivity : AppCompatActivity() {
         setContentView(R.layout.activity_detail_page)
 
         initActionBar()
+        initViewPager()
 
         val imageView = findViewById<ImageView>(R.id.image_view)
         imageView.setOnClickListener {
@@ -98,6 +126,20 @@ class DetailPageActivity : AppCompatActivity() {
 
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+    }
+
+    private fun initViewPager() {
+        launch(UI) {
+            val screenshots = withContext(DefaultDispatcher) {
+                srcCollectionId?.let {
+                    viewModel.getScreenshotList(listOf(it))
+                } ?: run {
+                    viewModel.getScreenshotList()
+                }
+            }
+
+
+        }
     }
 
     private fun toggleActionBar() {

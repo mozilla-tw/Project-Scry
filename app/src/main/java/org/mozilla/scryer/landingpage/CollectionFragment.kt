@@ -55,9 +55,7 @@ class CollectionFragment : Fragment() {
     private lateinit var screenshotListView: RecyclerView
     private lateinit var subtitleView: TextView
 
-    private val screenshotAdapter by lazy {
-        ScreenshotAdapter(context)
-    }
+    private lateinit var screenshotAdapter: ScreenshotAdapter
 
     private val collectionId: String? by lazy {
         arguments?.getString(ARG_COLLECTION_ID)
@@ -82,6 +80,11 @@ class CollectionFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        screenshotAdapter = ScreenshotAdapter(context) { item, view ->
+            val context = context ?: return@ScreenshotAdapter
+            DetailPageActivity.showDetailPage(context, item, view, collectionId)
+        }
+
         setHasOptionsMenu(true)
         setupActionBar()
         initScreenshotList(view.context)
@@ -208,7 +211,10 @@ const val CONTEXT_MENU_ID_INFO = 1
 const val CONTEXT_MENU_ID_SHARE = 2
 const val CONTEXT_MENU_ID_DELETE = 3
 
-open class ScreenshotAdapter(val context: Context?) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), OnContextMenuActionListener {
+open class ScreenshotAdapter(val context: Context?,
+                             private val onItemClickListener: ((item: ScreenshotModel, view: View?) -> Unit)? = null)
+    : RecyclerView.Adapter<RecyclerView.ViewHolder>(), OnContextMenuActionListener {
+
     private var screenshotList: List<ScreenshotModel> = emptyList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -219,7 +225,7 @@ open class ScreenshotAdapter(val context: Context?) : RecyclerView.Adapter<Recyc
         holder.image = view.findViewById(R.id.image_view)
         holder.itemView.setOnClickListener { _ ->
             holder.getValidPosition { position: Int ->
-                DetailPageActivity.showDetailPage(parent.context, screenshotList[position].absolutePath, holder.image)
+                onItemClickListener?.invoke(screenshotList[position], holder.image)
             }
         }
         return holder
@@ -274,6 +280,10 @@ open class ScreenshotAdapter(val context: Context?) : RecyclerView.Adapter<Recyc
 
     fun getScreenshotList(): List<ScreenshotModel> {
         return screenshotList
+    }
+
+    interface OnItemClickListener {
+        fun onItemClicked(model: ScreenshotModel)
     }
 }
 

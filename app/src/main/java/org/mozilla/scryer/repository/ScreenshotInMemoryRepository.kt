@@ -65,8 +65,8 @@ class ScreenshotInMemoryRepository : ScreenshotRepository {
         screenshotData.value = screenshotList
     }
 
-    override fun getScreenshotList(callback: (List<ScreenshotModel>) -> Unit) {
-        callback(screenshotList)
+    override fun getScreenshotList(): List<ScreenshotModel> {
+        return screenshotList
     }
 
     override fun getScreenshotList(collectionIds: List<String>): List<ScreenshotModel> {

@@ -272,7 +272,8 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
         welcomeView?.visibility = View.GONE
         storagePermissionView?.visibility = View.GONE
 
-        syncScreenshotsFromExternalStorage { newScreenshots ->
+        launch(UI) {
+            val newScreenshots = syncAndGetNewScreenshotsFromExternal()
             if (newScreenshots.isNotEmpty()) {
                 showNewScreenshotsDialog(newScreenshots)
             }
@@ -381,7 +382,7 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
     private fun initQuickAccessList(context: Context) {
         quickAccessAdapter.clickListener = object : QuickAccessAdapter.ItemClickListener {
             override fun onItemClick(screenshotModel: ScreenshotModel, holder: ScreenshotItemHolder) {
-                DetailPageActivity.showDetailPage(context, screenshotModel.absolutePath, holder.image)
+                DetailPageActivity.showDetailPage(context, screenshotModel, holder.image)
             }
 
             override fun onMoreClick(holder: RecyclerView.ViewHolder) {
@@ -475,13 +476,20 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
         mainAdapter.notifyDataSetChanged()
     }
 
-    private fun syncScreenshotsFromExternalStorage(callback: (newScreenshots: List<ScreenshotModel>) -> Unit) {
-        viewModel.getScreenshotList { list ->
-            context?.let {
-                ScreenshotFetcher().fetchScreenshots(it) { externalList ->
-                    val resultList = mergeExternalToDatabase(externalList, list)
-                    callback(resultList.filter { it.collectionId == CollectionModel.UNCATEGORIZED })
-                }
+    private suspend fun syncAndGetNewScreenshotsFromExternal(): List<ScreenshotModel> {
+        val context = context ?: return emptyList()
+
+        val externalList = withContext(DefaultDispatcher) {
+            ScreenshotFetcher().fetchScreenshots(context)
+        }
+
+        val dbList = withContext(DefaultDispatcher) {
+            viewModel.getScreenshotList()
+        }
+
+        return withContext(DefaultDispatcher) {
+            mergeExternalToDatabase(externalList, dbList).filter {
+                it.collectionId == CollectionModel.UNCATEGORIZED
             }
         }
     }
@@ -531,7 +539,7 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
         }
     }
 
-    private fun mergeExternalToDatabase(externalList: List<ScreenshotModel>,
+    private suspend fun mergeExternalToDatabase(externalList: List<ScreenshotModel>,
                                         dbList: List<ScreenshotModel>): List<ScreenshotModel> {
         // A lookup table consist of files recorded in the database, so we can quickly check whether each file
         // from external storage had already been recorded before
@@ -558,22 +566,19 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
             results.add(externalModel)
         }
 
-        launch(UI) {
-            withContext(DefaultDispatcher) {
-                for (entry in localModels) {
-                    val model = entry.value
-                    val file = File(model.absolutePath)
-                    if (!file.exists()) {
-                        viewModel.deleteScreenshot(model)
-                    }
-                }
+        for (entry in localModels) {
+            val model = entry.value
+            val file = File(model.absolutePath)
+            if (!file.exists()) {
+                viewModel.deleteScreenshot(model)
             }
+        }
+
+        withContext(UI) {
             mainAdapter.notifyDataSetChanged()
         }
 
-        launch {
-            viewModel.addScreenshot(results)
-        }
+        viewModel.addScreenshot(results)
         return results
     }
 

@@ -14,6 +14,17 @@
         <item name="alertDialogTheme">@style/DialogTheme</item>
     </style>
 
+    <style name="ToolbarNavigationButtonStyle" parent="Widget.AppCompat.Toolbar.Button.Navigation">
+        <item name="android:tint">@color/grey10</item>
+    </style>
+
+    <style name="DetailPageTheme.Base" parent="AppTheme">
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="toolbarNavigationButtonStyle">@style/ToolbarNavigationButtonStyle</item>
+    </style>
+
+    <style name="DetailPageTheme" parent="DetailPageTheme.Base" />
+
     <style name="OverflowButtonStyle" parent="Widget.AppCompat.Light.ActionButton.Overflow">
         <item name="android:src">@drawable/more</item>
     </style>

@@ -32,7 +32,9 @@
             android:taskAffinity="org.mozilla.choose_collection"
             android:theme="@style/SortingPanelTheme"
             android:windowSoftInputMode="adjustNothing" />
-        <activity android:name=".detailpage.DetailPageActivity" />
+        <activity
+            android:name=".detailpage.DetailPageActivity"
+            android:theme="@style/DetailPageTheme" />
         <activity
             android:name=".capture.RequestCaptureActivity"
             android:excludeFromRecents="true"

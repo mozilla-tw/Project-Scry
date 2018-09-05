@@ -16,6 +16,7 @@
 
     <style name="DetailPageTheme" parent="DetailPageTheme.Base">
         <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowTranslucentNavigation">true</item>
     </style>
 
 </resources>

@@ -204,8 +204,13 @@ class SortingPanelActivity : AppCompatActivity() {
 
             intent.hasExtra(EXTRA_SCREENSHOT_ID) -> {
                 val id = intent.getStringExtra(EXTRA_SCREENSHOT_ID)
-                viewModel.getScreenshot(id) {
-                    onFinished.invoke(listOf(it))
+                launch(UI) {
+                    withContext(DefaultDispatcher) {
+                        viewModel.getScreenshot(id)
+
+                    }?.let {
+                        onFinished.invoke(listOf(it))
+                    }
                 }
             }
 

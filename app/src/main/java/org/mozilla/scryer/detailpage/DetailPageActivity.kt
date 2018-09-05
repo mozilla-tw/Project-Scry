@@ -10,26 +10,21 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.support.constraint.Group
+import android.support.design.widget.FloatingActionButton
 import android.support.v4.app.ActivityOptionsCompat
 import android.support.v4.view.ViewCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
-import android.view.MenuItem
 import android.view.View
 import android.view.WindowManager
-import android.widget.ImageView
 import android.widget.Toast
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.target.Target
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.text.FirebaseVisionText
+import kotlinx.android.synthetic.main.activity_detail_page.*
+import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.DefaultDispatcher
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
@@ -37,13 +32,15 @@ import kotlinx.coroutines.experimental.withContext
 import org.mozilla.scryer.R
 import org.mozilla.scryer.persistence.ScreenshotModel
 import org.mozilla.scryer.viewmodel.ScreenshotViewModel
-import java.io.File
+import kotlin.coroutines.experimental.suspendCoroutine
 
 class DetailPageActivity : AppCompatActivity() {
 
     companion object Launcher {
         private const val EXTRA_SCREENSHOT_ID = "screenshot_id"
         private const val EXTRA_COLLECTION_ID = "collection_id"
+
+        private const val SUPPORT_SLIDE = true
 
         fun showDetailPage(context: Context, screenshot: ScreenshotModel, srcView: View?,
                            collectionId: String? = null) {
@@ -78,67 +75,138 @@ class DetailPageActivity : AppCompatActivity() {
         ScreenshotViewModel.get(this)
     }
 
+    private lateinit var screenshots: List<ScreenshotModel>
+    private val loadingViewController: LoadingViewGroup by lazy {
+        LoadingViewGroup(this)
+    }
+
+    private var isRecognizing = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detail_page)
 
         initActionBar()
         initViewPager()
+        initFab()
 
-        val imageView = findViewById<ImageView>(R.id.image_view)
-        imageView.setOnClickListener {
-            toggleActionBar()
-        }
+        updateUI()
 
-        val path = intent.getStringExtra("path")
-        val bitmap = BitmapFactory.decodeFile(path)
-        bitmap?.let {
-            runTextRecognition(it)
-        }
-
-        supportPostponeEnterTransition()
-        Glide.with(this).load(File(path).absolutePath).listener(object : RequestListener<Drawable> {
-            override fun onResourceReady(resource: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
-                supportStartPostponedEnterTransition()
-                return false
-            }
-
-            override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {
-                supportStartPostponedEnterTransition()
-                return false
-            }
-        }).into(imageView)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.home) {
-            finish()
-            return true
-        }
-        return super.onOptionsItemSelected(item)
+//        val path = intent.getStringExtra("path")
+//        val bitmap = BitmapFactory.decodeFile(path)
+//        bitmap?.let {
+//            runTextRecognition(it)
+//        }
+//
+//        supportPostponeEnterTransition()
+//        Glide.with(this).load(File(path).absolutePath).listener(object : RequestListener<Drawable> {
+//            override fun onResourceReady(resource: Drawable?, model: Any?,
+//                                         target: Target<Drawable>?,
+//                                         dataSource: DataSource?,
+//                                         isFirstResource: Boolean): Boolean {
+//                supportStartPostponedEnterTransition()
+//                return false
+//            }
+//
+//            override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?,
+//                                      isFirstResource: Boolean): Boolean {
+//                supportStartPostponedEnterTransition()
+//                return false
+//            }
+//        }).into(imageView)
     }
 
     private fun initActionBar() {
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        setSupportActionBar(toolbar)
+
         toolbar.setNavigationOnClickListener {
-            onBackPressed()
+            finish()
         }
 
-        setSupportActionBar(toolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.apply {
+            setDisplayHomeAsUpEnabled(true)
+            setDisplayShowTitleEnabled(false)
+        }
     }
 
     private fun initViewPager() {
         launch(UI) {
-            val screenshots = withContext(DefaultDispatcher) {
-                srcCollectionId?.let {
-                    viewModel.getScreenshotList(listOf(it))
-                } ?: run {
-                    viewModel.getScreenshotList()
+            screenshots = getScreenshots().sortedByDescending { it.lastModified }
+            view_pager.adapter = DetailPageAdapter().apply {
+                this.screenshots = this@DetailPageActivity.screenshots
+                this.onItemClickListener = {
+                    toggleActionBar()
+                }
+            }
+            view_pager.currentItem = screenshots.indexOfFirst { it.id == screenshotId }
+        }
+    }
+
+    private fun initFab() {
+        val fab = findViewById<FloatingActionButton>(R.id.text_mode_fab)
+
+        val fabListener = View.OnClickListener {
+            when (it.id) {
+                R.id.text_mode_fab -> {
+                    isRecognizing = true
+                    startRecognition()
+                }
+
+                R.id.cancel_fab -> {
+                    isRecognizing = false
+                    updateUI()
+                }
+            }
+        }
+
+        fab.setOnClickListener(fabListener)
+        cancel_fab.setOnClickListener(fabListener)
+    }
+
+    private fun startRecognition() {
+        launch(UI) {
+            updateUI()
+
+            val result = withContext(CommonPool) {
+                val path = (screenshots[view_pager.currentItem]).absolutePath
+                val bitmap = BitmapFactory.decodeFile(path)
+                bitmap?.let {
+                    runTextRecognition(it)
+                } ?: null
+            }
+
+            result?.let {
+                if (isRecognizing) {
+                    processTextRecognitionResult(it)
                 }
             }
 
+            isRecognizing = false
+            updateUI()
+        }
+    }
 
+    private fun updateUI() {
+        if (isRecognizing) {
+            loadingViewController.show()
+            cancel_fab.visibility = View.VISIBLE
+            text_mode_fab.visibility = View.INVISIBLE
+
+        } else {
+            loadingViewController.hide()
+            cancel_fab.visibility = View.INVISIBLE
+            text_mode_fab.visibility = View.VISIBLE
+        }
+    }
+
+    @Suppress("ConstantConditionIf")
+    private suspend fun getScreenshots(): List<ScreenshotModel> = withContext(DefaultDispatcher) {
+        if (SUPPORT_SLIDE) {
+            srcCollectionId?.let { viewModel.getScreenshotList(listOf(it)) }
+                    ?: viewModel.getScreenshotList()
+        } else {
+            viewModel.getScreenshot(screenshotId)?.let { listOf(it) } ?: emptyList()
         }
     }
 
@@ -150,6 +218,7 @@ class DetailPageActivity : AppCompatActivity() {
             toolbarGroup.visibility = View.VISIBLE
             supportActionBar?.show()
             window?.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+
         } else {
             toolbarGroup.visibility = View.INVISIBLE
             supportActionBar?.hide()
@@ -157,16 +226,15 @@ class DetailPageActivity : AppCompatActivity() {
         }
     }
 
-    private fun runTextRecognition(selectedImage: Bitmap) {
+    private suspend fun runTextRecognition(selectedImage: Bitmap): FirebaseVisionText? = suspendCoroutine { cont ->
         val image = FirebaseVisionImage.fromBitmap(selectedImage)
         val detector = FirebaseVision.getInstance().visionTextDetector
         detector.detectInImage(image)
                 .addOnSuccessListener { texts ->
-                    processTextRecognitionResult(texts)
+                    cont.resume(texts)
                 }
-                .addOnFailureListener { e ->
-                    // Task failed with an exception
-                    e.printStackTrace()
+                .addOnFailureListener { _ ->
+                    cont.resume(null)
                 }
     }
 
@@ -186,6 +254,40 @@ class DetailPageActivity : AppCompatActivity() {
                     mGraphicOverlay.add(textGraphic)
 
                 }
+            }
+        }
+    }
+//
+//    private fun showSystemUI() {
+//        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
+//                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
+//                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+//    }
+//
+//    private fun hideSystemUI() {
+//        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
+//                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
+//                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
+//                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
+//                View.SYSTEM_UI_FLAG_LOW_PROFILE or
+//                View.SYSTEM_UI_FLAG_FULLSCREEN or
+//                View.SYSTEM_UI_FLAG_IMMERSIVE
+//    }
+
+    private class LoadingViewGroup(private val activity: DetailPageActivity) {
+        fun show() {
+            activity.apply {
+                loading_overlay.visibility = View.VISIBLE
+                loading_progress.visibility = View.VISIBLE
+                loading_text.visibility = View.VISIBLE
+            }
+        }
+
+        fun hide() {
+            activity.apply {
+                loading_overlay.visibility = View.INVISIBLE
+                loading_progress.visibility = View.INVISIBLE
+                loading_text.visibility = View.INVISIBLE
             }
         }
     }

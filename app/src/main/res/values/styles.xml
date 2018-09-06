@@ -15,7 +15,7 @@
     </style>
 
     <style name="ToolbarNavigationButtonStyle" parent="Widget.AppCompat.Toolbar.Button.Navigation">
-        <item name="android:tint">@color/grey10</item>
+        <item name="android:tint">@color/white</item>
     </style>
 
     <style name="DetailPageTheme.Base" parent="AppTheme">

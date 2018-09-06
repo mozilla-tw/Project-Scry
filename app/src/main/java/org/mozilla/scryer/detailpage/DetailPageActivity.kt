@@ -11,7 +11,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.support.constraint.Group
+import android.support.design.widget.BottomSheetBehavior
 import android.support.design.widget.FloatingActionButton
 import android.support.v4.app.ActivityOptionsCompat
 import android.support.v4.view.ViewCompat
@@ -59,7 +59,6 @@ class DetailPageActivity : AppCompatActivity() {
     }
 
     private val mGraphicOverlay: GraphicOverlay by lazy { findViewById<GraphicOverlay>(R.id.graphic_overlay) }
-    private val toolbarGroup: Group by lazy { findViewById<Group>(R.id.toolbar_group) }
 
     /** Where did the user came from to this page **/
     private val srcCollectionId: String? by lazy {
@@ -81,6 +80,7 @@ class DetailPageActivity : AppCompatActivity() {
     }
 
     private var isRecognizing = false
+    private var isTextMode = false
     private var isEnterTransitionPostponed = true
 
     private val itemCallback = object : DetailPageAdapter.ItemCallback {
@@ -104,6 +104,7 @@ class DetailPageActivity : AppCompatActivity() {
         initActionBar()
         initViewPager()
         initFab()
+        initPanel()
 
         updateUI()
     }
@@ -113,7 +114,7 @@ class DetailPageActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         toolbar.setNavigationOnClickListener {
-            finish()
+            onBackPressed()
         }
 
         supportActionBar?.apply {
@@ -154,6 +155,22 @@ class DetailPageActivity : AppCompatActivity() {
         cancel_fab.setOnClickListener(fabListener)
     }
 
+    private fun initPanel() {
+        BottomSheetBehavior.from(text_mode_panel_content)
+                .setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+                    override fun onSlide(bottomSheet: View, slideOffset: Float) {
+
+                    }
+
+                    override fun onStateChanged(bottomSheet: View, newState: Int) {
+                        if (newState == BottomSheetBehavior.STATE_HIDDEN) {
+                            isTextMode = false
+                            updateUI()
+                        }
+                    }
+                })
+    }
+
     private fun startRecognition() {
         launch(UI) {
             updateUI()
@@ -163,12 +180,14 @@ class DetailPageActivity : AppCompatActivity() {
                 val bitmap = BitmapFactory.decodeFile(path)
                 bitmap?.let {
                     runTextRecognition(it)
-                } ?: null
+                }
             }
 
             result?.let {
                 if (isRecognizing) {
                     processTextRecognitionResult(it)
+                    isTextMode = true
+                    updateUI()
                 }
             }
 
@@ -178,15 +197,27 @@ class DetailPageActivity : AppCompatActivity() {
     }
 
     private fun updateUI() {
-        if (isRecognizing) {
-            loadingViewController.show()
-            cancel_fab.visibility = View.VISIBLE
-            text_mode_fab.visibility = View.INVISIBLE
+        if (isTextMode) {
+            text_mode_panel.visibility = View.VISIBLE
+            text_mode_background.visibility = View.VISIBLE
+            BottomSheetBehavior.from(text_mode_panel_content).state = BottomSheetBehavior.STATE_COLLAPSED
+            cancel_fab.visibility = View.INVISIBLE
+            text_mode_fab.verticalScrollbarPosition = View.INVISIBLE
+            loadingViewController.hide()
 
         } else {
-            loadingViewController.hide()
-            cancel_fab.visibility = View.INVISIBLE
-            text_mode_fab.visibility = View.VISIBLE
+            text_mode_panel.visibility = View.GONE
+            text_mode_background.visibility = View.GONE
+            if (isRecognizing) {
+                loadingViewController.show()
+                cancel_fab.visibility = View.VISIBLE
+                text_mode_fab.visibility = View.INVISIBLE
+
+            } else {
+                loadingViewController.hide()
+                cancel_fab.visibility = View.INVISIBLE
+                text_mode_fab.visibility = View.VISIBLE
+            }
         }
     }
 
@@ -205,12 +236,12 @@ class DetailPageActivity : AppCompatActivity() {
         isShowing = !isShowing
 
         if (isShowing) {
-            toolbarGroup.visibility = View.VISIBLE
+            toolbar_background.visibility = View.VISIBLE
             supportActionBar?.show()
             window?.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
 
         } else {
-            toolbarGroup.visibility = View.INVISIBLE
+            toolbar_background.visibility = View.INVISIBLE
             supportActionBar?.hide()
             window?.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
         }
@@ -235,6 +266,7 @@ class DetailPageActivity : AppCompatActivity() {
             return
         }
         mGraphicOverlay.clear()
+        text_mode_text.text = ""
         for (i in blocks.indices) {
             val lines = blocks[i].lines
             for (j in lines.indices) {
@@ -242,7 +274,9 @@ class DetailPageActivity : AppCompatActivity() {
                 for (k in elements.indices) {
                     val textGraphic = TextGraphic(mGraphicOverlay, elements[k])
                     mGraphicOverlay.add(textGraphic)
-
+                    var text = text_mode_text.text.toString()
+                    text = text + elements[k].text + " "
+                    text_mode_text.text = text
                 }
             }
         }

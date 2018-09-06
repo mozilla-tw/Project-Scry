@@ -57,6 +57,27 @@
         app:layout_constraintRight_toRightOf="@id/loading_overlay"
         app:layout_constraintTop_toBottomOf="@id/loading_progress" />
 
+    <View
+        android:id="@+id/text_mode_background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/dialogScrim"
+        android:clickable="true" />
+
+    <View
+        android:id="@+id/toolbar_background"
+        android:layout_width="match_parent"
+        android:layout_height="128dp"
+        android:background="@drawable/detailpage_toolbar_background" />
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:navigationIcon="@drawable/back"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -85,27 +106,46 @@
             app:layout_constraintBottom_toBottomOf="@id/text_mode_fab"
             app:fabSize="normal"
             app:backgroundTint="@color/grey10" />
+
+        <android.support.design.widget.CoordinatorLayout
+            android:id="@+id/text_mode_panel"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:visibility="visible"
+            android:layout_marginTop="?attr/actionBarSize"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+            <android.support.v4.widget.NestedScrollView
+                android:id="@+id/text_mode_panel_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/bottom_dialog_bkg"
+                app:layout_behavior="@string/bottom_sheet_behavior"
+                app:behavior_hideable="true">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+                    <View
+                        android:id="@+id/text_mode_panel_hint_bar"
+                        android:layout_width="@dimen/sorting_panel_hint_bar_width"
+                        android:layout_height="@dimen/sorting_panel_hint_bar_height"
+                        android:layout_marginTop="@dimen/sorting_panel_hint_bar_margin_top"
+                        android:layout_gravity="center_horizontal"
+                        android:background="@drawable/sorting_panel_hint_bar" />
+                    <TextView
+                        android:id="@+id/text_mode_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:textColor="@color/grey60"
+                        android:paddingStart="24dp"
+                        android:paddingEnd="40dp"
+                        android:paddingTop="16dp"
+                        android:paddingBottom="16dp"
+                        style="body1" />
+                </LinearLayout>
+            </android.support.v4.widget.NestedScrollView>
+        </android.support.design.widget.CoordinatorLayout>
     </android.support.constraint.ConstraintLayout>
-
-    <View
-        android:id="@+id/toolbar_background"
-        android:layout_width="match_parent"
-        android:layout_height="128dp"
-        android:background="@drawable/detailpage_toolbar_background" />
-
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        app:navigationIcon="@drawable/back"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <android.support.constraint.Group
-        android:id="@+id/toolbar_group"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:constraint_referenced_ids="toolbar_background"
-        app:navigationIcon="@drawable/back" />
 
 </android.support.constraint.ConstraintLayout>

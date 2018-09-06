@@ -81,39 +81,31 @@ class DetailPageActivity : AppCompatActivity() {
     }
 
     private var isRecognizing = false
+    private var isEnterTransitionPostponed = true
+
+    private val itemCallback = object : DetailPageAdapter.ItemCallback {
+        override fun onItemClicked(item: ScreenshotModel) {
+            toggleActionBar()
+        }
+
+        override fun onItemLoaded(item: ScreenshotModel) {
+            if (isEnterTransitionPostponed && item.id == screenshotId) {
+                isEnterTransitionPostponed = false
+                supportStartPostponedEnterTransition()
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detail_page)
+        supportPostponeEnterTransition()
 
         initActionBar()
         initViewPager()
         initFab()
 
         updateUI()
-
-//        val path = intent.getStringExtra("path")
-//        val bitmap = BitmapFactory.decodeFile(path)
-//        bitmap?.let {
-//            runTextRecognition(it)
-//        }
-//
-//        supportPostponeEnterTransition()
-//        Glide.with(this).load(File(path).absolutePath).listener(object : RequestListener<Drawable> {
-//            override fun onResourceReady(resource: Drawable?, model: Any?,
-//                                         target: Target<Drawable>?,
-//                                         dataSource: DataSource?,
-//                                         isFirstResource: Boolean): Boolean {
-//                supportStartPostponedEnterTransition()
-//                return false
-//            }
-//
-//            override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?,
-//                                      isFirstResource: Boolean): Boolean {
-//                supportStartPostponedEnterTransition()
-//                return false
-//            }
-//        }).into(imageView)
     }
 
     private fun initActionBar() {
@@ -135,9 +127,7 @@ class DetailPageActivity : AppCompatActivity() {
             screenshots = getScreenshots().sortedByDescending { it.lastModified }
             view_pager.adapter = DetailPageAdapter().apply {
                 this.screenshots = this@DetailPageActivity.screenshots
-                this.onItemClickListener = {
-                    toggleActionBar()
-                }
+                this.itemCallback = this@DetailPageActivity.itemCallback
             }
             view_pager.currentItem = screenshots.indexOfFirst { it.id == screenshotId }
         }

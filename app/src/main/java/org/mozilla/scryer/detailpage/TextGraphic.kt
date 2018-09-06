@@ -42,9 +42,6 @@ class TextGraphic internal constructor(overlay: GraphicOverlay, private val bloc
         // Draws the bounding box around the TextBlock.
         val rect = RectF(block.boundingBox)
         canvas.drawRect(rect, rectPaint)
-
-        // Renders the text at the bottom of the box.
-        canvas.drawText(block.text, rect.left, rect.bottom, textPaint)
     }
 
     companion object {

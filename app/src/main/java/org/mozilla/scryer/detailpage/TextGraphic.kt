@@ -8,7 +8,7 @@ import android.util.Log
 
 import com.google.firebase.ml.vision.text.FirebaseVisionText
 
-class TextGraphic internal constructor(overlay: GraphicOverlay, private val element: FirebaseVisionText.Element?) : GraphicOverlay.Graphic(overlay) {
+class TextGraphic internal constructor(overlay: GraphicOverlay, private val block: FirebaseVisionText.Block?) : GraphicOverlay.Graphic(overlay) {
 
     private val rectPaint: Paint = Paint()
     private val textPaint: Paint = Paint()
@@ -29,16 +29,22 @@ class TextGraphic internal constructor(overlay: GraphicOverlay, private val elem
      */
     override fun draw(canvas: Canvas) {
         Log.d(TAG, "on draw text graphic")
-        if (element == null) {
+        if (block == null) {
             throw IllegalStateException("Attempting to draw a null text.")
         }
 
+        for (line in block.lines.toMutableList().apply{ sortBy{ it.boundingBox?.centerY() } }) {
+            line.boundingBox?.let {
+                canvas.drawText(line.text, it.left.toFloat(), it.bottom.toFloat(), textPaint)
+            }
+        }
+
         // Draws the bounding box around the TextBlock.
-        val rect = RectF(element.boundingBox)
+        val rect = RectF(block.boundingBox)
         canvas.drawRect(rect, rectPaint)
 
         // Renders the text at the bottom of the box.
-        canvas.drawText(element.text, rect.left, rect.bottom, textPaint)
+        canvas.drawText(block.text, rect.left, rect.bottom, textPaint)
     }
 
     companion object {

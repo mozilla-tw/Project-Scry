@@ -29,6 +29,7 @@ import kotlinx.coroutines.experimental.DefaultDispatcher
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.withContext
+import org.mozilla.scryer.BuildConfig
 import org.mozilla.scryer.R
 import org.mozilla.scryer.persistence.ScreenshotModel
 import org.mozilla.scryer.viewmodel.ScreenshotViewModel
@@ -260,26 +261,35 @@ class DetailPageActivity : AppCompatActivity() {
     }
 
     private fun processTextRecognitionResult(texts: FirebaseVisionText) {
-        val blocks = texts.blocks
+        val blocks = texts.blocks.toMutableList().apply {  }
+        blocks.sortBy { it.boundingBox?.centerY() }
+
         if (blocks.size == 0) {
             Toast.makeText(applicationContext, "No text found", Toast.LENGTH_SHORT).show()
             return
         }
+
+        val builder = StringBuilder()
+
         mGraphicOverlay.clear()
-        text_mode_text.text = ""
-        for (i in blocks.indices) {
-            val lines = blocks[i].lines
-            for (j in lines.indices) {
-                val elements = lines[j].elements
-                for (k in elements.indices) {
-                    val textGraphic = TextGraphic(mGraphicOverlay, elements[k])
-                    mGraphicOverlay.add(textGraphic)
-                    var text = text_mode_text.text.toString()
-                    text = text + elements[k].text + " "
-                    text_mode_text.text = text
-                }
+
+        for (block in blocks) {
+            val lines = block.lines.toMutableList()
+            lines.sortBy { it.boundingBox?.centerY() }
+
+            for (line in lines) {
+                builder.append(line.text).append("\n")
+            }
+
+            builder.append("\n")
+
+            if (BuildConfig.DEBUG) {
+                val textGraphic = TextGraphic(mGraphicOverlay, block)
+                mGraphicOverlay.add(textGraphic)
             }
         }
+
+        text_mode_text.text = builder.toString()
     }
 //
 //    private fun showSystemUI() {

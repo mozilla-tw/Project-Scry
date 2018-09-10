@@ -9,6 +9,7 @@ import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.Transformations
 import android.content.Context
+import org.mozilla.scryer.R
 import org.mozilla.scryer.persistence.CollectionModel
 import org.mozilla.scryer.persistence.ScreenshotDatabase
 import org.mozilla.scryer.persistence.ScreenshotModel
@@ -75,7 +76,8 @@ class ScreenshotDatabaseRepository(private val database: ScreenshotDatabase) : S
     }
 
     override fun setupDefaultContent(context: Context) {
-        val none = CollectionModel(CollectionModel.CATEGORY_NONE, "Unsorted collection", 0, 0)
+        val none = CollectionModel(CollectionModel.CATEGORY_NONE,
+                context.getString(R.string.home_action_unsorted), 0, 0)
         addCollection(none)
         for (collection in CollectionModel.suggestCollections) {
             addCollection(collection)

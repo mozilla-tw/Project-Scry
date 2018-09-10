@@ -38,12 +38,13 @@ class ScreenshotFetcher {
     }
 
     private fun fetchScreenshots(dirPath: String): List<ScreenshotModel> {
-        val files = File(dirPath).listFiles()
         val results = mutableListOf<ScreenshotModel>()
 
-        for (file in files) {
-            val model = ScreenshotModel(file.absolutePath, file.lastModified(), CollectionModel.UNCATEGORIZED)
-            results.add(model)
+        File(dirPath).listFiles()?.let { files ->
+            for (file in files) {
+                val model = ScreenshotModel(file.absolutePath, file.lastModified(), CollectionModel.UNCATEGORIZED)
+                results.add(model)
+            }
         }
         return results
     }

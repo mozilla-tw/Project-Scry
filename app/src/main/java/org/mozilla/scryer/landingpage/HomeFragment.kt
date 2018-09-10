@@ -502,7 +502,7 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
         val dialog = BottomDialogFactory.create(context, R.layout.dialog_bottom)
 
         dialog.findViewById<TextView>(R.id.title)?.setText(R.string.sheet_unsorted_title_unsorted)
-        val subtitle = getString(R.string.sheet_unsorted_content_shots, newScreenshots.size)
+        val subtitle = resources.getQuantityString(R.plurals.sheet_unsorted_content_shots, newScreenshots.size, newScreenshots.size)
         dialog.findViewById<TextView>(R.id.subtitle)?.text = subtitle
 
         dialog.findViewById<TextView>(R.id.positive_button)?.apply {

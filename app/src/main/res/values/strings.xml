@@ -39,8 +39,11 @@
     <!-- String displayed to allow users to enter a collection with all unsorted screenshots -->
     <string name="home_action_unsorted">Unsorted</string>
 
-    <!-- Collection view: string displayed on the collection view. Parameter %1$d is the quantity of screenshot files, i.e. 100 shots -->
-    <string name="collection_separator_shots">%1$d shots</string>
+    <!-- Collection view: string displayed on the collection view. Parameter %d is the quantity of screenshot files, i.e. 100 shots -->
+    <plurals name="collection_separator_shots">
+        <item quantity="one">%d shot</item>
+        <item quantity="other">%d shots</item>
+    </plurals>
 
     <!-- Detail view: string displayed on the detail view when recognizing the text on the screenshot -->
     <string name="detail_transition_recognizing">Recognizing&#8230;</string>
@@ -56,8 +59,11 @@
     <string name="dialogue_deletecollection_title_delete">Delete collection?</string>
     <string name="dialogue_deleteshot_title_delete">Delete screenshot?</string>
     <string name="dialogue_delete_content_cantundo">Are you sure? This action cannot be undone.</string>
-    <!-- Parameter %1$d is the quantity of screenshot files, i.e. 100 screenshots -->
-    <string name="dialogue_deletecollection_content_shots">%1$d screenshots</string>
+    <!-- Parameter %d is the quantity of screenshot files, i.e. 100 screenshots -->
+    <plurals name="dialogue_deletecollection_content_shots">
+        <item quantity="one">%d screenshot</item>
+        <item quantity="other">%d screenshots</item>
+    </plurals>
     <string name="dialogue_rename_title_rename">Rename collection</string>
     <string name="dialogue_rename_error_duplicate">There is already a collection with this name</string>
     <string name="dialogue_rename_error_maximum">20 characters maximum</string>
@@ -88,8 +94,11 @@
     <!-- String displayed to allow users to enable the screenshot service -->
     <string name="sheet_enable_action_enable">Enabled</string>
     <string name="sheet_unsorted_title_unsorted">Unsorted screenshots</string>
-    <!-- Parameter %1$d is the quantity of screenshot files, i.e. 100 unsorted screenshots. Sort them now? -->
-    <string name="sheet_unsorted_content_shots">%1$d unsorted screenshots. Sort them now?</string>
+    <!-- Parameter %d is the quantity of screenshot files, i.e. 100 unsorted screenshots. Sort them now? -->
+    <plurals name="sheet_unsorted_content_shots">
+        <item quantity="one">%d unsorted screenshot. Sort them now?</item>
+        <item quantity="other">%d unsorted screenshots. Sort them now?</item>
+    </plurals>
     <string name="sheet_box_ask">Don’t ask again</string>
     <string name="sheet_unsorted_action_sort">Sort</string>
     <string name="sheet_action_no">No thanks</string>

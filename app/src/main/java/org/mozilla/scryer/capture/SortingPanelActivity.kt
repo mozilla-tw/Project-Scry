@@ -101,7 +101,7 @@ class SortingPanelActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        if (unsortedScreenshots.isNotEmpty()) {
+        if (screenshotCount > 1) {
             AlertDialog.Builder(this)
                     .setTitle(R.string.dialogue_skipsorting_title_skip)
                     .setMessage(R.string.dialogue_skipsorting_content_moveto)

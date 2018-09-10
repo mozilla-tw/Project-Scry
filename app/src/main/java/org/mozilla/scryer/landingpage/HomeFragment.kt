@@ -574,7 +574,9 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
     private fun updateScreenshotCategory(list: List<ScreenshotModel>, collectionId: String) {
         list.forEach {
             it.collectionId = collectionId
-            viewModel.updateScreenshot(it)
+            launch {
+                viewModel.updateScreenshot(it)
+            }
         }
     }
 

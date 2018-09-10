@@ -82,7 +82,9 @@ class CollectionNameDialog(private val context: Context,
             val dialog = CollectionNameDialog(context, object : CollectionNameDialog.Delegate {
                 override fun onPositiveAction(collectionName: String) {
                     collection.name = collectionName
-                    viewModel.updateCollection(collection)
+                    launch {
+                        viewModel.updateCollection(collection)
+                    }
                 }
 
                 override fun isNameConflict(name: String): Boolean {
@@ -119,7 +121,9 @@ class CollectionNameDialog(private val context: Context,
             }?: run {
                 val color = findNewCollectionColor(context, collections)
                 val model = CollectionModel(name, System.currentTimeMillis(), color)
-                viewModel.addCollection(model)
+                launch {
+                    viewModel.addCollection(model)
+                }
                 model
             }
         }

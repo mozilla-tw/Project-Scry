@@ -9,15 +9,13 @@ import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.Transformations
 import android.content.Context
+import kotlinx.coroutines.experimental.launch
 import org.mozilla.scryer.R
 import org.mozilla.scryer.persistence.CollectionModel
 import org.mozilla.scryer.persistence.ScreenshotDatabase
 import org.mozilla.scryer.persistence.ScreenshotModel
-import java.util.concurrent.Executors
 
 class ScreenshotDatabaseRepository(private val database: ScreenshotDatabase) : ScreenshotRepository {
-    private val executor = Executors.newSingleThreadExecutor()
-
     private var collectionListData = database.collectionDao().getCollections()
     private val screenshotListData = database.screenshotDao().getScreenshots()
 
@@ -26,9 +24,7 @@ class ScreenshotDatabaseRepository(private val database: ScreenshotDatabase) : S
     }
 
     override fun updateScreenshot(screenshot: ScreenshotModel) {
-        executor.submit {
-            database.screenshotDao().updateScreenshot(screenshot)
-        }
+        database.screenshotDao().updateScreenshot(screenshot)
     }
 
     override fun getScreenshot(screenshotId: String): ScreenshotModel? {
@@ -56,9 +52,7 @@ class ScreenshotDatabaseRepository(private val database: ScreenshotDatabase) : S
     }
 
     override fun addCollection(collection: CollectionModel) {
-        executor.submit {
-            database.collectionDao().addCollection(collection)
-        }
+        database.collectionDao().addCollection(collection)
     }
 
     override fun getCollectionCovers(): LiveData<Map<String, ScreenshotModel>> {
@@ -70,17 +64,17 @@ class ScreenshotDatabaseRepository(private val database: ScreenshotDatabase) : S
     }
 
     override fun updateCollection(collection: CollectionModel) {
-        executor.submit {
-            database.collectionDao().updateCollection(collection)
-        }
+        database.collectionDao().updateCollection(collection)
     }
 
     override fun setupDefaultContent(context: Context) {
-        val none = CollectionModel(CollectionModel.CATEGORY_NONE,
-                context.getString(R.string.home_action_unsorted), 0, 0)
-        addCollection(none)
-        for (collection in CollectionModel.suggestCollections) {
-            addCollection(collection)
+        launch {
+            val none = CollectionModel(CollectionModel.CATEGORY_NONE,
+                    context.getString(R.string.home_action_unsorted), 0, 0)
+            addCollection(none)
+            for (collection in CollectionModel.suggestCollections) {
+                addCollection(collection)
+            }
         }
     }
 

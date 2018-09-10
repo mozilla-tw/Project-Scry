@@ -122,7 +122,9 @@ class SortingPanelActivity : AppCompatActivity() {
         for (model in unsortedScreenshots) {
             model.collectionId = CollectionModel.CATEGORY_NONE
             // TODO: Batch
-            screenshotViewModel.updateScreenshot(model)
+            launch {
+                screenshotViewModel.updateScreenshot(model)
+            }
         }
     }
 
@@ -177,7 +179,9 @@ class SortingPanelActivity : AppCompatActivity() {
 
         if (screenshot.collectionId == CollectionModel.UNCATEGORIZED) {
             screenshot.collectionId = CollectionModel.CATEGORY_NONE
-            screenshotViewModel.updateScreenshot(screenshot)
+            launch {
+                screenshotViewModel.updateScreenshot(screenshot)
+            }
         }
     }
 

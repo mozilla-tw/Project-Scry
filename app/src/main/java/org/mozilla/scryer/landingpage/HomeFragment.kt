@@ -62,6 +62,7 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
         const val QUICK_ACCESS_ITEM_COUNT = 5
 
         private const val PREF_SHOW_NEW_SCREENSHOT_DIALOG = "show_new_screenshot_dialog"
+        private const val PREF_SHOW_ENABLE_SERVICE_DIALOG = "show_enable_service_dialog"
     }
 
     private lateinit var quickAccessContainer: ViewGroup
@@ -273,8 +274,17 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
 
         launch(UI) {
             val newScreenshots = syncAndGetNewScreenshotsFromExternal()
-            if (newScreenshots.isNotEmpty()) {
+
+            val showNewScreenshotDialog = newScreenshots.isNotEmpty()
+                    && isDialogAllowed(PREF_SHOW_NEW_SCREENSHOT_DIALOG)
+            val showEnableServiceDialog = isServiceDisabled()
+                    && isDialogAllowed(PREF_SHOW_ENABLE_SERVICE_DIALOG)
+
+            if (showNewScreenshotDialog) {
                 showNewScreenshotsDialog(newScreenshots)
+
+            } else if (showEnableServiceDialog) {
+                showEnableServiceDialog()
             }
         }
     }
@@ -495,10 +505,6 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
 
     private fun showNewScreenshotsDialog(newScreenshots: List<ScreenshotModel>) {
         val context = context?: return
-        if (!isNewScreenshotDialogAllowed()) {
-            return
-        }
-
         val dialog = BottomDialogFactory.create(context, R.layout.dialog_bottom)
 
         dialog.findViewById<TextView>(R.id.title)?.setText(R.string.sheet_unsorted_title_unsorted)
@@ -517,9 +523,6 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
         dialog.findViewById<TextView>(R.id.negative_button)?.apply {
             setText(R.string.sheet_action_no)
             setOnClickListener {
-                if (checkbox?.isChecked == true) {
-                    setDoNotShowNewScreenshotDialog()
-                }
                 dialog.cancel()
             }
         }
@@ -528,7 +531,44 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
             updateScreenshotCategory(newScreenshots, CollectionModel.CATEGORY_NONE)
         }
 
-        dialogQueue.tryShow(dialog, null)
+        dialogQueue.tryShow(dialog, DialogInterface.OnDismissListener {
+            if (checkbox?.isChecked == true) {
+                setDoNotShowDialogAgain(PREF_SHOW_NEW_SCREENSHOT_DIALOG)
+            }
+        })
+    }
+
+    private fun showEnableServiceDialog() {
+        val context = context?: return
+        val dialog = BottomDialogFactory.create(context, R.layout.dialog_bottom)
+
+        dialog.findViewById<TextView>(R.id.title)?.setText(R.string.sheet_enable_title_enable)
+        dialog.findViewById<TextView>(R.id.subtitle)?.text = getString(R.string.sheet_enable_content_enable)
+
+        dialog.findViewById<TextView>(R.id.positive_button)?.apply {
+            setText(R.string.sheet_enable_action_enable)
+            setOnClickListener {
+                ScryerApplication.getSettingsRepository().serviceEnabled = true
+                val intent = Intent(activity, ScryerService::class.java)
+                intent.action = ScryerService.ACTION_ENABLE_SERVICE
+                activity?.startService(intent)
+                dialog.dismiss()
+            }
+        }
+
+        val checkbox = dialog.findViewById<AppCompatCheckBox>(R.id.dont_ask_again_checkbox)
+        dialog.findViewById<TextView>(R.id.negative_button)?.apply {
+            setText(R.string.sheet_action_no)
+            setOnClickListener {
+                dialog.cancel()
+            }
+        }
+
+        dialogQueue.tryShow(dialog, DialogInterface.OnDismissListener {
+            if (checkbox?.isChecked == true) {
+                setDoNotShowDialogAgain(PREF_SHOW_ENABLE_SERVICE_DIALOG)
+            }
+        })
     }
 
     private fun updateScreenshotCategory(list: List<ScreenshotModel>, collectionId: String) {
@@ -585,20 +625,22 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
         Log.d(tag, msg)
     }
 
-    private fun setDoNotShowNewScreenshotDialog() {
+    private fun setDoNotShowDialogAgain(prefKey: String) {
         context?.let {
             PreferenceManager.getDefaultSharedPreferences(it).edit()
-                    .putBoolean(PREF_SHOW_NEW_SCREENSHOT_DIALOG, false)
+                    .putBoolean(prefKey, false)
                     .apply()
         }
     }
 
-    private fun isNewScreenshotDialogAllowed(): Boolean {
+    private fun isDialogAllowed(prefKey: String): Boolean {
         return context?.let {
             PreferenceManager.getDefaultSharedPreferences(it)
-                    .getBoolean(PREF_SHOW_NEW_SCREENSHOT_DIALOG, true)
+                    .getBoolean(prefKey, true)
         }?: false
     }
+
+    private fun isServiceDisabled() = !ScryerApplication.getSettingsRepository().serviceEnabled
 
     private class DialogQueue {
         private var current: AppCompatDialog? = null

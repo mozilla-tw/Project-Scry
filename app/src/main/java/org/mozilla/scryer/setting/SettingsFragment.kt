@@ -85,7 +85,7 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
             intent.action = if (enable) {
                 ScryerService.ACTION_ENABLE_SERVICE
             } else {
-                ScryerService.ACTION_STOP
+                ScryerService.ACTION_DISABLE_SERVICE
             }
             activity?.startService(intent)
 

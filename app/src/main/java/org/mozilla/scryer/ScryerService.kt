@@ -40,7 +40,7 @@ class ScryerService : Service(), CaptureButtonController.ClickListener, ScreenCa
         private const val ID_SCREENSHOT_DETECTED = 9488
 
         const val ACTION_CAPTURE_SCREEN = "action_capture"
-        const val ACTION_STOP = "action_stop"
+        const val ACTION_DISABLE_SERVICE = "action_disable_service"
 
         /** Action used to launch the main activity */
         const val ACTION_LAUNCH_APP = "action_launch_app"
@@ -114,8 +114,8 @@ class ScryerService : Service(), CaptureButtonController.ClickListener, ScreenCa
 
     private fun dispatchOnStartCommandAction(intent: Intent): Int {
         when (intent.action) {
-            ACTION_STOP -> {
-                stopScryerService()
+            ACTION_DISABLE_SERVICE -> {
+                disableScryerService()
                 return START_NOT_STICKY
             }
 
@@ -136,7 +136,7 @@ class ScryerService : Service(), CaptureButtonController.ClickListener, ScreenCa
         initFloatingButton()
     }
 
-    private fun stopScryerService() {
+    private fun disableScryerService() {
         toast.show(getString(R.string.snackbar_disable), Toast.LENGTH_SHORT)
         ScryerApplication.getSettingsRepository().serviceEnabled = false
         stopSelf()
@@ -265,7 +265,7 @@ class ScryerService : Service(), CaptureButtonController.ClickListener, ScreenCa
                 getString(R.string.notification_action_open),
                 openAppPendingIntent)
 
-        val stopIntent = Intent(ACTION_STOP)
+        val stopIntent = Intent(ACTION_DISABLE_SERVICE)
         stopIntent.setClass(this, ScryerService::class.java)
         val stopPendingIntent = PendingIntent.getService(this, 0, stopIntent, 0)
         val stopAction = NotificationCompat.Action(android.R.drawable.ic_menu_close_clear_cancel,

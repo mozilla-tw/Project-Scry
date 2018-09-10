@@ -26,7 +26,8 @@ import org.mozilla.scryer.ui.GridItemDecoration
 import org.mozilla.scryer.viewmodel.ScreenshotViewModel
 import java.io.File
 
-class MainAdapter(private val fragment: Fragment?): RecyclerView.Adapter<RecyclerView.ViewHolder>(), OnContextMenuActionListener {
+class MainAdapter(private val fragment: Fragment?): RecyclerView.Adapter<RecyclerView.ViewHolder>(),
+        OnContextMenuActionListener {
     companion object {
         const val TYPE_SECTION_NAME = 0
         const val TYPE_QUICK_ACCESS = 1
@@ -108,9 +109,15 @@ class MainAdapter(private val fragment: Fragment?): RecyclerView.Adapter<Recycle
         }
 
         when (item?.itemId) {
-            CONTEXT_MENU_ID_RENAME -> fragment?.context?.let { CollectionNameDialog.renameCollection(it, ScreenshotViewModel.get(fragment), collectionModel.id) }
-            CONTEXT_MENU_ID_INFO -> fragment?.context?.let { showCollectionInfo(it, ScreenshotViewModel.get(fragment), collectionModel.id) }
-            CONTEXT_MENU_ID_DELETE -> fragment?.context?.let { showDeleteCollectionDialog(it, ScreenshotViewModel.get(fragment), collectionModel.id, null) }
+            CONTEXT_MENU_ID_RENAME -> fragment?.context?.let {
+                CollectionNameDialog.renameCollection(it, ScreenshotViewModel.get(fragment), collectionModel.id)
+            }
+            CONTEXT_MENU_ID_INFO -> fragment?.context?.let {
+                showCollectionInfo(it, ScreenshotViewModel.get(fragment), collectionModel.id)
+            }
+            CONTEXT_MENU_ID_DELETE -> fragment?.context?.let {
+                showDeleteCollectionDialog(it, ScreenshotViewModel.get(fragment), collectionModel.id, null)
+            }
         }
     }
 
@@ -151,7 +158,8 @@ class MainAdapter(private val fragment: Fragment?): RecyclerView.Adapter<Recycle
                     // name-conflict error msg when user input a name identical to suggest collections,
                     // so here we just make that suggest collection become an user-created collection
                     // since we don't want to show name conflict error msg on the dialog, set excludeSuggestion to true
-                    CollectionNameDialog.createNewCollection(parent.context, ScreenshotViewModel.get(it), true) {}
+                    CollectionNameDialog.createNewCollection(parent.context, ScreenshotViewModel.get(it),
+                            true) {}
                 }
             }
         }
@@ -167,7 +175,8 @@ class MainAdapter(private val fragment: Fragment?): RecyclerView.Adapter<Recycle
     }
 
     private fun createSectionNameHolder(parent: ViewGroup): SectionNameHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.view_home_section_title, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.view_home_section_title, parent,
+                false)
 
         val holder = SectionNameHolder(view)
         holder.title = view.findViewById(R.id.root_view)
@@ -201,16 +210,19 @@ class MainAdapter(private val fragment: Fragment?): RecyclerView.Adapter<Recycle
         val path: String?
         if (model.id == CollectionModel.CATEGORY_NONE) {
             path = getCoverPathForUnsortedCollection()
-            holder.overlay?.background = ContextCompat.getDrawable(holder.itemView.context, R.drawable.unsorted_collection_item_bkg)
+            holder.overlay?.background = ContextCompat.getDrawable(holder.itemView.context,
+                    R.drawable.unsorted_collection_item_bkg)
         } else {
             path = coverList[model.id]?.absolutePath
-            holder.overlay?.background = ContextCompat.getDrawable(holder.itemView.context, R.drawable.sorted_collection_item_bkg)
+            holder.overlay?.background = ContextCompat.getDrawable(holder.itemView.context,
+                    R.drawable.sorted_collection_item_bkg)
         }
 
         if (!path.isNullOrEmpty() && File(path).exists()) {
             Glide.with(holder.itemView).load(File(path)).into(holder.image!!)
         } else {
-            holder.image?.setImageDrawable(ContextCompat.getDrawable(holder.itemView.context, R.drawable.image_emptyfolder))
+            holder.image?.setImageDrawable(ContextCompat.getDrawable(holder.itemView.context,
+                    R.drawable.image_emptyfolder))
         }
     }
 
@@ -237,7 +249,9 @@ class MainAdapter(private val fragment: Fragment?): RecyclerView.Adapter<Recycle
         var title: TextView? = null
     }
 
-    class CollectionHolder(itemView: View, private val onContextMenuActionListener: OnContextMenuActionListener) : RecyclerView.ViewHolder(itemView), View.OnCreateContextMenuListener, MenuItem.OnMenuItemClickListener {
+    class CollectionHolder(itemView: View,
+                           private val onContextMenuActionListener: OnContextMenuActionListener)
+        : RecyclerView.ViewHolder(itemView), View.OnCreateContextMenuListener, MenuItem.OnMenuItemClickListener {
         var image: ImageView? = null
         var title: TextView? = null
         var overlay: View? = null

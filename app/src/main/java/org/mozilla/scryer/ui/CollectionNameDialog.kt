@@ -60,6 +60,14 @@ class CollectionNameDialog(private val context: Context,
                 override fun isNameConflict(name: String): Boolean {
                     return isNameConflict(name, excludeSuggestion, collections)
                 }
+
+                override fun getPositiveButtonText(): Int {
+                    return R.string.dialogue_action_add
+                }
+
+                override fun getNegativeButtonText(): Int {
+                    return android.R.string.cancel
+                }
             })
 
             dialog.title = context.resources.getText(R.string.dialogue_title_collection).toString()
@@ -80,6 +88,14 @@ class CollectionNameDialog(private val context: Context,
                 override fun isNameConflict(name: String): Boolean {
                     val isOriginalName = name.compareTo(originalName, true) == 0
                     return !isOriginalName && isNameConflict(name, true, collections)
+                }
+
+                override fun getPositiveButtonText(): Int {
+                    return android.R.string.ok
+                }
+
+                override fun getNegativeButtonText(): Int {
+                    return android.R.string.cancel
                 }
             })
 
@@ -201,14 +217,14 @@ class CollectionNameDialog(private val context: Context,
 
     private fun createDialog(): AlertDialog {
         return AlertDialog.Builder(context, R.style.Theme_AppCompat_Light_Dialog_Alert)
-                .setPositiveButton(R.string.dialogue_action_add) { _, _ ->
+                .setPositiveButton(delegate.getPositiveButtonText()) { _, _ ->
                     if (inputName == originalName) {
                         delegate.onNegativeAction()
                     } else {
                         delegate.onPositiveAction(inputName)
                     }
                 }
-                .setNegativeButton(android.R.string.cancel) { _, _ ->
+                .setNegativeButton(delegate.getNegativeButtonText()) { _, _ ->
                     delegate.onNegativeAction()
                 }
                 .setView(dialogView)
@@ -305,5 +321,7 @@ class CollectionNameDialog(private val context: Context,
         fun onPositiveAction(collectionName: String)
         fun onNegativeAction() {}
         fun isNameConflict(name: String): Boolean
+        fun getPositiveButtonText(): Int
+        fun getNegativeButtonText(): Int
     }
 }

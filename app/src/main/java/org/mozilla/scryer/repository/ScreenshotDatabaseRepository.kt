@@ -9,8 +9,6 @@ import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.Transformations
 import android.content.Context
-import android.os.Handler
-import android.os.Looper
 import org.mozilla.scryer.persistence.CollectionModel
 import org.mozilla.scryer.persistence.ScreenshotDatabase
 import org.mozilla.scryer.persistence.ScreenshotModel
@@ -21,8 +19,6 @@ class ScreenshotDatabaseRepository(private val database: ScreenshotDatabase) : S
 
     private var collectionListData = database.collectionDao().getCollections()
     private val screenshotListData = database.screenshotDao().getScreenshots()
-
-    private val handler = Handler(Looper.getMainLooper())
 
     override fun addScreenshot(screenshots: List<ScreenshotModel>) {
         database.screenshotDao().addScreenshot(screenshots)

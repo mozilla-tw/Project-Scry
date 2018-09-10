@@ -16,7 +16,7 @@ import java.util.*
 data class CollectionModel constructor(
         @PrimaryKey(autoGenerate = false) var id: String,
         @ColumnInfo(name = "name") var name: String,
-        @ColumnInfo(name = "date") val date: Long,
+        @ColumnInfo(name = "date") var date: Long,
         @ColumnInfo(name = "color") val color: Int) {
 
     @Ignore
@@ -31,9 +31,9 @@ data class CollectionModel constructor(
         const val CATEGORY_NONE = "category_none"
 
         val suggestCollections = listOf(
-                CollectionModel("default1", "default1", 1, Color.parseColor("#235dff")),
-                CollectionModel("default2", "default2", 2, Color.parseColor("#10c1b6")),
-                CollectionModel("default3", "default3", 3, Color.parseColor("#ffa6a8")))
+                CollectionModel("default1", "default1", Long.MAX_VALUE - 2, Color.parseColor("#235dff")),
+                CollectionModel("default2", "default2", Long.MAX_VALUE - 1, Color.parseColor("#10c1b6")),
+                CollectionModel("default3", "default3", Long.MAX_VALUE, Color.parseColor("#ffa6a8")))
 
         fun isSuggestCollection(collection: CollectionModel): Boolean {
             return suggestCollections.any { it.id == collection.id }

@@ -31,6 +31,11 @@ abstract class CollectionDao {
     open fun updateCollectionId(collection: CollectionModel, id: String) {
         deleteCollection(collection)
         collection.id = id
+        // This method is used mainly to alter a suggest collection(special id) to a normal
+        // collection(random UUID), this happens when user decides to put an image into a suggest collection,
+        // and this is the time the suggest collection becomes a real collection, thus update the
+        // timestamp
+        collection.date = System.currentTimeMillis()
         addCollection(collection)
     }
 }

@@ -110,6 +110,14 @@ class DetailPageActivity : AppCompatActivity() {
         updateUI()
     }
 
+    override fun onBackPressed() {
+        if (supportActionBar?.isShowing != true) {
+            toggleActionBar()
+        } else {
+            super.onBackPressed()
+        }
+    }
+
     private fun initActionBar() {
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)

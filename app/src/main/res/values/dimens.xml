@@ -12,11 +12,12 @@
     <dimen name="sorting_panel_height">268dp</dimen>
     <dimen name="sorting_panel_item_height">64dp</dimen>
     <dimen name="sorting_panel_item_spacing">16dp</dimen>
-    <dimen name="sorting_panel_elevation">10dp</dimen>
+    <dimen name="sorting_panel_image_elevation">10dp</dimen>
     <dimen name="sorting_panel_hint_bar_width">40dp</dimen>
     <dimen name="sorting_panel_hint_bar_height">4dp</dimen>
     <dimen name="sorting_panel_hint_bar_radius">2dp</dimen>
     <dimen name="sorting_panel_hint_bar_margin_top">4dp</dimen>
+    <dimen name="sorting_panel_panel_elevation">3dp</dimen>
 
     <dimen name="toast_horizontal_margin">8dp</dimen>
     <dimen name="toast_horizontal_padding">16dp</dimen>

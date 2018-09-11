@@ -275,7 +275,12 @@ class SortingPanelActivity : AppCompatActivity() {
 
     private fun showAddedToast(model: CollectionModel?) {
         model?.let {
-            toast.show(getString(R.string.snackbar_addto, it.name), Toast.LENGTH_SHORT)
+            val yOffset = if (sortingPanel.isCollapse()) {
+                sortingPanel.getCollapseHeight()
+            } else {
+                0
+            }
+            toast.show(getString(R.string.snackbar_addto, it.name), Toast.LENGTH_SHORT, yOffset)
         }
     }
 

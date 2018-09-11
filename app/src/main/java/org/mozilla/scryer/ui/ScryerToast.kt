@@ -30,12 +30,12 @@ class ScryerToast(private val context: Context) {
         rootView.findViewById<TextView>(R.id.text)
     }
 
-    fun show(msg: String, toastDuration: Int) {
+    fun show(msg: String, toastDuration: Int, yOffset: Int = 0) {
         textView.text = msg
         toast?.cancel()
 
         toast = Toast(context).apply {
-            setGravity(Gravity.FILL_HORIZONTAL or Gravity.BOTTOM, 0, 0)
+            setGravity(Gravity.FILL_HORIZONTAL or Gravity.BOTTOM, 0, yOffset)
             view = rootView
             duration = toastDuration
             show()

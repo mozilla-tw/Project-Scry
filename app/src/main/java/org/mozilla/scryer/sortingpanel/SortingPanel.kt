@@ -185,6 +185,14 @@ class SortingPanel : FrameLayout, DefaultLifecycleObserver {
         })
     }
 
+    fun getCollapseHeight(): Int {
+        return BottomSheetBehavior.from(panelView).peekHeight
+    }
+
+    fun isCollapse(): Boolean {
+        return BottomSheetBehavior.from(panelView).state == BottomSheetBehavior.STATE_COLLAPSED
+    }
+
     fun setActionText(text: String) {
         actionButton.text = text
     }

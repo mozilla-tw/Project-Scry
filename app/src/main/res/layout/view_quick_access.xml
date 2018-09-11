@@ -38,7 +38,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:maxLines="2"
-        android:text="empty"
+        android:text="@string/title_noshots"
         app:layout_constraintTop_toTopOf="@id/empty_view"
         app:layout_constraintLeft_toLeftOf="@id/empty_view"
         app:layout_constraintRight_toRightOf="@id/empty_view"

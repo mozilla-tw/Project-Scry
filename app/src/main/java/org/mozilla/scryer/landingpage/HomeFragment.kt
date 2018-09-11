@@ -528,7 +528,9 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
         }
 
         dialog.setOnCancelListener {
-            updateScreenshotCategory(newScreenshots, CollectionModel.CATEGORY_NONE)
+            launch {
+                viewModel.batchMove(newScreenshots, CollectionModel.CATEGORY_NONE)
+            }
         }
 
         dialogQueue.tryShow(dialog, DialogInterface.OnDismissListener {
@@ -569,15 +571,6 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
                 setDoNotShowDialogAgain(PREF_SHOW_ENABLE_SERVICE_DIALOG)
             }
         })
-    }
-
-    private fun updateScreenshotCategory(list: List<ScreenshotModel>, collectionId: String) {
-        list.forEach {
-            it.collectionId = collectionId
-            launch {
-                viewModel.updateScreenshot(it)
-            }
-        }
     }
 
     private suspend fun mergeExternalToDatabase(externalList: List<ScreenshotModel>,

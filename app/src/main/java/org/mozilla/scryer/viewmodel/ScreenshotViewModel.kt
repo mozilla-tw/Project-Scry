@@ -10,7 +10,9 @@ import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentActivity
+import kotlinx.coroutines.experimental.*
 import org.mozilla.scryer.ScryerApplication
+import org.mozilla.scryer.persistence.ScreenshotModel
 import org.mozilla.scryer.repository.ScreenshotRepository
 
 class ScreenshotViewModel(private val delegate: ScreenshotRepository) : ViewModel(),
@@ -26,6 +28,13 @@ class ScreenshotViewModel(private val delegate: ScreenshotRepository) : ViewMode
 
         private fun getFactory(): ScreenshotViewModelFactory {
             return ScreenshotViewModelFactory(ScryerApplication.getScreenshotRepository())
+        }
+    }
+
+    suspend fun batchMove(screenshots: List<ScreenshotModel>, collectionId: String) = withContext(CommonPool) {
+        screenshots.forEach {
+            it.collectionId = collectionId
+            updateScreenshot(it)
         }
     }
 }

@@ -82,7 +82,7 @@ class SortingPanelActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sorting_panel)
 
-        loadColors()
+        loadCollectionColorList()
         loadScreenshots(intent, this::onLoadScreenshotsSuccess)
         initSortingPanel()
     }
@@ -121,16 +121,12 @@ class SortingPanelActivity : AppCompatActivity() {
 
     private fun flushToUnsortedCollection() {
         showAddedToast(unsortedCollection)
-        for (model in unsortedScreenshots) {
-            model.collectionId = CollectionModel.CATEGORY_NONE
-            // TODO: Batch
-            launch {
-                screenshotViewModel.updateScreenshot(model)
-            }
+        launch {
+            screenshotViewModel.batchMove(unsortedScreenshots, CollectionModel.CATEGORY_NONE)
         }
     }
 
-    private fun loadColors() {
+    private fun loadCollectionColorList() {
         val typedArray = resources.obtainTypedArray(R.array.collection_colors)
         val length = typedArray.length()
         for (i in 0 until length) {

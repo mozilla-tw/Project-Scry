@@ -31,9 +31,11 @@ data class CollectionModel constructor(
         const val CATEGORY_NONE = "category_none"
 
         val suggestCollections = listOf(
-                CollectionModel("default1", "default1", Long.MAX_VALUE - 2, Color.parseColor("#235dff")),
-                CollectionModel("default2", "default2", Long.MAX_VALUE - 1, Color.parseColor("#10c1b6")),
-                CollectionModel("default3", "default3", Long.MAX_VALUE, Color.parseColor("#ffa6a8")))
+                CollectionModel("default1", "", Long.MAX_VALUE - 5, Color.parseColor("#235dff")),
+                CollectionModel("default2", "", Long.MAX_VALUE - 4, Color.parseColor("#10c1b6")),
+                CollectionModel("default3", "", Long.MAX_VALUE - 3, Color.parseColor("#ffa6a8")),
+                CollectionModel("default4", "", Long.MAX_VALUE - 2, Color.parseColor("#f8c300")),
+                CollectionModel("default5", "", Long.MAX_VALUE - 1, Color.parseColor("#8400dc")))
 
         fun isSuggestCollection(collection: CollectionModel): Boolean {
             return suggestCollections.any { it.id == collection.id }

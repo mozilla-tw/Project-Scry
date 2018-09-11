@@ -72,6 +72,9 @@ class SortingPanelActivity : AppCompatActivity() {
 
     private val collectionColors = mutableListOf<Int>()
 
+    private val isMultiSortMode: Boolean
+        get() = intent.hasExtra(EXTRA_COLLECTION_ID)
+
     private val toast: ScryerToast by lazy {
         ScryerToast(this)
     }
@@ -101,7 +104,7 @@ class SortingPanelActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        if (screenshotCount > 1) {
+        if (isMultiSortMode) {
             AlertDialog.Builder(this)
                     .setTitle(R.string.dialogue_skipsorting_title_skip)
                     .setMessage(R.string.dialogue_skipsorting_content_moveto)
@@ -194,6 +197,7 @@ class SortingPanelActivity : AppCompatActivity() {
         val viewModel = this.screenshotViewModel
 
         when {
+            // Sort a new screenshot
             intent.hasExtra(EXTRA_PATH) -> {
                 createNewScreenshot(intent)?.apply {
                     val result = listOf(this)
@@ -206,6 +210,7 @@ class SortingPanelActivity : AppCompatActivity() {
                 }?: onLoadScreenshotsFailed()
             }
 
+            // Sort an old screenshot
             intent.hasExtra(EXTRA_SCREENSHOT_ID) -> {
                 val id = intent.getStringExtra(EXTRA_SCREENSHOT_ID)
                 launch(UI) {
@@ -218,6 +223,7 @@ class SortingPanelActivity : AppCompatActivity() {
                 }
             }
 
+            // Sort all screenshots in a collection
             intent.hasExtra(EXTRA_COLLECTION_ID) -> {
                 val id = intent.getStringExtra(EXTRA_COLLECTION_ID)
                 val idList = if (id == CollectionModel.CATEGORY_NONE) {

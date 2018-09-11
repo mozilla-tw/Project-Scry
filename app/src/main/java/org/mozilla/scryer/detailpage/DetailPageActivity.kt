@@ -110,10 +110,19 @@ class DetailPageActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        if (supportActionBar?.isShowing != true) {
-            toggleActionBar()
-        } else {
-            super.onBackPressed()
+        when {
+            isTextMode -> {
+                isTextMode = false
+                updateUI()
+            }
+
+            supportActionBar?.isShowing != true -> {
+                toggleActionBar()
+            }
+
+            else -> {
+                super.onBackPressed()
+            }
         }
     }
 
@@ -177,28 +186,6 @@ class DetailPageActivity : AppCompatActivity() {
                         }
                     }
                 })
-        text_mode_text.setOnLongClickListener {
-            startActionMode(ActionBarCallback())
-            true
-        }
-    }
-
-    private class ActionBarCallback : ActionMode.Callback {
-        override fun onActionItemClicked(mode: ActionMode?, item: MenuItem?): Boolean {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        }
-
-        override fun onCreateActionMode(mode: ActionMode?, menu: Menu?): Boolean {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        }
-
-        override fun onPrepareActionMode(mode: ActionMode?, menu: Menu?): Boolean {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        }
-
-        override fun onDestroyActionMode(mode: ActionMode?) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        }
     }
 
     private fun startRecognition() {
@@ -269,11 +256,15 @@ class DetailPageActivity : AppCompatActivity() {
             toolbar_background.visibility = View.VISIBLE
             supportActionBar?.show()
             window?.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+            text_mode_fab.visibility = View.VISIBLE
+            cancel_fab.visibility = View.INVISIBLE
 
         } else {
             toolbar_background.visibility = View.INVISIBLE
             supportActionBar?.hide()
             window?.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+            text_mode_fab.visibility = View.INVISIBLE
+            cancel_fab.visibility = View.INVISIBLE
         }
     }
 

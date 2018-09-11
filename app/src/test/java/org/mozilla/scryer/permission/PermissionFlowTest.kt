@@ -7,7 +7,6 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.*
 import org.mockito.ArgumentMatchers.anyBoolean
-import org.mockito.ArgumentMatchers.anyString
 import org.mozilla.scryer.MainActivity
 import kotlin.reflect.KClass
 
@@ -34,7 +33,6 @@ class PermissionFlowTest {
         pageStateData = mutableListOf(false, false, false)
         shouldShowStorageRational = false
         permissionState = object : PermissionFlow.PermissionStateProvider {
-
             override fun isStorageGranted(): Boolean {
                 return permissions[0]
             }
@@ -91,7 +89,7 @@ class PermissionFlowTest {
     fun firstLaunch_clickToRequestStorage() {
         // Prepare
         flow.start()
-        verifyMethod().showWelcomePage(capture(runnableCaptor))
+        verifyMethod().showWelcomePage(capture(runnableCaptor), anyBoolean())
         runnableCaptor.value.run()
 
         // Test: Click to request storage permission
@@ -202,11 +200,11 @@ class PermissionFlowTest {
     @Test
     fun storageGranted_overlayNotGranted_transferToOverlayState() {
         permissions[0] = true
+        pageState.setWelcomePageShown()
 
         // Test: First time
         flow.start()
         // In case user manually grant storage permission before launching the app
-        assertTrue(pageState.isWelcomePageShown())
         assertTrue(flow.state is PermissionFlow.OverlayState.FirstTimeRequest)
 
         // Test: Second time, directly finish the flow
@@ -218,6 +216,7 @@ class PermissionFlowTest {
     fun storageGranted_overlayGrantedInDefault_transferToCaptureState() {
         permissions[0] = true
         permissions[1] = true
+        pageState.setWelcomePageShown()
 
         // Test: First time
         flow.start()

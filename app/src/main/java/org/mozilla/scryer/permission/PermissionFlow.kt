@@ -20,6 +20,7 @@ class PermissionFlow(private var permissionState: PermissionStateProvider,
 
         fun createDefaultPermissionProvider(activity: FragmentActivity?): PermissionStateProvider {
             return object : PermissionFlow.PermissionStateProvider {
+
                 override fun isStorageGranted(): Boolean {
                     return activity?.let {
                         PermissionHelper.hasStoragePermission(it)
@@ -100,7 +101,7 @@ class PermissionFlow(private var permissionState: PermissionStateProvider,
     }
 
     interface ViewDelegate {
-        fun showWelcomePage(action: Runnable)
+        fun showWelcomePage(action: Runnable, withStoragePermission: Boolean)
 
         fun showStoragePermissionView(isRational: Boolean, action: Runnable)
         fun showOverlayPermissionView(action: Runnable, negativeAction: Runnable)
@@ -144,7 +145,13 @@ class PermissionFlow(private var permissionState: PermissionStateProvider,
     open class StorageState(private val flow: PermissionFlow) : State {
         override fun execute(): State {
             return transfer(when {
-                flow.permissionState.isStorageGranted() -> Granted(flow)
+                flow.permissionState.isStorageGranted() -> {
+                    if (flow.pageState.isWelcomePageShown()) {
+                        Granted(flow)
+                    } else {
+                        FirstTimeWelcome(flow)
+                    }
+                }
                 flow.pageState.isWelcomePageShown() -> NonFirstTimeRequest(flow)
                 else -> FirstTimeRequest(flow)
             })
@@ -162,7 +169,7 @@ class PermissionFlow(private var permissionState: PermissionStateProvider,
             override fun execute(): State {
                 flow.viewDelegate.showWelcomePage(Runnable {
                     flow.viewDelegate.requestStoragePermission()
-                })
+                }, true)
                 return this
             }
         }
@@ -178,6 +185,17 @@ class PermissionFlow(private var permissionState: PermissionStateProvider,
                         flow.viewDelegate.launchSystemSettingPage()
                     }
                 })
+                return this
+            }
+        }
+
+        class FirstTimeWelcome(private val flow: PermissionFlow) : StorageState(flow) {
+            override fun execute(): State {
+                flow.viewDelegate.showWelcomePage(Runnable {
+                    flow.pageState.setWelcomePageShown()
+                    flow.viewDelegate.onStorageGranted()
+                    transfer(OverlayState(flow))
+                }, false)
                 return this
             }
         }

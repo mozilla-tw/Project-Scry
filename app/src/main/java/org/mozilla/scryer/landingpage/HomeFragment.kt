@@ -145,7 +145,7 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
         }
     }
 
-    override fun showWelcomePage(action: Runnable) {
+    override fun showWelcomePage(action: Runnable, withStoragePermission: Boolean) {
         welcomeView = welcomeView?.let {
             it.visibility = View.VISIBLE
             it
@@ -158,6 +158,15 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
         welcomeView?.apply {
             findViewById<TextView>(R.id.title).text = getString(R.string.onboarding_storage_title_welcome,
                     getString(R.string.app_name))
+
+            findViewById<TextView>(R.id.description).text = getString(if (withStoragePermission) {
+                    R.string.onboarding_storage_content_permission
+
+                } else {
+                    R.string.onboarding_storage_content_autogrant
+
+                }, getString(R.string.app_name))
+
             showStoragePermissionView(this, action)
         }
     }

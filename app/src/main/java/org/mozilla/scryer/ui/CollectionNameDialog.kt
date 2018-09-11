@@ -114,6 +114,7 @@ class CollectionNameDialog(private val context: Context,
 
             }?.let {
                 launch(DefaultDispatcher) {
+                    it.date = System.currentTimeMillis()
                     viewModel.updateCollectionId(it, UUID.randomUUID().toString())
                 }
                 it

@@ -64,15 +64,16 @@ class SortingPanelActivity : AppCompatActivity() {
     private val unsortedScreenshots = LinkedList<ScreenshotModel>()
     private val sortedScreenshots = LinkedList<ScreenshotModel>()
     private var currentScreenshot: ScreenshotModel? = null
-    private val screenshotCount: Int
-        get() = unsortedScreenshots.size + sortedScreenshots.size
 
     private var unsortedCollection: CollectionModel? = null
 
     private val collectionColors = mutableListOf<Int>()
 
-    private val isMultiSortMode: Boolean
-        get() = intent.hasExtra(EXTRA_COLLECTION_ID)
+    private var isMultiSortMode: Boolean = false
+
+    /*  Update the timestamp of each suggest collection at once in onStop(), so
+        the order of collections will keep static during multiple-sorting */
+    private val suggestCollectionCreateTime = HashMap<CollectionModel, Long>()
 
     private val toast: ScryerToast by lazy {
         ScryerToast(this)
@@ -93,8 +94,15 @@ class SortingPanelActivity : AppCompatActivity() {
     }
 
     override fun onStop() {
-        super.onStop()
         this.lifecycle.removeObserver(this.sortingPanel)
+
+        for ((suggestCollection, createTime) in suggestCollectionCreateTime) {
+            suggestCollection.date = createTime
+            launch {
+                screenshotViewModel.updateCollection(suggestCollection)
+            }
+        }
+        super.onStop()
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -120,7 +128,7 @@ class SortingPanelActivity : AppCompatActivity() {
     }
 
     private fun flushToUnsortedCollection() {
-        showAddedToast(unsortedCollection)
+        showAddedToast(unsortedCollection, false)
         launch {
             screenshotViewModel.batchMove(unsortedScreenshots, CollectionModel.CATEGORY_NONE)
         }
@@ -190,6 +198,7 @@ class SortingPanelActivity : AppCompatActivity() {
         }
 
         val viewModel = this.screenshotViewModel
+        isMultiSortMode = false
 
         when {
             // Sort a new screenshot
@@ -220,6 +229,7 @@ class SortingPanelActivity : AppCompatActivity() {
 
             // Sort all screenshots in a collection
             intent.hasExtra(EXTRA_COLLECTION_ID) -> {
+                isMultiSortMode = true
                 val id = intent.getStringExtra(EXTRA_COLLECTION_ID)
                 val idList = if (id == CollectionModel.CATEGORY_NONE) {
                     listOf(CollectionModel.UNCATEGORIZED, CollectionModel.CATEGORY_NONE)
@@ -263,7 +273,7 @@ class SortingPanelActivity : AppCompatActivity() {
         }
 
         sortingPanel.setActionCallback {
-            showAddedToast(unsortedCollection)
+            showAddedToast(unsortedCollection, unsortedScreenshots.isNotEmpty())
             onNewModelAvailable()
         }
 
@@ -274,9 +284,9 @@ class SortingPanelActivity : AppCompatActivity() {
         onNewModelAvailable()
     }
 
-    private fun showAddedToast(model: CollectionModel?) {
+    private fun showAddedToast(model: CollectionModel?, stickToCollapsedPanel: Boolean) {
         model?.let {
-            val yOffset = if (sortingPanel.isCollapse()) {
+            val yOffset = if (sortingPanel.isCollapse() && stickToCollapsedPanel) {
                 sortingPanel.getCollapseHeight()
             } else {
                 0
@@ -295,6 +305,7 @@ class SortingPanelActivity : AppCompatActivity() {
                 if (CollectionModel.isSuggestCollection(collection)) {
                     // Once the user selects a suggest collection, we update its id to
                     // a random UUID, so that it will be treated as a normal collection from then on
+                    suggestCollectionCreateTime[collection] = System.currentTimeMillis()
                     withContext(DefaultDispatcher) {
                         screenshotViewModel.updateCollectionId(collection, UUID.randomUUID().toString())
                     }
@@ -305,8 +316,8 @@ class SortingPanelActivity : AppCompatActivity() {
                     screenshotViewModel.addScreenshot(listOf(screenshot))
                 }
 
-                if (screenshotCount == 1) {
-                    showAddedToast(collection)
+                if (!isMultiSortMode) {
+                    showAddedToast(collection, false)
                 }
             }
             onNewModelAvailable()

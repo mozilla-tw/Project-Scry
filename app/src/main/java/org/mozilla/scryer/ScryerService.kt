@@ -23,7 +23,7 @@ import kotlinx.coroutines.experimental.launch
 import org.mozilla.scryer.capture.RequestCaptureActivity
 import org.mozilla.scryer.capture.ScreenCaptureListener
 import org.mozilla.scryer.capture.ScreenCaptureManager
-import org.mozilla.scryer.capture.SortingPanelActivity
+import org.mozilla.scryer.sortingpanel.SortingPanelActivity
 import org.mozilla.scryer.filemonitor.FileMonitor
 import org.mozilla.scryer.filemonitor.MediaProviderDelegate
 import org.mozilla.scryer.overlay.CaptureButtonController

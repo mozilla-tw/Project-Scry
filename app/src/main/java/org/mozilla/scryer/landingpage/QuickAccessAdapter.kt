@@ -12,7 +12,7 @@ import android.view.MenuItem
 import android.view.ViewGroup
 import com.bumptech.glide.Glide
 import org.mozilla.scryer.R
-import org.mozilla.scryer.capture.SortingPanelActivity
+import org.mozilla.scryer.sortingpanel.SortingPanelActivity
 import org.mozilla.scryer.extension.getValidPosition
 import org.mozilla.scryer.persistence.ScreenshotModel
 import java.io.File

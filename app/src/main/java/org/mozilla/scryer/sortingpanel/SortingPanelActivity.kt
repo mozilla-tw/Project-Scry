@@ -3,7 +3,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.scryer.capture
+package org.mozilla.scryer.sortingpanel
 
 import android.content.Context
 import android.content.Intent
@@ -22,7 +22,6 @@ import org.mozilla.scryer.Observer
 import org.mozilla.scryer.R
 import org.mozilla.scryer.persistence.CollectionModel
 import org.mozilla.scryer.persistence.ScreenshotModel
-import org.mozilla.scryer.sortingpanel.SortingPanel
 import org.mozilla.scryer.ui.CollectionNameDialog
 import org.mozilla.scryer.ui.ScryerToast
 import org.mozilla.scryer.viewmodel.ScreenshotViewModel
@@ -38,20 +37,20 @@ class SortingPanelActivity : AppCompatActivity() {
 
         fun sortCollection(context: Context, collectionId: String): Intent {
             val intent = Intent(context, SortingPanelActivity::class.java)
-            intent.putExtra(SortingPanelActivity.EXTRA_COLLECTION_ID, collectionId)
+            intent.putExtra(EXTRA_COLLECTION_ID, collectionId)
             return intent
         }
 
         fun sortNewScreenshot(context: Context, path: String, showAddToCollection: Boolean): Intent {
             val intent = Intent(context, SortingPanelActivity::class.java)
-            intent.putExtra(SortingPanelActivity.EXTRA_PATH, path)
-            intent.putExtra(SortingPanelActivity.EXTRA_SHOW_ADD_TO_COLLECTION, showAddToCollection)
+            intent.putExtra(EXTRA_PATH, path)
+            intent.putExtra(EXTRA_SHOW_ADD_TO_COLLECTION, showAddToCollection)
             return intent
         }
 
         fun sortOldScreenshot(context: Context, screenshotId: String): Intent {
             val intent = Intent(context, SortingPanelActivity::class.java)
-            intent.putExtra(SortingPanelActivity.EXTRA_SCREENSHOT_ID, screenshotId)
+            intent.putExtra(EXTRA_SCREENSHOT_ID, screenshotId)
             return intent
         }
     }

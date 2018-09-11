@@ -27,7 +27,7 @@
         </activity>
 
         <activity
-            android:name=".capture.SortingPanelActivity"
+            android:name=".sortingpanel.SortingPanelActivity"
             android:launchMode="singleTask"
             android:exported="false"
             android:noHistory="true"

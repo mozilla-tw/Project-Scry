@@ -37,7 +37,7 @@ import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.withContext
 import org.mozilla.scryer.*
-import org.mozilla.scryer.capture.SortingPanelActivity
+import org.mozilla.scryer.sortingpanel.SortingPanelActivity
 import org.mozilla.scryer.detailpage.DetailPageActivity
 import org.mozilla.scryer.extension.dpToPx
 import org.mozilla.scryer.filemonitor.ScreenshotFetcher

@@ -24,6 +24,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.navigation.Navigation
 import com.bumptech.glide.Glide
+import kotlinx.android.synthetic.main.fragment_collection.*
 import kotlinx.coroutines.experimental.DefaultDispatcher
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
@@ -195,11 +196,20 @@ class CollectionFragment : Fragment() {
         liveData.observe(this, Observer { screenshots ->
             sortMenuItem?.isVisible = screenshots.isNotEmpty()
 
+            if (screenshots.isNotEmpty()) {
+                sortMenuItem?.isVisible = true
+                subtitleView.visibility = View.VISIBLE
+                subtitleView.text = getString(R.string.collection_separator_shots, screenshots.size)
+                empty_view.visibility = View.GONE
+            } else {
+                sortMenuItem?.isVisible = false
+                subtitleView.visibility = View.INVISIBLE
+                empty_view.visibility = View.VISIBLE
+            }
+
             screenshots.sortedByDescending { it.lastModified }.let { sorted ->
                 screenshotAdapter.setScreenshotList(sorted)
                 screenshotAdapter.notifyDataSetChanged()
-                val shotCount: Int = sorted.size
-                subtitleView.text = getString(R.string.collection_separator_shots, shotCount)
             }
         })
 
@@ -288,10 +298,6 @@ open class ScreenshotAdapter(val context: Context?,
 
     fun getScreenshotList(): List<ScreenshotModel> {
         return screenshotList
-    }
-
-    interface OnItemClickListener {
-        fun onItemClicked(model: ScreenshotModel)
     }
 }
 

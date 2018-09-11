@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="org.mozilla.scryer">
 
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
@@ -12,29 +13,34 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        tools:ignore="GoogleAppIndexingWarning">
+
         <activity
             android:name=".MainActivity"
-            android:launchMode="singleTask">
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <service android:name=".ScryerService" />
-
         <activity
             android:name=".capture.SortingPanelActivity"
             android:launchMode="singleTask"
+            android:exported="false"
             android:noHistory="true"
             android:taskAffinity="org.mozilla.choose_collection"
             android:theme="@style/SortingPanelTheme"
             android:windowSoftInputMode="adjustNothing" />
+
         <activity
             android:name=".detailpage.DetailPageActivity"
-            android:theme="@style/DetailPageTheme" />
+            android:theme="@style/DetailPageTheme"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
         <activity
             android:name=".capture.RequestCaptureActivity"
             android:excludeFromRecents="true"
@@ -42,10 +48,20 @@
             android:launchMode="singleTask"
             android:taskAffinity="org.mozilla.scryer.request_capture_permission"
             android:theme="@style/Theme.AppCompat.NoActionBar.Translucent" />
+
         <activity
             android:name=".setting.SettingsActivity"
             android:exported="false"
-            android:launchMode="singleTask" />
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".SvgViewerActivity"
+            android:exported="false" />
+
+        <service
+            android:name=".ScryerService"
+            android:exported="false" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"
@@ -57,7 +73,5 @@
                 android:resource="@xml/fileprovider" />
         </provider>
 
-        <activity android:name=".SvgViewerActivity" android:exported="false" />
     </application>
-
 </manifest>

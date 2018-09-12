@@ -40,7 +40,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="@id/image_top_guideline"
         app:layout_constraintRight_toRightOf="parent"
-        style="@style/H2" />
+        style="@style/H3" />
 
     <ImageView
         android:id="@+id/error_image"

@@ -26,7 +26,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        style="@style/H2" />
+        style="@style/H1" />
 
     <TextView
         android:id="@+id/description"

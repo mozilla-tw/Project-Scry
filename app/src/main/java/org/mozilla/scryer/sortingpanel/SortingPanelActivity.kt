@@ -69,7 +69,16 @@ class SortingPanelActivity : AppCompatActivity() {
 
     private val collectionColors = mutableListOf<Int>()
 
-    private var isMultiSortMode: Boolean = false
+    /** This will only become non-null if we are sorting a whole collection */
+    private var collectionId: String? = null
+
+    /** True when we are sorting screenshots that haven't been reviewed by the user before */
+    private val isSortingUncategorized: Boolean
+        get() = (collectionId == CollectionModel.UNCATEGORIZED)
+
+    /** True when: 1. Capture and save 2. Move screenshot to another collection  */
+    private val isSortingSingleScreenshot: Boolean
+        get() = (collectionId == null)
 
     /*  Update the timestamp of each suggest collection at once in onStop(), so
         the order of collections will keep static during multiple-sorting */
@@ -111,7 +120,7 @@ class SortingPanelActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        if (isMultiSortMode) {
+        if (isSortingUncategorized) {
             AlertDialog.Builder(this)
                     .setTitle(R.string.dialogue_skipsorting_title_skip)
                     .setMessage(R.string.dialogue_skipsorting_content_moveto)
@@ -198,7 +207,7 @@ class SortingPanelActivity : AppCompatActivity() {
         }
 
         val viewModel = this.screenshotViewModel
-        isMultiSortMode = false
+        collectionId = null
 
         when {
             // Sort a new screenshot
@@ -229,13 +238,16 @@ class SortingPanelActivity : AppCompatActivity() {
 
             // Sort all screenshots in a collection
             intent.hasExtra(EXTRA_COLLECTION_ID) -> {
-                isMultiSortMode = true
-                val id = intent.getStringExtra(EXTRA_COLLECTION_ID)
-                val idList = if (id == CollectionModel.CATEGORY_NONE) {
-                    listOf(CollectionModel.UNCATEGORIZED, CollectionModel.CATEGORY_NONE)
-                } else {
-                    listOf(id)
-                }
+                collectionId = intent.getStringExtra(EXTRA_COLLECTION_ID)
+
+                val idList = collectionId?.let {
+                    if (it == CollectionModel.CATEGORY_NONE) {
+                        listOf(CollectionModel.UNCATEGORIZED, CollectionModel.CATEGORY_NONE)
+                    } else {
+                        listOf(it)
+                    }
+                }?: emptyList()
+
                 launch(UI) {
                     val screenshots = withContext(DefaultDispatcher) {
                         viewModel.getScreenshotList(idList)
@@ -316,7 +328,7 @@ class SortingPanelActivity : AppCompatActivity() {
                     screenshotViewModel.addScreenshot(listOf(screenshot))
                 }
 
-                if (!isMultiSortMode) {
+                if (isSortingSingleScreenshot) {
                     showAddedToast(collection, false)
                 }
             }

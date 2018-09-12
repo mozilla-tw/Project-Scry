@@ -112,18 +112,8 @@ class SortingPanel : FrameLayout, DefaultLifecycleObserver {
         initPanel()
     }
 
-    private fun getColumnCount(): Int {
-        val display = (context.getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay
-        val rotation = display.rotation
-        return when (rotation) {
-            Surface.ROTATION_0 -> COLUMN_PORTRAIT
-            Surface.ROTATION_180 -> COLUMN_PORTRAIT
-            else -> COLUMN_LANDSCAPE
-        }
-    }
-
     private fun initRecyclerView() {
-        val columnCount = getColumnCount()
+        val columnCount = context.resources.getInteger(R.integer.sorting_panel_column_count)
         this.recyclerView.layoutManager = GridLayoutManager(context, columnCount,
                 GridLayoutManager.VERTICAL,
                 false)

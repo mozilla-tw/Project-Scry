@@ -44,11 +44,11 @@
 
     <ImageView
         android:id="@+id/error_image"
-        android:layout_width="wrap_content"
-        android:layout_height="156dp"
+        android:layout_width="140dp"
+        android:layout_height="140dp"
         android:scaleType="fitCenter"
         android:src="@drawable/image_error"
-        android:layout_marginBottom="16dp"
+
         app:layout_constraintBottom_toTopOf="@id/title"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"/>

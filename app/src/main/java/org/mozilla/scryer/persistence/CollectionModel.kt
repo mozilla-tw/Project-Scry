@@ -17,7 +17,7 @@ data class CollectionModel constructor(
         @PrimaryKey(autoGenerate = false) var id: String,
         @ColumnInfo(name = "name") var name: String,
         @ColumnInfo(name = "date") var date: Long,
-        @ColumnInfo(name = "color") val color: Int) {
+        @ColumnInfo(name = "color") var color: Int) {
 
     @Ignore
     constructor(name: String, date: Long, color: Int)

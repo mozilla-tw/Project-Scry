@@ -5,10 +5,7 @@
 
 package org.mozilla.scryer.sortingpanel
 
-import android.arch.lifecycle.DefaultLifecycleObserver
-import android.arch.lifecycle.LifecycleOwner
-import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.Observer
+import android.arch.lifecycle.*
 import android.content.Context
 import android.graphics.Rect
 import android.os.Parcel
@@ -17,9 +14,7 @@ import android.support.design.widget.BottomSheetBehavior
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.AttributeSet
-import android.view.Surface
 import android.view.View
-import android.view.WindowManager
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
@@ -30,10 +25,6 @@ import org.mozilla.scryer.persistence.ScreenshotModel
 import java.io.File
 
 class SortingPanel : FrameLayout, DefaultLifecycleObserver {
-    companion object {
-        private const val COLUMN_PORTRAIT = 2
-        private const val COLUMN_LANDSCAPE = 3
-    }
 
     private val recyclerView: RecyclerView by lazy { findViewById<RecyclerView>(R.id.panel_recycler_view) }
     private val coordinatorLayout: View by lazy { findViewById<View>(R.id.coordinator_layout) }
@@ -96,12 +87,10 @@ class SortingPanel : FrameLayout, DefaultLifecycleObserver {
     }
 
     override fun onStart(owner: LifecycleOwner) {
-        super.onStart(owner)
         this.collectionSource?.observe(owner, this.collectionSourceObserver)
     }
 
     override fun onStop(owner: LifecycleOwner) {
-        super.onStop(owner)
         this.collectionSource?.removeObserver(this.collectionSourceObserver)
     }
 

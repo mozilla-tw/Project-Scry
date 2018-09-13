@@ -82,7 +82,7 @@ class SortingPanelActivity : AppCompatActivity() {
 
     /*  Update the timestamp of each suggest collection at once in onStop(), so
         the order of collections will keep static during multiple-sorting */
-    private val suggestCollectionCreateTime = HashMap<CollectionModel, Long>()
+    private val suggestCollectionCreateTime = mutableListOf<Pair<CollectionModel, Long>>()
 
     private val toast: ScryerToast by lazy {
         ScryerToast(this)
@@ -317,7 +317,7 @@ class SortingPanelActivity : AppCompatActivity() {
                 if (CollectionModel.isSuggestCollection(collection)) {
                     // Once the user selects a suggest collection, we update its id to
                     // a random UUID, so that it will be treated as a normal collection from then on
-                    suggestCollectionCreateTime[collection] = System.currentTimeMillis()
+                    suggestCollectionCreateTime.add(Pair(collection, System.currentTimeMillis()))
                     withContext(DefaultDispatcher) {
                         screenshotViewModel.updateCollectionId(collection, UUID.randomUUID().toString())
                     }

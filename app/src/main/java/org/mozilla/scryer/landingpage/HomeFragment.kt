@@ -286,6 +286,7 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
 
             val showNewScreenshotDialog = newScreenshots.isNotEmpty()
                     && isDialogAllowed(PREF_SHOW_NEW_SCREENSHOT_DIALOG)
+                    && !permissionFlow.isFirstTimeLaunch
             val showEnableServiceDialog = isServiceDisabled()
                     && isDialogAllowed(PREF_SHOW_ENABLE_SERVICE_DIALOG)
 

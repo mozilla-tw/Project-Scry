@@ -37,6 +37,7 @@ import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.withContext
 import org.mozilla.scryer.*
+import org.mozilla.scryer.capture.ScreenCaptureManager
 import org.mozilla.scryer.detailpage.DetailPageActivity
 import org.mozilla.scryer.extension.dpToPx
 import org.mozilla.scryer.filemonitor.ScreenshotFetcher
@@ -599,7 +600,11 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
         val localModels = dbList.map { it.absolutePath to it }.toMap().toMutableMap()
 
         val results = mutableListOf<ScreenshotModel>()
-        externalList.forEach { externalModel ->
+        externalList.filterNot {
+            // skip screenshots that were taken by our self
+            File(it.absolutePath).parent.endsWith(File.separator + ScreenCaptureManager.SCREENSHOT_DIR)
+
+        }.forEach { externalModel ->
             val localModel = localModels[externalModel.absolutePath]
             localModel?.let {
                 // Already recorded before, sync id and collectionId from local record

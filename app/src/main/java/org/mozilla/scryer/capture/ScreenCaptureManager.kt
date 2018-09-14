@@ -22,6 +22,10 @@ import java.io.File
 import java.io.FileOutputStream
 
 class ScreenCaptureManager(context: Context, private val screenCapturePermissionIntent: Intent, private val screenCaptureListener: ScreenCaptureListener) {
+    companion object {
+        const val SCREENSHOT_DIR = "screenshot+"
+    }
+
     private val projectionManager: MediaProjectionManager = context.getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
     private var mediaProjection: MediaProjection? = null
     private var imageReader: ImageReader? = null
@@ -36,7 +40,7 @@ class ScreenCaptureManager(context: Context, private val screenCapturePermission
     private val screenshotPath: String
 
     init {
-        val screenshotDirectory = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "screenshot+")
+        val screenshotDirectory = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), SCREENSHOT_DIR)
         ensureDir(screenshotDirectory)
         screenshotPath = screenshotDirectory.absolutePath
 

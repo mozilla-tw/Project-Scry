@@ -45,6 +45,7 @@ import org.mozilla.scryer.permission.PermissionHelper
 import org.mozilla.scryer.permission.PermissionViewModel
 import org.mozilla.scryer.persistence.CollectionModel
 import org.mozilla.scryer.persistence.ScreenshotModel
+import org.mozilla.scryer.preference.PreferenceWrapper
 import org.mozilla.scryer.setting.SettingsActivity
 import org.mozilla.scryer.sortingpanel.SortingPanelActivity
 import org.mozilla.scryer.ui.BottomDialogFactory
@@ -92,6 +93,12 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
     private val searchObserver = Observer<List<ScreenshotModel>> { screenshots ->
         screenshots?.let { newData ->
             searchListAdapter.setScreenshotList(newData)
+        }
+    }
+
+    private val pref: PreferenceWrapper? by lazy {
+        context?.let {
+            PreferenceWrapper(it)
         }
     }
 
@@ -286,7 +293,7 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
             val showNewScreenshotDialog = newScreenshots.isNotEmpty()
                     && isDialogAllowed(PREF_SHOW_NEW_SCREENSHOT_DIALOG)
                     && !permissionFlow.isFirstTimeLaunch
-            val showEnableServiceDialog = isServiceDisabled()
+            val showEnableServiceDialog = shouldPromptEnableService()
                     && isDialogAllowed(PREF_SHOW_ENABLE_SERVICE_DIALOG)
 
             if (showNewScreenshotDialog) {
@@ -575,11 +582,14 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
             }
         }
 
-        dialogQueue.tryShow(dialog, DialogInterface.OnDismissListener {
+        val isShown = dialogQueue.tryShow(dialog, DialogInterface.OnDismissListener {
             if (checkbox?.isChecked == true) {
                 setDoNotShowDialogAgain(PREF_SHOW_ENABLE_SERVICE_DIALOG)
             }
         })
+        if (isShown) {
+            pref?.setShouldPromptEnableService(false)
+        }
     }
 
     private suspend fun mergeExternalToDatabase(externalList: List<ScreenshotModel>,
@@ -644,7 +654,9 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
         }?: false
     }
 
-    private fun isServiceDisabled() = !ScryerApplication.getSettingsRepository().serviceEnabled
+    private fun shouldPromptEnableService(): Boolean {
+        return pref?.shouldPromptEnableService() ?: false
+    }
 
     private class DialogQueue {
         private var current: AppCompatDialog? = null
@@ -657,10 +669,12 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
             schedule()
         }
 
-        fun tryShow(dialog: AppCompatDialog, dismissListener: DialogInterface.OnDismissListener?) {
+        fun tryShow(dialog: AppCompatDialog, dismissListener: DialogInterface.OnDismissListener?): Boolean {
             current?: run {
                 show(dialog, dismissListener)
+                return true
             }
+            return false
         }
 
         private fun schedule() {

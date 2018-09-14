@@ -276,15 +276,13 @@ class ScryerService : Service(), CaptureButtonController.ClickListener, ScreenCa
 
         val openAppPendingIntent = PendingIntent.getActivity(this, 0,
                 bringTaskToFrontIntent, 0)
-        val openAppAction = NotificationCompat.Action(android.R.drawable.ic_menu_close_clear_cancel,
-                getString(R.string.notification_action_open),
+        val openAppAction = NotificationCompat.Action(0, getString(R.string.notification_action_open),
                 openAppPendingIntent)
 
         val stopIntent = Intent(ACTION_DISABLE_SERVICE_SOFTLY)
         stopIntent.setClass(this, ScryerService::class.java)
         val stopPendingIntent = PendingIntent.getService(this, 0, stopIntent, 0)
-        val stopAction = NotificationCompat.Action(android.R.drawable.ic_menu_close_clear_cancel,
-                getString(R.string.notification_action_stop),
+        val stopAction = NotificationCompat.Action(0, getString(R.string.notification_action_stop),
                 stopPendingIntent)
 
         val style = NotificationCompat.BigTextStyle()

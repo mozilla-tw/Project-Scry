@@ -223,6 +223,7 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
 
         val dialog = BottomDialogFactory.create(context, R.layout.dialog_bottom)
         val appNameGo = getString(R.string.app_name_go)
+        dialog.findViewById<View>(R.id.image)?.visibility = View.VISIBLE
         dialog.findViewById<TextView>(R.id.title)?.text = getString(R.string.onboarding_fab_title_fab, appNameGo)
         dialog.findViewById<TextView>(R.id.subtitle)?.text = getString(R.string.onboarding_fab_content_permission, appNameGo)
         dialog.findViewById<View>(R.id.dont_ask_again_checkbox)?.visibility = View.GONE
@@ -255,7 +256,9 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
         val context = context?: return
 
         val dialog = BottomDialogFactory.create(context, R.layout.dialog_bottom)
-        dialog.findViewById<TextView>(R.id.title)?.text = getString(R.string.onboarding_autogrant_overlay_title, getString(R.string.app_name_go))
+        dialog.findViewById<View>(R.id.image)?.visibility = View.VISIBLE
+        dialog.findViewById<TextView>(R.id.title)?.visibility = View.GONE
+        dialog.findViewById<TextView>(R.id.subtitle)?.text = getString(R.string.onboarding_autogrant_overlay_title, getString(R.string.app_name_go))
         dialog.findViewById<View>(R.id.dont_ask_again_checkbox)?.visibility = View.GONE
         dialog.findViewById<View>(R.id.positive_button)?.setOnClickListener {
             action.run()

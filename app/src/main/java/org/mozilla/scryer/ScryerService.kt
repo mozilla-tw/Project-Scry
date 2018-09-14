@@ -47,9 +47,6 @@ class ScryerService : Service(), CaptureButtonController.ClickListener, ScreenCa
         /** Disable service while allowing to show a prompt-enable dialog in the future  */
         const val ACTION_DISABLE_SERVICE_SOFTLY = "action_disable_service_softly"
 
-        /** Action used to launch the main activity */
-        const val ACTION_LAUNCH_APP = "action_launch_app"
-
         /** Action indicating user has explicitly enabled the service */
         const val ACTION_ENABLE_SERVICE = "action_enable_service"
 
@@ -77,6 +74,20 @@ class ScryerService : Service(), CaptureButtonController.ClickListener, ScreenCa
     private val fileMonitor: FileMonitor by lazy {
         //FileMonitor(FileObserverDelegate(Handler(Looper.getMainLooper())))
         FileMonitor(MediaProviderDelegate(this, Handler(Looper.getMainLooper())))
+    }
+
+    private val bringTaskToFrontIntent: Intent by lazy {
+        Intent(Intent.ACTION_MAIN).apply {
+            setClass(this@ScryerService, MainActivity::class.java)
+            addCategory(Intent.CATEGORY_LAUNCHER)
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+    }
+
+    private val bringMainActivityToFrontIntent: Intent by lazy {
+        Intent(this, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+        }
     }
 
     private val handler = Handler(Looper.getMainLooper())
@@ -263,9 +274,8 @@ class ScryerService : Service(), CaptureButtonController.ClickListener, ScreenCa
         tapIntent.setClass(this, ScryerService::class.java)
         val tapPendingIntent = PendingIntent.getService(this, 0, tapIntent, 0)
 
-        val openAppIntent = Intent(ACTION_LAUNCH_APP)
-        openAppIntent.setClass(this, MainActivity::class.java)
-        val openAppPendingIntent = PendingIntent.getActivity(this, 0, openAppIntent, 0)
+        val openAppPendingIntent = PendingIntent.getActivity(this, 0,
+                bringTaskToFrontIntent, 0)
         val openAppAction = NotificationCompat.Action(android.R.drawable.ic_menu_close_clear_cancel,
                 getString(R.string.notification_action_open),
                 openAppPendingIntent)
@@ -298,9 +308,8 @@ class ScryerService : Service(), CaptureButtonController.ClickListener, ScreenCa
             ""
         }
 
-        val tapIntent = Intent(ACTION_LAUNCH_APP)
-        tapIntent.setClass(this, MainActivity::class.java)
-        val tapPendingIntent = PendingIntent.getActivity(this, 0, tapIntent, 0)
+        val tapPendingIntent = PendingIntent.getActivity(this, 0,
+                bringMainActivityToFrontIntent, 0)
 
         return NotificationCompat.Builder(this, channelId)
                 .setCategory(Notification.CATEGORY_PROMO)

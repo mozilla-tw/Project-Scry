@@ -28,7 +28,7 @@ open class GridItemDecoration(private val columnCount: Int,
         setSpaces(outRect, position)
     }
 
-    fun setSpaces(outRect: Rect, position: Int) {
+    open fun setSpaces(outRect: Rect, position: Int) {
         outRect.left = if (position % columnCount == 0) left else hSpace / 2
         outRect.top = if (position < columnCount) top else 0
         outRect.right = if (position % columnCount == columnCount - 1) right else hSpace / 2

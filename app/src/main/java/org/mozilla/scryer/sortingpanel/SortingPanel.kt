@@ -22,6 +22,7 @@ import com.bumptech.glide.Glide
 import org.mozilla.scryer.R
 import org.mozilla.scryer.persistence.CollectionModel
 import org.mozilla.scryer.persistence.ScreenshotModel
+import org.mozilla.scryer.ui.GridItemDecoration
 import java.io.File
 
 class SortingPanel : FrameLayout, DefaultLifecycleObserver {
@@ -40,8 +41,8 @@ class SortingPanel : FrameLayout, DefaultLifecycleObserver {
 
     private var actionCallback: (() -> Unit)? = null
 
-    private var collectionSourceObserver = Observer<List<CollectionModel>> {
-        it?.filter {
+    private var collectionSourceObserver = Observer<List<CollectionModel>> { collections ->
+        collections?.filter {
             it.id != CollectionModel.CATEGORY_NONE
 
         }?.sortedBy {
@@ -79,6 +80,9 @@ class SortingPanel : FrameLayout, DefaultLifecycleObserver {
             }
         }
 
+    private val columnCount: Int
+        get() = context.resources.getInteger(R.integer.sorting_panel_column_count)
+
     constructor(context: Context): super(context) {
         initView()
     }
@@ -102,13 +106,12 @@ class SortingPanel : FrameLayout, DefaultLifecycleObserver {
     }
 
     private fun initRecyclerView() {
-        val columnCount = context.resources.getInteger(R.integer.sorting_panel_column_count)
         this.recyclerView.layoutManager = GridLayoutManager(context, columnCount,
                 GridLayoutManager.VERTICAL,
                 false)
 
         val space = resources.getDimensionPixelSize(R.dimen.sorting_panel_item_spacing)
-        this.recyclerView.addItemDecoration(SortingPanelDecoration(columnCount, 0, 0, 0, space, space))
+        this.recyclerView.addItemDecoration(SortingPanelDecoration(space, 0, this))
         this.recyclerView.adapter = this.adapter
     }
 
@@ -221,31 +224,50 @@ class SortingPanel : FrameLayout, DefaultLifecycleObserver {
         }
     }
 
-    class SortingPanelDecoration(private val columnCount: Int,
-                                 private val left: Int,
-                                 private val top: Int,
-                                 private val right: Int,
-                                 private val vSpace: Int,
-                                 private val hSpace: Int) : RecyclerView.ItemDecoration() {
+    class SortingPanelDecoration(private val space: Int, top: Int, private val panel: SortingPanel)
+        : GridItemDecoration(panel.columnCount, 0, top, 0, space, space) {
 
-        @Suppress("unused")
-        constructor(columnCount: Int, space: Int) : this(columnCount, space, space, space, space, space)
+        override fun setSpaces(outRect: Rect, position: Int) {
+            val columnCount = panel.columnCount
+            if (columnCount <= 2) {
+                outRect.left = if (position % columnCount == 0) 0 else space / 2
+                outRect.top = 0
+                outRect.right = if (position % columnCount == columnCount - 1) 0 else space / 2
+                outRect.bottom = space
 
-        override fun getItemOffsets(outRect: Rect, view: View,
-                                    parent: RecyclerView, state: RecyclerView.State) {
-            val position = parent.getChildViewHolder(view).adapterPosition
-            if (position < 0) {
-                return
+            } else {
+                /**
+                 * x: padding for left/right-most items (left-most item only have right padding, vice versa)
+                 * y: padding for middle items (padding at both left & right sides)
+                 *
+                 * size of left/right-most items must be equal to the size of middle items
+                 *   x = 2y
+                 *
+                 * 2x + 2(middleItemCount)y = sum of all padding
+                 * => 2x + 2(itemCount - 2)y = space * (itemCount - 1)
+                 * => 4y + 2(itemCount - 2)y = space * (itemCount - 1)
+                 * => y = space * (itemCount  - 1) / (4 + 2 * (itemCount - 2))y
+                 */
+                val y = space * (columnCount - 1) / (4 + 2 * (columnCount - 2))
+                val x = y * 2
+
+                outRect.top = 0
+                outRect.bottom = space
+                when {
+                    position % columnCount == 0 -> {
+                        outRect.left = 0
+                        outRect.right = x
+                    }
+                    position % columnCount == columnCount - 1 -> {
+                        outRect.left = x
+                        outRect.right = 0
+                    }
+                    else -> {
+                        outRect.left = y
+                        outRect.right = y
+                    }
+                }
             }
-
-            setSpaces(outRect, position)
-        }
-
-        private fun setSpaces(outRect: Rect, position: Int) {
-            outRect.left = if (position % this.columnCount == 0) left else 0
-            outRect.top = if (position < this.columnCount) top else 0
-            outRect.right = if (position % this.columnCount == this.columnCount - 1) right else this.hSpace
-            outRect.bottom = this.vSpace
         }
     }
 

@@ -16,7 +16,8 @@
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        tools:background="@color/grey50">
 
         <ImageView
             android:id="@+id/image"
@@ -39,6 +40,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
             android:maxLines="2"
             android:ellipsize="end"
             app:layout_constraintBottom_toBottomOf="@id/image"

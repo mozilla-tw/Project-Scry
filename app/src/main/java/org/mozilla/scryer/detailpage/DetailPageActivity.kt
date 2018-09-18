@@ -10,6 +10,8 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Point
+import android.graphics.RectF
 import android.os.Bundle
 import android.support.design.widget.BottomSheetBehavior
 import android.support.design.widget.FloatingActionButton
@@ -40,6 +42,7 @@ import org.mozilla.scryer.landingpage.showScreenshotInfoDialog
 import org.mozilla.scryer.landingpage.showShareScreenshotDialog
 import org.mozilla.scryer.persistence.ScreenshotModel
 import org.mozilla.scryer.sortingpanel.SortingPanelActivity
+import org.mozilla.scryer.ui.ScryerToast
 import org.mozilla.scryer.viewmodel.ScreenshotViewModel
 import kotlin.coroutines.experimental.suspendCoroutine
 
@@ -91,6 +94,13 @@ class DetailPageActivity : AppCompatActivity() {
     private var isRecognizing = false
     private var isTextMode = false
     private var isEnterTransitionPostponed = true
+
+    private val screenSize: RectF by lazy {
+        val size = Point().apply {
+            windowManager.defaultDisplay.getRealSize(this)
+        }
+        RectF(0f, 0f, size.x.toFloat(), size.y.toFloat())
+    }
 
     private val itemCallback = object : DetailPageAdapter.ItemCallback {
         override fun onItemClicked(item: ScreenshotModel) {
@@ -233,24 +243,67 @@ class DetailPageActivity : AppCompatActivity() {
             updateUI()
 
             val result = withContext(CommonPool) {
-                val path = (screenshots[view_pager.currentItem]).absolutePath
-                val bitmap = BitmapFactory.decodeFile(path)
-                bitmap?.let {
-                    runTextRecognition(it)
-                }
+                runTextRecognition(screenshots[view_pager.currentItem])
             }
 
-            result?.let {
+            if (result is Result.Success) {
+                if (result is Result.WeiredImageSize) {
+                    // TODO: String
+                    ScryerToast.makeText(this@DetailPageActivity, result.msg,
+                            Toast.LENGTH_SHORT).show()
+                }
+
                 if (isRecognizing) {
-                    processTextRecognitionResult(it)
+                    processTextRecognitionResult(result.value)
                     isTextMode = true
                     updateUI()
                 }
+
+            } else if (result is Result.Failed) {
+                // TODO: String
+                ScryerToast.makeText(this@DetailPageActivity, result.msg,
+                        Toast.LENGTH_SHORT).show()
             }
 
             isRecognizing = false
             updateUI()
         }
+    }
+
+    private suspend fun runTextRecognition(screenshot: ScreenshotModel): Result {
+        val decoded = BitmapFactory.decodeFile(screenshot.absolutePath)
+        return decoded?.let { bitmap ->
+            runTextRecognition(bitmap)?.let { result ->
+                if (isValidSize(bitmap)) {
+                    Result.Success(result)
+                } else {
+                    Result.WeiredImageSize(result,
+                            "weird image size: ${bitmap.width}x${bitmap.height}")
+                }
+
+            } ?: Result.Failed("recognize failed")
+
+        } ?: Result.Failed("invalid bitmap")
+    }
+
+    private fun isValidSize(bitmap: Bitmap): Boolean {
+        return if (bitmap.width >= bitmap.height) {
+            isValidLandscapeSize(bitmap)
+        } else {
+            isValidPortraitSize(bitmap)
+        }
+    }
+
+    private fun isValidPortraitSize(bitmap: Bitmap): Boolean {
+        val isWidthValid = bitmap.width <= 1.5f * screenSize.width()
+        val isHeightValid = bitmap.height <= 2 * screenSize.height()
+        return isWidthValid && isHeightValid
+    }
+
+    private fun isValidLandscapeSize(bitmap: Bitmap): Boolean {
+        val isWidthValid = bitmap.width <= screenSize.height()
+        val isHeightValid = bitmap.height <= 2 * screenSize.width()
+        return isWidthValid && isHeightValid
     }
 
     private fun updateUI() {
@@ -308,16 +361,17 @@ class DetailPageActivity : AppCompatActivity() {
         }
     }
 
-    private suspend fun runTextRecognition(selectedImage: Bitmap): FirebaseVisionText? = suspendCoroutine { cont ->
-        val image = FirebaseVisionImage.fromBitmap(selectedImage)
-        val detector = FirebaseVision.getInstance().visionTextDetector
-        detector.detectInImage(image)
-                .addOnSuccessListener { texts ->
-                    cont.resume(texts)
-                }
-                .addOnFailureListener { _ ->
-                    cont.resume(null)
-                }
+    private suspend fun runTextRecognition(selectedImage: Bitmap): FirebaseVisionText? =
+            suspendCoroutine { cont ->
+                val image = FirebaseVisionImage.fromBitmap(selectedImage)
+                val detector = FirebaseVision.getInstance().visionTextDetector
+                detector.detectInImage(image)
+                        .addOnSuccessListener { texts ->
+                            cont.resume(texts)
+                        }
+                        .addOnFailureListener { _ ->
+                            cont.resume(null)
+                        }
     }
 
     private fun processTextRecognitionResult(texts: FirebaseVisionText) {
@@ -385,4 +439,11 @@ class DetailPageActivity : AppCompatActivity() {
             }
         }
     }
+
+    sealed class Result {
+        open class Success(val value: FirebaseVisionText) : Result()
+        class WeiredImageSize(value: FirebaseVisionText, val msg: String) : Success(value)
+        class Failed(val msg: String) : Result()
+    }
+
 }

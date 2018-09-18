@@ -5,7 +5,10 @@
 
 package org.mozilla.scryer.sortingpanel
 
-import android.arch.lifecycle.*
+import android.arch.lifecycle.DefaultLifecycleObserver
+import android.arch.lifecycle.LifecycleOwner
+import android.arch.lifecycle.LiveData
+import android.arch.lifecycle.Observer
 import android.content.Context
 import android.graphics.Rect
 import android.os.Parcel
@@ -22,7 +25,6 @@ import com.bumptech.glide.Glide
 import org.mozilla.scryer.R
 import org.mozilla.scryer.persistence.CollectionModel
 import org.mozilla.scryer.persistence.ScreenshotModel
-import org.mozilla.scryer.ui.GridItemDecoration
 import java.io.File
 
 class SortingPanel : FrameLayout, DefaultLifecycleObserver {
@@ -111,7 +113,9 @@ class SortingPanel : FrameLayout, DefaultLifecycleObserver {
                 false)
 
         val space = resources.getDimensionPixelSize(R.dimen.sorting_panel_item_spacing)
-        this.recyclerView.addItemDecoration(SortingPanelDecoration(space, 0, this))
+        this.recyclerView.addItemDecoration(SortingPanelDecoration(space) {
+            columnCount
+        })
         this.recyclerView.adapter = this.adapter
     }
 
@@ -224,48 +228,40 @@ class SortingPanel : FrameLayout, DefaultLifecycleObserver {
         }
     }
 
-    class SortingPanelDecoration(private val space: Int, top: Int, private val panel: SortingPanel)
-        : GridItemDecoration(panel.columnCount, 0, top, 0, space, space) {
+    class SortingPanelDecoration(private val space: Int,
+                                 private val columnCountProvider: () -> Int) : RecyclerView.ItemDecoration() {
+        override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
+            /**
+             * x: padding for left/right-most items (left-most item only have right padding, vice versa)
+             * y: padding for middle items (padding at both left & right sides)
+             *
+             * size of left/right-most items must be equal to the size of middle items
+             *   x = 2y
+             *
+             * 2x + 2(middleItemCount)y = sum of all padding
+             * => 2x + 2(itemCount - 2)y = space * (itemCount - 1)
+             * => 4y + 2(itemCount - 2)y = space * (itemCount - 1)
+             * => y = space * (itemCount  - 1) / (4 + 2 * (itemCount - 2))y
+             */
+            val position = parent.getChildAdapterPosition(view)
+            val columnCount = columnCountProvider.invoke()
+            val y = space * (columnCount - 1) / (4 + 2 * (columnCount - 2))
+            val x = y * 2
 
-        override fun setSpaces(outRect: Rect, position: Int) {
-            val columnCount = panel.columnCount
-            if (columnCount <= 2) {
-                outRect.left = if (position % columnCount == 0) 0 else space / 2
-                outRect.top = 0
-                outRect.right = if (position % columnCount == columnCount - 1) 0 else space / 2
-                outRect.bottom = space
-
-            } else {
-                /**
-                 * x: padding for left/right-most items (left-most item only have right padding, vice versa)
-                 * y: padding for middle items (padding at both left & right sides)
-                 *
-                 * size of left/right-most items must be equal to the size of middle items
-                 *   x = 2y
-                 *
-                 * 2x + 2(middleItemCount)y = sum of all padding
-                 * => 2x + 2(itemCount - 2)y = space * (itemCount - 1)
-                 * => 4y + 2(itemCount - 2)y = space * (itemCount - 1)
-                 * => y = space * (itemCount  - 1) / (4 + 2 * (itemCount - 2))y
-                 */
-                val y = space * (columnCount - 1) / (4 + 2 * (columnCount - 2))
-                val x = y * 2
-
-                outRect.top = 0
-                outRect.bottom = space
-                when {
-                    position % columnCount == 0 -> {
-                        outRect.left = 0
-                        outRect.right = x
-                    }
-                    position % columnCount == columnCount - 1 -> {
-                        outRect.left = x
-                        outRect.right = 0
-                    }
-                    else -> {
-                        outRect.left = y
-                        outRect.right = y
-                    }
+            outRect.top = 0
+            outRect.bottom = space
+            when {
+                position % columnCount == 0 -> {
+                    outRect.left = 0
+                    outRect.right = x
+                }
+                position % columnCount == columnCount - 1 -> {
+                    outRect.left = x
+                    outRect.right = 0
+                }
+                else -> {
+                    outRect.left = y
+                    outRect.right = y
                 }
             }
         }

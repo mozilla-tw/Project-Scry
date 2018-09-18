@@ -315,6 +315,7 @@ class ScryerService : Service(), CaptureButtonController.ClickListener, ScreenCa
                 .setContentTitle(getString(R.string.app_full_name))
                 .setContentText(getString(R.string.notification_action_collect))
                 .setContentIntent(tapPendingIntent)
+                .setAutoCancel(true)
                 .build()
     }
 

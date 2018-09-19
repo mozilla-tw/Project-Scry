@@ -27,6 +27,9 @@
     <color name="home_background">@color/white</color>
     <color name="quick_access_background">@color/grey10</color>
 
+    <!-- Notification -->
+    <color name="foreground_notification">#0A84FF</color>
+
     <array name="collection_colors">
         <item>#235dff</item>
         <item>#10c1b6</item>

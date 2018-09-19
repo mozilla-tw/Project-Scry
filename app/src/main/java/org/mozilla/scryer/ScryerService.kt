@@ -16,6 +16,7 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.support.v4.app.NotificationCompat
+import android.support.v4.content.ContextCompat
 import android.support.v4.content.LocalBroadcastManager
 import android.text.TextUtils
 import android.widget.Toast
@@ -289,7 +290,8 @@ class ScryerService : Service(), CaptureButtonController.ClickListener, ScreenCa
         style.bigText(getString(R.string.notification_action_capture))
         return NotificationCompat.Builder(this, channelId)
                 .setCategory(Notification.CATEGORY_SERVICE)
-                .setSmallIcon(android.R.drawable.ic_menu_camera)
+                .setSmallIcon(R.drawable.ic_stat_notify)
+                .setColor(ContextCompat.getColor(this, R.color.foreground_notification))
                 .setContentTitle(getString(R.string.app_full_name))
                 .setContentText(getString(R.string.notification_action_capture))
                 .setContentIntent(tapPendingIntent)

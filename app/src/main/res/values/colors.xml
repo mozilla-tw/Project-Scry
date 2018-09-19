@@ -28,7 +28,7 @@
     <color name="quick_access_background">@color/grey10</color>
 
     <!-- Notification -->
-    <color name="foreground_notification">#0A84FF</color>
+    <color name="foreground_notification">@color/primaryTeal</color>
 
     <array name="collection_colors">
         <item>#235dff</item>

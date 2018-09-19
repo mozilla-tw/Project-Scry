@@ -27,6 +27,9 @@ abstract class CollectionDao {
     @Delete
     abstract fun deleteCollection(collection: CollectionModel)
 
+    @Query("SELECT * FROM collection WHERE id = :id")
+    abstract fun getCollection(id: String): CollectionModel?
+
     @Transaction
     open fun updateCollectionId(collection: CollectionModel, id: String) {
         deleteCollection(collection)

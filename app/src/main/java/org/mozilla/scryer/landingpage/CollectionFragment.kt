@@ -486,13 +486,14 @@ fun showDeleteCollectionDialog(context: Context, viewModel: ScreenshotViewModel,
             .setNegativeButton(context.getString(android.R.string.cancel)) { dialog: DialogInterface?, _: Int -> dialog?.dismiss() }
             .setPositiveButton(context.getString(R.string.action_delete)) { dialog: DialogInterface?, _: Int ->
                 launch {
-                    val collections = viewModel.getCollectionList()
-                    collections.find { it.id == collectionId }?.let {
-                        val screenshots = withContext(DefaultDispatcher) {
-                            viewModel.getScreenshotList(listOf(it.id))
+                    collectionId?.let { viewModel.getCollection(it) }?.let { collection ->
+                        val screenshots = viewModel.getScreenshotList(listOf(collection.id))
+                        viewModel.deleteCollection(collection)
+
+                        screenshots.forEach { screenshot ->
+                            File(screenshot.absolutePath).delete()
+                            viewModel.deleteScreenshot(screenshot)
                         }
-                        viewModel.deleteCollection(it)
-                        screenshots.forEach { File(it.absolutePath).delete() }
                     }
                 }
                 dialog?.dismiss()

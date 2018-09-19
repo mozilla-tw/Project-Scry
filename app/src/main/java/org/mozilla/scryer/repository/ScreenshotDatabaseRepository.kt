@@ -56,6 +56,10 @@ class ScreenshotDatabaseRepository(private val database: ScreenshotDatabase) : S
         database.collectionDao().addCollection(collection)
     }
 
+    override fun getCollection(id: String): CollectionModel? {
+        return database.collectionDao().getCollection(id)
+    }
+
     override fun getCollectionCovers(): LiveData<Map<String, ScreenshotModel>> {
         return Transformations.switchMap(database.screenshotDao().getCollectionCovers()) { models ->
             MutableLiveData<Map<String, ScreenshotModel>>().apply {

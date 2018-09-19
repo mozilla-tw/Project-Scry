@@ -15,19 +15,28 @@ class PreferenceWrapper(context: Context) {
     }
 
     // TODO: What about letting caller be responsible for providing PrefConfig instead of
-    // hard-coding it here in the PreferenceManager
-    private val prefEnableService = PrefConfig("prompt_service_enable", false)
+    // hard-coding it here in the PreferenceManager?
+    private val shouldPromptEnableService = PrefConfig("prompt_service_enable", false)
+    private val isFirstTimeLaunch = PrefConfig("first_time_launch", true)
 
     private val pref: SharedPreferences by lazy {
         context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
     }
 
+    fun isFirstTimeLaunch(): Boolean {
+        return pref.getBoolean(isFirstTimeLaunch.key, isFirstTimeLaunch.defaultValue)
+    }
+
+    fun setFirstTimeLaunched() {
+        pref.edit().putBoolean(isFirstTimeLaunch.key, false).apply()
+    }
+
     fun shouldPromptEnableService(): Boolean {
-        return pref.getBoolean(prefEnableService.key, prefEnableService.defaultValue)
+        return pref.getBoolean(shouldPromptEnableService.key, shouldPromptEnableService.defaultValue)
     }
 
     fun setShouldPromptEnableService(shouldPrompt: Boolean) {
-        pref.edit().putBoolean(prefEnableService.key, shouldPrompt).apply()
+        pref.edit().putBoolean(shouldPromptEnableService.key, shouldPrompt).apply()
     }
 }
 

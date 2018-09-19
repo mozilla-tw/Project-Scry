@@ -78,7 +78,6 @@ class PermissionFlow(private var permissionState: PermissionStateProvider,
 
     var initialState: State = StorageState(this)
     var state: State = initialState
-    val isFirstTimeLaunch = !pageState.isWelcomePageShown()
 
     fun start() {
         state = initialState.execute()

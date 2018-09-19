@@ -296,7 +296,7 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
 
             val showNewScreenshotDialog = newScreenshots.isNotEmpty()
                     && isDialogAllowed(PREF_SHOW_NEW_SCREENSHOT_DIALOG)
-                    && !permissionFlow.isFirstTimeLaunch
+                    && !isFirstTimeLaunched()
             val showEnableServiceDialog = shouldPromptEnableService()
                     && isDialogAllowed(PREF_SHOW_ENABLE_SERVICE_DIALOG)
 
@@ -664,6 +664,11 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
 
     private fun shouldPromptEnableService(): Boolean {
         return pref?.shouldPromptEnableService() ?: false
+    }
+
+    private fun isFirstTimeLaunched(): Boolean {
+        // TODO: Better way?
+        return (activity as? MainActivity)?.isFirstTimeLaunched ?: false
     }
 
     private class DialogQueue {

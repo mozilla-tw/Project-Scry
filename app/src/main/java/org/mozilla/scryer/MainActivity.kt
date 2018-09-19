@@ -12,6 +12,7 @@ import android.support.v7.app.ActionBar
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import org.mozilla.scryer.permission.PermissionViewModel
+import org.mozilla.scryer.preference.PreferenceWrapper
 import org.mozilla.scryer.telemetry.TelemetryWrapper
 
 class MainActivity : AppCompatActivity() {
@@ -21,9 +22,19 @@ class MainActivity : AppCompatActivity() {
         const val REQUEST_CODE_WRITE_EXTERNAL_PERMISSION = 1001
     }
 
+    private val prefs: PreferenceWrapper by lazy {
+        PreferenceWrapper(this)
+    }
+
+    var isFirstTimeLaunched: Boolean = true
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        isFirstTimeLaunched = prefs.isFirstTimeLaunch()
+        if (isFirstTimeLaunched) {
+            prefs.setFirstTimeLaunched()
+        }
     }
 
     override fun onResume() {

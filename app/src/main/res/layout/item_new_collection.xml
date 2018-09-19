@@ -26,6 +26,8 @@
         android:gravity="center"
         android:maxLines="2"
         android:ellipsize="end"
+        android:textColor="@color/grey90"
+        style="@style/ButtonText"
         android:text="@string/action_create"/>
 
 </LinearLayout>

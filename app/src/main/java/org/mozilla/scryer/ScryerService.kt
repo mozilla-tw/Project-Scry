@@ -308,12 +308,14 @@ class ScryerService : Service(), CaptureButtonController.ClickListener, ScreenCa
             ""
         }
 
-        val tapPendingIntent = PendingIntent.getActivity(this, 0,
-                bringMainActivityToFrontIntent, 0)
+        val intent = SortingPanelActivity.sortCollection(this, CollectionModel.UNCATEGORIZED)
+        intent.flags = intent.flags or Intent.FLAG_ACTIVITY_NEW_TASK
+        val tapPendingIntent = PendingIntent.getActivity(this, 0, intent, 0)
 
         return NotificationCompat.Builder(this, channelId)
                 .setCategory(Notification.CATEGORY_PROMO)
-                .setSmallIcon(android.R.drawable.ic_menu_upload)
+                .setSmallIcon(R.drawable.ic_stat_notify)
+                .setColor(ContextCompat.getColor(this, R.color.foreground_notification))
                 .setContentTitle(getString(R.string.app_full_name))
                 .setContentText(getString(R.string.notification_action_collect))
                 .setContentIntent(tapPendingIntent)

@@ -68,7 +68,7 @@ class SortingPanel : FrameLayout, DefaultLifecycleObserver {
 
     var collectionSource: LiveData<List<CollectionModel>>? = null
 
-    var callback: Callback? = null
+    var callback: SortingPanelAdapter.Callback? = null
         set(value) {
             this.adapter.callback = value
         }
@@ -265,10 +265,5 @@ class SortingPanel : FrameLayout, DefaultLifecycleObserver {
                 }
             }
         }
-    }
-
-    interface Callback {
-        fun onClick(collection: CollectionModel)
-        fun onNewCollectionClick()
     }
 }

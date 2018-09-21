@@ -45,6 +45,7 @@ import org.mozilla.scryer.permission.PermissionFlow
 import org.mozilla.scryer.permission.PermissionHelper
 import org.mozilla.scryer.permission.PermissionViewModel
 import org.mozilla.scryer.persistence.CollectionModel
+import org.mozilla.scryer.persistence.SuggestCollectionHelper
 import org.mozilla.scryer.persistence.ScreenshotModel
 import org.mozilla.scryer.preference.PreferenceWrapper
 import org.mozilla.scryer.setting.SettingsActivity
@@ -463,7 +464,7 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
 
         viewModel.getCollections().observe(this, Observer { collections ->
             collections?.filter {
-                !CollectionModel.isSuggestCollection(it)
+                !SuggestCollectionHelper.isSuggestCollection(it)
 
             }?.sortedBy {
                 it.date

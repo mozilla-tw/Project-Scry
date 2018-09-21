@@ -9,10 +9,10 @@ import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.Transformations
 import android.content.Context
-import android.graphics.Color
 import kotlinx.coroutines.experimental.launch
 import org.mozilla.scryer.R
 import org.mozilla.scryer.persistence.CollectionModel
+import org.mozilla.scryer.persistence.SuggestCollectionHelper
 import org.mozilla.scryer.persistence.ScreenshotDatabase
 import org.mozilla.scryer.persistence.ScreenshotModel
 
@@ -84,11 +84,11 @@ class ScreenshotDatabaseRepository(private val database: ScreenshotDatabase) : S
                     R.string.sorting_suggestion_4th,
                     R.string.sorting_suggestion_5th)
 
-            if (nameList.size < CollectionModel.suggestCollections.size) {
+            if (nameList.size < SuggestCollectionHelper.suggestCollections.size) {
                 throw RuntimeException("Not enough name for all suggestion collection")
             }
 
-            CollectionModel.suggestCollections.forEachIndexed { index, collection ->
+            SuggestCollectionHelper.suggestCollections.forEachIndexed { index, collection ->
                 collection.name = context.getString(nameList[index])
                 addCollection(collection)
             }

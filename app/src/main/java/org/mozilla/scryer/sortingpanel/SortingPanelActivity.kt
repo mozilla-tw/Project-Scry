@@ -22,8 +22,10 @@ import org.mozilla.scryer.Observer
 import org.mozilla.scryer.R
 import org.mozilla.scryer.persistence.CollectionModel
 import org.mozilla.scryer.persistence.ScreenshotModel
+import org.mozilla.scryer.persistence.SuggestCollectionHelper
 import org.mozilla.scryer.ui.CollectionNameDialog
 import org.mozilla.scryer.ui.ScryerToast
+import org.mozilla.scryer.util.CollectionListHelper
 import org.mozilla.scryer.viewmodel.ScreenshotViewModel
 import java.io.File
 import java.util.*
@@ -105,6 +107,7 @@ class SortingPanelActivity : AppCompatActivity() {
     override fun onStop() {
         this.lifecycle.removeObserver(this.sortingPanel)
 
+
         for ((suggestCollection, createTime) in suggestCollectionCreateTime) {
             suggestCollection.date = createTime
             launch {
@@ -155,15 +158,19 @@ class SortingPanelActivity : AppCompatActivity() {
 
     private fun initSortingPanel() {
         val collectionData = screenshotViewModel.getCollections()
-        collectionData.observe(this, Observer {
-            unsortedCollection = it.find { it.id == CollectionModel.CATEGORY_NONE }
+        collectionData.observe(this, Observer { collection ->
+            unsortedCollection = collection.find { it.id == CollectionModel.CATEGORY_NONE }
         })
 
         sortingPanel.collectionSource = collectionData
         sortingPanel.showCollectionPanel = shouldShowCollectionPanel
-        sortingPanel.callback = object : SortingPanel.Callback {
-            override fun onClick(collection: CollectionModel) {
-                onCollectionClicked(collection)
+        sortingPanel.callback = object : SortingPanelAdapter.Callback {
+            override fun onClickStart(collection: CollectionModel) {
+                onCollectionClickStart(collection)
+            }
+
+            override fun onClickFinish(collection: CollectionModel) {
+                onCollectionClickFinish(collection)
             }
 
             override fun onNewCollectionClick() {
@@ -311,29 +318,36 @@ class SortingPanelActivity : AppCompatActivity() {
         finishAndRemoveTask()
     }
 
-    private fun onCollectionClicked(collection: CollectionModel) {
-        launch(UI) {
-            currentScreenshot?.let { screenshot ->
-                if (CollectionModel.isSuggestCollection(collection)) {
-                    // Once the user selects a suggest collection, we update its id to
-                    // a random UUID, so that it will be treated as a normal collection from then on
-                    suggestCollectionCreateTime.add(Pair(collection, System.currentTimeMillis()))
-                    withContext(DefaultDispatcher) {
-                        screenshotViewModel.updateCollectionId(collection, UUID.randomUUID().toString())
-                    }
-                }
+    private fun onCollectionClickStart(collection: CollectionModel) {
+        launch(UI.immediate) {
+            val screenshot = currentScreenshot ?: return@launch
 
-                screenshot.collectionId = collection.id
+            if (SuggestCollectionHelper.isSuggestCollection(collection)) {
+                // Once the user selects a suggest collection, we update its id to
+                // a random UUID, so that it will be treated as a normal collection from then on
+
+                collection.color = CollectionListHelper.nextCollectionColor(
+                        this@SortingPanelActivity, true)
                 withContext(DefaultDispatcher) {
-                    screenshotViewModel.addScreenshot(listOf(screenshot))
+                    screenshotViewModel.updateCollectionId(collection, UUID.randomUUID().toString())
                 }
-
-                if (isSortingSingleScreenshot) {
-                    showAddedToast(collection, false)
-                }
+                suggestCollectionCreateTime.add(Pair(collection, System.currentTimeMillis()))
             }
-            onNewModelAvailable()
+
+            screenshot.collectionId = collection.id
+            withContext(DefaultDispatcher) {
+                screenshotViewModel.addScreenshot(listOf(screenshot))
+            }
+
+            if (isSortingSingleScreenshot) {
+                showAddedToast(collection, false)
+            }
         }
+    }
+
+    @Suppress("UNUSED_PARAMETER")
+    private fun onCollectionClickFinish(collection: CollectionModel) {
+        onNewModelAvailable()
     }
 
     private fun onNewCollectionClicked() {
@@ -341,7 +355,8 @@ class SortingPanelActivity : AppCompatActivity() {
         // when user input a name identical to suggest collection, there's no need to exclude
         // suggest collection when matching for conflict name, set excludeSuggestion to false
         CollectionNameDialog.createNewCollection(this, screenshotViewModel, false) {
-            onCollectionClicked(it)
+            onCollectionClickStart(it)
+            onCollectionClickFinish(it)
         }
     }
 

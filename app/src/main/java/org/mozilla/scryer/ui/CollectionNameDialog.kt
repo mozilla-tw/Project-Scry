@@ -17,6 +17,7 @@ import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.withContext
 import org.mozilla.scryer.R
 import org.mozilla.scryer.persistence.CollectionModel
+import org.mozilla.scryer.util.CollectionListHelper
 import org.mozilla.scryer.viewmodel.ScreenshotViewModel
 import java.util.*
 
@@ -53,12 +54,14 @@ class CollectionNameDialog(private val context: Context,
             val dialog = CollectionNameDialog(context, object : CollectionNameDialog.Delegate {
 
                 override fun onPositiveAction(collectionName: String) {
-                    val result = updateOrInsertCollection(context, collectionName, viewModel, collections)
-                    callback(result)
+                    launch(UI) {
+                        val result = updateOrInsertCollection(context, collectionName, viewModel, collections)
+                        callback(result)
+                    }
                 }
 
                 override fun isNameConflict(name: String): Boolean {
-                    return isNameConflict(name, excludeSuggestion, collections)
+                    return CollectionListHelper.isNameConflict(name, collections, excludeSuggestion)
                 }
 
                 override fun getPositiveButtonText(): Int {
@@ -89,7 +92,8 @@ class CollectionNameDialog(private val context: Context,
 
                 override fun isNameConflict(name: String): Boolean {
                     val isOriginalName = name.compareTo(originalName, true) == 0
-                    return !isOriginalName && isNameConflict(name, true, collections)
+                    return !isOriginalName
+                            && CollectionListHelper.isNameConflict(name, collections, true)
                 }
 
                 override fun getPositiveButtonText(): Int {
@@ -106,63 +110,30 @@ class CollectionNameDialog(private val context: Context,
             dialog.show()
         }
 
-        private fun updateOrInsertCollection(context: Context, name: String,
-                                             viewModel: ScreenshotViewModel,
-                                             collections: List<CollectionModel>): CollectionModel {
-            return collections.find {
+        private suspend fun updateOrInsertCollection(
+                context: Context,
+                name: String,
+                viewModel: ScreenshotViewModel,
+                collections: List<CollectionModel>
+        ): CollectionModel = withContext(UI) {
+            collections.find {
                 it.name == name
 
             }?.let {
-                launch(DefaultDispatcher) {
+                launch {
                     it.date = System.currentTimeMillis()
                     viewModel.updateCollectionId(it, UUID.randomUUID().toString())
                 }
                 it
 
             }?: run {
-                val color = findNewCollectionColor(context, collections)
+                val color = CollectionListHelper.nextCollectionColor(context, collections, true)
                 val model = CollectionModel(name, System.currentTimeMillis(), color)
-                launch {
+                withContext(DefaultDispatcher) {
                     viewModel.addCollection(model)
                 }
                 model
             }
-        }
-
-        private fun findNewCollectionColor(context: Context, collections: List<CollectionModel>): Int {
-            val lastColor = collections.last().color
-            val defaultColor = ContextCompat.getColor(context, R.color.primaryTeal)
-
-            var newColorIndex = 0
-            val typedArray = context.resources.obtainTypedArray(R.array.collection_colors)
-            val length = typedArray.length()
-
-            for (i in 0 until length) {
-                if (typedArray.getColor(i, defaultColor) == lastColor) {
-                    newColorIndex = (i + 1) % length
-                    break
-                }
-            }
-
-            val color = typedArray.getColor(newColorIndex, defaultColor)
-            typedArray.recycle()
-
-            return color
-        }
-
-        private fun isNameConflict(name: String, excludeSuggestion: Boolean,
-                                   collections: List<CollectionModel>): Boolean {
-            return collections.find {
-                name.compareTo(it.name, true) == 0
-
-            }?.let { conflictCollection ->
-                if (CollectionModel.isSuggestCollection(conflictCollection)) {
-                    !excludeSuggestion
-                } else {
-                    true
-                }
-
-            } ?: false
         }
 
         private suspend fun queryCollectionList(viewModel: ScreenshotViewModel): List<CollectionModel> {

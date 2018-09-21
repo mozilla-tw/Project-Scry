@@ -15,6 +15,7 @@ import android.widget.TextView
 import org.mozilla.scryer.R
 import org.mozilla.scryer.extension.getValidPosition
 import org.mozilla.scryer.persistence.CollectionModel
+import org.mozilla.scryer.persistence.SuggestCollectionHelper
 
 class SortingPanelAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     companion object {
@@ -32,7 +33,7 @@ class SortingPanelAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var newCollectionItemPosition = 0
 
-    var callback: SortingPanel.Callback? = null
+    var callback: Callback? = null
 
     private var selectedHolder: ItemHolder? = null
 
@@ -68,7 +69,12 @@ class SortingPanelAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             else -> {
                 getItem(position)?.let {
                     (holder as ItemHolder).title?.text = it.name
-                    DrawableCompat.setTint(holder.itemView.background, it.color)
+                    val color = if (SuggestCollectionHelper.isSuggestCollection(it)) {
+                        SuggestCollectionHelper.SUGGEST_COLOR
+                    } else {
+                        it.color
+                    }
+                    DrawableCompat.setTint(holder.itemView.background, color)
                 }
             }
         }
@@ -129,9 +135,10 @@ class SortingPanelAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         selectedHolder = selectedHolder?.let { return }?: holder
 
         setSelectState(holder, true)
+        callback?.onClickStart(model)
 
         holder.itemView.postDelayed({
-            callback?.onClick(model)
+            callback?.onClickFinish(model)
 
         }, DURATION_SELECT_ANIMATION)
     }
@@ -153,5 +160,11 @@ class SortingPanelAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             holder.checkIcon?.visibility = View.INVISIBLE
             holder.title?.visibility = View.VISIBLE
         }
+    }
+
+    interface Callback {
+        fun onClickStart(collection: CollectionModel)
+        fun onClickFinish(collection: CollectionModel)
+        fun onNewCollectionClick()
     }
 }

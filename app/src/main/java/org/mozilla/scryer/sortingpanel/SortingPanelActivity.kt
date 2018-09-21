@@ -355,6 +355,7 @@ class SortingPanelActivity : AppCompatActivity() {
         // when user input a name identical to suggest collection, there's no need to exclude
         // suggest collection when matching for conflict name, set excludeSuggestion to false
         CollectionNameDialog.createNewCollection(this, screenshotViewModel, false) {
+            showAddedToast(it, true)
             onCollectionClickStart(it)
             onCollectionClickFinish(it)
         }

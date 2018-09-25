@@ -265,8 +265,8 @@ class DetailPageActivity : AppCompatActivity() {
 
             if (result is Result.Success) {
                 if (result is Result.WeiredImageSize) {
-                    // TODO: String
-                    ScryerToast.makeText(this@DetailPageActivity, result.msg,
+                    ScryerToast.makeText(this@DetailPageActivity,
+                            getString(R.string.detail_ocr_error_edgecase),
                             Toast.LENGTH_SHORT).show()
                 }
 
@@ -277,8 +277,8 @@ class DetailPageActivity : AppCompatActivity() {
                 }
 
             } else if (result is Result.Failed) {
-                // TODO: String
-                ScryerToast.makeText(this@DetailPageActivity, result.msg,
+                ScryerToast.makeText(this@DetailPageActivity,
+                        getString(R.string.detail_ocr_error_failed),
                         Toast.LENGTH_SHORT).show()
             }
 
@@ -441,6 +441,8 @@ class DetailPageActivity : AppCompatActivity() {
 
         if (blocks.size == 0) {
             Toast.makeText(applicationContext, "No text found", Toast.LENGTH_SHORT).show()
+            ScryerToast.makeText(this, getString(R.string.detail_ocr_error_notext),
+                    Toast.LENGTH_SHORT).show()
             return
         }
 

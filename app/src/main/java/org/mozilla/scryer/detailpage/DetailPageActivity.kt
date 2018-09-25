@@ -325,31 +325,56 @@ class DetailPageActivity : AppCompatActivity() {
 
     private fun updateUI() {
         if (isTextMode) {
-            text_mode_panel.visibility = View.VISIBLE
-            text_mode_background.visibility = View.VISIBLE
-            BottomSheetBehavior.from(text_mode_panel_content).state = BottomSheetBehavior.STATE_COLLAPSED
-            cancel_fab.visibility = View.INVISIBLE
-            text_mode_fab.verticalScrollbarPosition = View.INVISIBLE
-            loadingViewController.hide()
-
+            updateLoadingViewVisibility(false)
+            updateFabUI(true, false)
+            updateTextModePanelVisibility(true)
             enableActionMenu(false)
 
         } else {
-            text_mode_panel.visibility = View.GONE
-            text_mode_background.visibility = View.GONE
-            if (isRecognizing) {
-                loadingViewController.show()
+            updateLoadingViewVisibility(isRecognizing)
+            updateFabUI(false, isRecognizing)
+            updateTextModePanelVisibility(false)
+            enableActionMenu(true)
+        }
+        updateNavigationIcon()
+    }
+
+    private fun updateLoadingViewVisibility(visible: Boolean) {
+        if (visible) {
+            loadingViewController.show()
+        } else {
+            loadingViewController.hide()
+        }
+    }
+
+    private fun updateFabUI(isTextMode: Boolean, isLoading: Boolean) {
+        when {
+            isTextMode -> {
+                cancel_fab.visibility = View.INVISIBLE
+                text_mode_fab.verticalScrollbarPosition = View.INVISIBLE
+            }
+
+            isLoading -> {
                 cancel_fab.visibility = View.VISIBLE
                 text_mode_fab.visibility = View.INVISIBLE
+            }
 
-            } else {
-                loadingViewController.hide()
+            else -> {
                 cancel_fab.visibility = View.INVISIBLE
                 text_mode_fab.visibility = View.VISIBLE
             }
-
-            enableActionMenu(true)
         }
+    }
+
+    private fun updateTextModePanelVisibility(visible: Boolean) {
+        val visibility = if (visible) {
+            BottomSheetBehavior.from(text_mode_panel_content).state = BottomSheetBehavior.STATE_COLLAPSED
+            View.VISIBLE
+        } else {
+            View.GONE
+        }
+        text_mode_panel.visibility = visibility
+        text_mode_background.visibility = visibility
     }
 
     private fun enableActionMenu(enable: Boolean) {
@@ -357,6 +382,14 @@ class DetailPageActivity : AppCompatActivity() {
         moveToMenu?.isVisible = enable
         screenshotInfoMenu?.isVisible = enable
         deleteMenu?.isVisible = enable
+    }
+
+    private fun updateNavigationIcon() {
+        toolbar.navigationIcon = ContextCompat.getDrawable(this, if (isTextMode) {
+            R.drawable.close_large
+        } else {
+            R.drawable.back
+        })
     }
 
     @Suppress("ConstantConditionIf")

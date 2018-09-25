@@ -41,6 +41,7 @@ import org.mozilla.scryer.landingpage.OnDeleteScreenshotListener
 import org.mozilla.scryer.landingpage.showDeleteScreenshotDialog
 import org.mozilla.scryer.landingpage.showScreenshotInfoDialog
 import org.mozilla.scryer.landingpage.showShareScreenshotDialog
+import org.mozilla.scryer.persistence.CollectionModel
 import org.mozilla.scryer.persistence.ScreenshotModel
 import org.mozilla.scryer.sortingpanel.SortingPanelActivity
 import org.mozilla.scryer.ui.ScryerToast
@@ -395,8 +396,14 @@ class DetailPageActivity : AppCompatActivity() {
     @Suppress("ConstantConditionIf")
     private suspend fun getScreenshots(): List<ScreenshotModel> = withContext(DefaultDispatcher) {
         if (SUPPORT_SLIDE) {
-            srcCollectionId?.let { viewModel.getScreenshotList(listOf(it)) }
-                    ?: viewModel.getScreenshotList()
+            srcCollectionId?.let {
+                val list = if (it == CollectionModel.CATEGORY_NONE) {
+                    listOf(it, CollectionModel.UNCATEGORIZED)
+                } else {
+                    listOf(it)
+                }
+                viewModel.getScreenshotList(list)
+            } ?: viewModel.getScreenshotList()
         } else {
             viewModel.getScreenshot(screenshotId)?.let { listOf(it) } ?: emptyList()
         }
@@ -505,8 +512,11 @@ class DetailPageActivity : AppCompatActivity() {
 
     sealed class Result {
         open class Success(val value: FirebaseVisionText) : Result()
-        class WeiredImageSize(value: FirebaseVisionText, val msg: String) : Success(value)
-        class Failed(val msg: String) : Result()
+        class WeiredImageSize(
+                value: FirebaseVisionText,
+                @Suppress("unused") val msg: String
+        ) : Success(value)
+        class Failed(@Suppress("unused") val msg: String) : Result()
     }
 
 }

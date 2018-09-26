@@ -7,9 +7,14 @@ object Versions {
     val arch_room = "1.1.1"
     val arch_navigation = "1.0.0-alpha05"
 
+    // Crashlytics
+    val fabric_gradle_plugin = "1.26.0"
+    val crashlytics = "2.9.5"
+
     // Google
     val firebase = "16.0.1"
     val firebase_ml = "16.0.0"
+    val google_service_plugin = "4.0.2"
 
     // Kotlin
     val kotlin = "1.2.60"

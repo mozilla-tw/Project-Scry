@@ -53,6 +53,7 @@ class CollectionFragment : Fragment() {
     private lateinit var subtitleView: TextView
 
     private lateinit var screenshotAdapter: ScreenshotAdapter
+    private var screenshotList = listOf<ScreenshotModel>()
 
     private val collectionId: String? by lazy {
         arguments?.getString(ARG_COLLECTION_ID)
@@ -89,7 +90,11 @@ class CollectionFragment : Fragment() {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_collection, menu)
-        sortMenuItem = if (collectionId == CollectionModel.CATEGORY_NONE) menu.findItem(R.id.action_sort) else null
+        sortMenuItem = if (collectionId == CollectionModel.CATEGORY_NONE) {
+            menu.findItem(R.id.action_sort).apply { updateSortMenuItem(this) }
+        } else {
+            null
+        }
 
         val renameItem = menu.findItem(R.id.action_collection_rename)
         if (collectionId == null || collectionId == CollectionModel.CATEGORY_NONE) {
@@ -171,6 +176,10 @@ class CollectionFragment : Fragment() {
         actionBar.title = collectionName?.let { it } ?: "All"
     }
 
+    private fun updateSortMenuItem(item: MenuItem?) {
+        item?.isVisible = screenshotList.isNotEmpty()
+    }
+
     private fun initScreenshotList(context: Context) {
         val manager = GridLayoutManager(context, SPAN_COUNT, GridLayoutManager.VERTICAL, false)
         screenshotListView.layoutManager = manager
@@ -192,15 +201,14 @@ class CollectionFragment : Fragment() {
         } ?: viewModel.getScreenshots()
 
         liveData.observe(this, Observer { screenshots ->
-            sortMenuItem?.isVisible = screenshots.isNotEmpty()
+            screenshotList = screenshots
+            updateSortMenuItem(sortMenuItem)
 
             if (screenshots.isNotEmpty()) {
-                sortMenuItem?.isVisible = true
                 subtitleView.visibility = View.VISIBLE
                 subtitleView.text = getString(R.string.collection_separator_shots, screenshots.size)
                 empty_view.visibility = View.GONE
             } else {
-                sortMenuItem?.isVisible = false
                 subtitleView.visibility = View.INVISIBLE
                 empty_view.visibility = View.VISIBLE
             }

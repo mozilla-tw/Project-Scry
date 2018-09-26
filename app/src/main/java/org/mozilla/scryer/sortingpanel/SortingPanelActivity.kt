@@ -5,6 +5,7 @@
 
 package org.mozilla.scryer.sortingpanel
 
+import android.arch.lifecycle.Lifecycle
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -276,6 +277,10 @@ class SortingPanelActivity : AppCompatActivity() {
         }
 
     private fun onLoadScreenshotsSuccess(screenshots: List<ScreenshotModel>) {
+        if (!lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
+            return
+        }
+
         this.sortedScreenshots.clear()
 
         this.unsortedScreenshots.clear()

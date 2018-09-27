@@ -22,6 +22,8 @@
     <color name="sorting_panel_create_button_border">#dddddd</color>
     <color name="sorting_panel_fake_layer">#d5e4d6</color>
     <color name="sorting_panel_hint_bar">#d7d7d7</color>
+    <color name="sorting_panel_suggest_item_background">@color/grey60</color>
+    <color name="sorting_panel_collection_item_background">@color/white</color>
 
     <!-- Home -->
     <color name="home_background">@color/white</color>

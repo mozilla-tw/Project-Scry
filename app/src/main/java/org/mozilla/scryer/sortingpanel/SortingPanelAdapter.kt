@@ -5,6 +5,7 @@
 
 package org.mozilla.scryer.sortingpanel
 
+import android.graphics.drawable.Drawable
 import android.support.v4.content.ContextCompat
 import android.support.v4.graphics.drawable.DrawableCompat
 import android.support.v7.widget.RecyclerView
@@ -13,6 +14,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import org.mozilla.scryer.R
+import org.mozilla.scryer.extension.dpToPx
 import org.mozilla.scryer.extension.getValidPosition
 import org.mozilla.scryer.persistence.CollectionModel
 import org.mozilla.scryer.persistence.SuggestCollectionHelper
@@ -62,24 +64,39 @@ class SortingPanelAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        when (position) {
-            newCollectionItemPosition -> {
-                (holder as NewItemHolder).title?.text = holder.itemView.resources.getString(R.string.action_create)
-            }
-            else -> {
-                getItem(position)?.let {
-                    (holder as ItemHolder).title?.text = it.name
-                    val color = if (SuggestCollectionHelper.isSuggestCollection(it)) {
-                        SuggestCollectionHelper.SUGGEST_COLOR
-                    } else {
-                        it.color
-                    }
-                    DrawableCompat.setTint(holder.itemView.background, color)
-                }
-            }
+        if (position == newCollectionItemPosition) {
+            bindNewCollectionItem(holder)
+        } else {
+            bindCollectionItem(holder, position)
         }
     }
 
+    private fun bindNewCollectionItem(holder: RecyclerView.ViewHolder) {
+        (holder as? NewItemHolder)?.let {
+            holder.title?.text = holder.itemView.resources.getString(R.string.action_create)
+        }
+    }
+
+    private fun bindCollectionItem(holder: RecyclerView.ViewHolder, position: Int) {
+        val itemHolder = (holder as? ItemHolder) ?: return
+        val item = getItem(position) ?: return
+        val context = itemHolder.itemView.context
+
+        itemHolder.title?.text = item.name
+        if (SuggestCollectionHelper.isSuggestCollection(item)) {
+            itemHolder.itemView.background = ContextCompat.getDrawable(itemHolder.itemView.context,
+                    R.drawable.sorting_panel_suggest_item_bkg)
+            itemHolder.itemView.elevation = 0f
+            itemHolder.title?.setTextColor(ContextCompat.getColor(context,
+                    R.color.sorting_panel_suggest_item_background))
+        } else {
+            itemHolder.itemView.background = itemHolder.background
+            DrawableCompat.setTint(holder.itemView.background, item.color)
+            itemHolder.itemView.elevation = 1f.dpToPx(itemHolder.itemView.resources.displayMetrics).toFloat()
+            itemHolder.title?.setTextColor(ContextCompat.getColor(context,
+                    R.color.sorting_panel_collection_item_background))
+        }
+    }
 
     fun onNewScreenshotReady() {
         selectedHolder?.let {
@@ -127,7 +144,9 @@ class SortingPanelAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 }
             }
         }
-        holder.itemView.background = DrawableCompat.wrap(holder.itemView.background)
+        holder.background = DrawableCompat.wrap(holder.itemView.background)
+        holder.itemView.background = holder.background
+
         return holder
     }
 
@@ -146,6 +165,7 @@ class SortingPanelAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private class ItemHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var title: TextView? = null
         var checkIcon: View? = null
+        var background: Drawable? = null
     }
 
     private class NewItemHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

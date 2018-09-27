@@ -28,7 +28,7 @@
         <activity
             android:name="org.mozilla.scryer.sortingpanel.SortingPanelActivity"
             android:launchMode="singleTask"
-            android:noHistory="true"
+            android:noHistory="false"
             android:taskAffinity="org.mozilla.choose_collection"
             android:theme="@style/SortingPanelTheme"
             android:windowSoftInputMode="adjustNothing" />

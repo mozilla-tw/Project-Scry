@@ -6,6 +6,8 @@
 package org.mozilla.scryer.sortingpanel
 
 import android.arch.lifecycle.Lifecycle
+import android.arch.lifecycle.ViewModel
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -91,6 +93,18 @@ class SortingPanelActivity : AppCompatActivity() {
         ScryerToast(this)
     }
 
+    private val persistModel: PersistModel by lazy {
+        ViewModelProviders.of(this)[PersistModel::class.java]
+    }
+
+    private val shouldShowCollectionPanel: Boolean
+        get() = if (intent.hasExtra(EXTRA_SHOW_ADD_TO_COLLECTION)) {
+            intent.getBooleanExtra(EXTRA_SHOW_ADD_TO_COLLECTION, true)
+
+        } else {
+            true
+        }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sorting_panel)
@@ -108,7 +122,6 @@ class SortingPanelActivity : AppCompatActivity() {
     override fun onStop() {
         this.lifecycle.removeObserver(this.sortingPanel)
 
-
         for ((suggestCollection, createTime) in suggestCollectionCreateTime) {
             suggestCollection.date = createTime
             launch {
@@ -120,6 +133,7 @@ class SortingPanelActivity : AppCompatActivity() {
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
+        ViewModelProviders.of(this).get(PersistModel::class.java).reset()
         loadScreenshots(intent, this::onLoadScreenshotsSuccess)
     }
 
@@ -208,83 +222,91 @@ class SortingPanelActivity : AppCompatActivity() {
         }
     }
 
-    private fun loadScreenshots(intent: Intent?, onFinished: (List<ScreenshotModel>) -> Unit) {
-        intent?: run {
-            onLoadScreenshotsFailed()
+    private fun loadScreenshots(intent: Intent?, onFinished: (list: List<ScreenshotModel>) -> Unit) {
+        if (persistModel.isLoaded()) {
+            onFinished.invoke(persistModel.getScreenshots())
             return
         }
 
-        val viewModel = this.screenshotViewModel
+        intent ?: run {
+            onLoadScreenshotsFailed()
+            return
+        }
         collectionId = null
 
-        when {
-            // Sort a new screenshot
-            intent.hasExtra(EXTRA_PATH) -> {
-                createNewScreenshot(intent)?.apply {
-                    val result = listOf(this)
-                    launch(UI) {
-                        withContext(DefaultDispatcher) {
-                            viewModel.addScreenshot(result)
-                        }
-                        onFinished.invoke(result)
-                    }
-                }?: onLoadScreenshotsFailed()
-            }
+        launch (UI) {
+            when {
+                intent.hasExtra(EXTRA_PATH) -> {
+                    loadNewScreenshot(getFilePath(intent))
+                }
 
-            // Sort an old screenshot
-            intent.hasExtra(EXTRA_SCREENSHOT_ID) -> {
-                val id = intent.getStringExtra(EXTRA_SCREENSHOT_ID)
-                launch(UI) {
-                    withContext(DefaultDispatcher) {
-                        viewModel.getScreenshot(id)
+                intent.hasExtra(EXTRA_SCREENSHOT_ID) -> {
+                    loadOldScreenshot(intent.getStringExtra(EXTRA_SCREENSHOT_ID))
+                }
 
-                    }?.let {
-                        onFinished.invoke(listOf(it))
+                intent.hasExtra(EXTRA_COLLECTION_ID) -> {
+                    collectionId = intent.getStringExtra(EXTRA_COLLECTION_ID)
+                    collectionId?.let {
+                        loadCollection(it)
                     }
                 }
-            }
 
-            // Sort all screenshots in a collection
-            intent.hasExtra(EXTRA_COLLECTION_ID) -> {
-                collectionId = intent.getStringExtra(EXTRA_COLLECTION_ID)
-
-                val idList = collectionId?.let {
-                    if (it == CollectionModel.CATEGORY_NONE) {
-                        listOf(CollectionModel.UNCATEGORIZED, CollectionModel.CATEGORY_NONE)
-                    } else {
-                        listOf(it)
-                    }
-                }?: emptyList()
-
-                launch(UI) {
-                    val screenshots = withContext(DefaultDispatcher) {
-                        viewModel.getScreenshotList(idList)
-                    }
-                    onFinished.invoke(screenshots)
+                else -> {
+                    null
                 }
-            }
 
-            else -> onLoadScreenshotsFailed()
+            }?.let {
+                persistModel.onScreenshotLoaded(it)
+                onFinished.invoke(it)
+
+            }?: onLoadScreenshotsFailed()
         }
     }
 
-    private val shouldShowCollectionPanel: Boolean
-        get() = if (intent.hasExtra(EXTRA_SHOW_ADD_TO_COLLECTION)) {
-            intent.getBooleanExtra(EXTRA_SHOW_ADD_TO_COLLECTION, true)
+    private suspend fun loadNewScreenshot(
+            path: String
+    ): List<ScreenshotModel>? = withContext(DefaultDispatcher) {
+        createNewScreenshot(path)?.let {
+            val result = listOf(it)
+            screenshotViewModel.addScreenshot(result)
+            result
+        }
+    }
 
+    private suspend fun loadOldScreenshot(
+            screenshotId: String
+    ): List<ScreenshotModel>? = withContext(DefaultDispatcher) {
+        screenshotViewModel.getScreenshot(screenshotId)?.let {
+            listOf(it)
+        }
+    }
+
+    private suspend fun loadCollection(
+            collectionId: String
+    ): List<ScreenshotModel>? = withContext(DefaultDispatcher) {
+        val idList = if (collectionId == CollectionModel.CATEGORY_NONE) {
+            listOf(CollectionModel.UNCATEGORIZED, CollectionModel.CATEGORY_NONE)
         } else {
-            true
+            listOf(collectionId)
         }
 
+        screenshotViewModel.getScreenshotList(idList)
+    }
+
     private fun onLoadScreenshotsSuccess(screenshots: List<ScreenshotModel>) {
-        if (!lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
+        if (!lifecycle.currentState.isAtLeast(Lifecycle.State.INITIALIZED)) {
             return
         }
 
         this.sortedScreenshots.clear()
-
         this.unsortedScreenshots.clear()
-        this.unsortedScreenshots.addAll(screenshots.sortedByDescending { it.lastModified })
+
+        val panelModel = ViewModelProviders.of(this).get(PersistModel::class.java)
+        val currentIndex = panelModel.getCurrentIndex()
+
+        val sorted = screenshots.sortedByDescending { it.lastModified }
+        this.sortedScreenshots.addAll(sorted.subList(0, currentIndex))
+        this.unsortedScreenshots.addAll(sorted.subList(currentIndex, screenshots.size))
 
         if (screenshots.size == 1) {
             sortingPanel.setActionText(getString(android.R.string.cancel))
@@ -299,6 +321,7 @@ class SortingPanelActivity : AppCompatActivity() {
         sortingPanel.setActionCallback {
             showAddedToast(unsortedCollection, unsortedScreenshots.isNotEmpty())
             onNewModelAvailable()
+            panelModel.onNextScreenshot()
         }
 
         if (!shouldShowCollectionPanel) {
@@ -353,6 +376,7 @@ class SortingPanelActivity : AppCompatActivity() {
     @Suppress("UNUSED_PARAMETER")
     private fun onCollectionClickFinish(collection: CollectionModel) {
         onNewModelAvailable()
+        persistModel.onNextScreenshot()
     }
 
     private fun onNewCollectionClicked() {
@@ -366,8 +390,7 @@ class SortingPanelActivity : AppCompatActivity() {
         }
     }
 
-    private fun createNewScreenshot(intent: Intent): ScreenshotModel? {
-        val path = getFilePath(intent)
+    private fun createNewScreenshot(path: String): ScreenshotModel? {
         if (path.isNotEmpty()) {
             return ScreenshotModel(path, System.currentTimeMillis(), CollectionModel.UNCATEGORIZED)
         }
@@ -378,5 +401,41 @@ class SortingPanelActivity : AppCompatActivity() {
         val path = intent.getStringExtra(EXTRA_PATH)
         val file = File(path)
         return if (file.exists()) file.absolutePath else ""
+    }
+}
+
+class PersistModel : ViewModel() {
+    private var screenshots = mutableListOf<ScreenshotModel>()
+    private var isLoaded = false
+    private var currentIdx = 0
+
+    fun onScreenshotLoaded(screenshots: List<ScreenshotModel>) {
+        this.screenshots.clear()
+        this.screenshots.addAll(screenshots)
+        isLoaded = true
+    }
+
+    fun getScreenshots(): List<ScreenshotModel> {
+        return screenshots
+    }
+
+    fun isLoaded(): Boolean {
+        return isLoaded
+    }
+
+    fun getCurrentIndex(): Int {
+        return currentIdx
+    }
+
+    fun onNextScreenshot() {
+        currentIdx++
+    }
+
+    fun reset() {
+        if (isLoaded) {
+            isLoaded = false
+            screenshots.clear()
+            currentIdx = 0
+        }
     }
 }

@@ -56,7 +56,19 @@
     </style>
 
     <style name="PrimaryTextButton" parent="@style/ButtonText">
-        <item name="android:layout_height">36dp</item>
+        <!--
+            TODO: Discuss with designer about a better way to define text view height
+            Height defined in visual spec: 36dp
+            Line height defined in visual spec: 16dp
+            Use (36 - 16) / 2 as the top/bottom padding instead of hardcode the height, so that
+            we can still have padding when there're multiple lines and the total height is indeed
+            larger than 36dp
+        -->
+        <!--<item name="android:layout_height">36dp</item>-->
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingTop">10dp</item>
+        <item name="android:paddingBottom">10dp</item>
+
         <item name="android:minWidth">64dp</item>
         <item name="android:textColor">@color/primary_text_button</item>
         <item name="android:paddingStart">8dp</item>

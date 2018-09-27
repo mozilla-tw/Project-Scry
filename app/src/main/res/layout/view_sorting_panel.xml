@@ -6,14 +6,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ImageView
+    <org.mozilla.scryer.sortingpanel.TopInsideImageView
         android:id="@+id/image_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="@dimen/sorting_panel_padding"
         android:scaleType="matrix"
-        android:background="@color/sorting_panel_background"
-        android:elevation="@dimen/sorting_panel_image_elevation"
         android:src="@android:drawable/ic_menu_camera" />
 
     <android.support.constraint.ConstraintLayout

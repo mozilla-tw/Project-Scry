@@ -10,10 +10,12 @@ import android.arch.lifecycle.LifecycleOwner
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.Observer
 import android.content.Context
+import android.graphics.Matrix
 import android.graphics.Rect
 import android.os.Parcel
 import android.os.Parcelable
 import android.support.design.widget.BottomSheetBehavior
+import android.support.v7.widget.AppCompatImageView
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.AttributeSet
@@ -264,6 +266,45 @@ class SortingPanel : FrameLayout, DefaultLifecycleObserver {
                     outRect.right = y
                 }
             }
+        }
+    }
+}
+
+class TopInsideImageView : AppCompatImageView {
+    private val oldMatrix = Matrix()
+
+    constructor(context: Context): super(context) {
+        init()
+    }
+
+    constructor(context: Context, attrs: AttributeSet): super(context, attrs) {
+        init()
+    }
+
+    override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
+        super.onLayout(changed, left, top, right, bottom)
+        computeMatrix()
+    }
+
+    override fun setFrame(l: Int, t: Int, r: Int, b: Int): Boolean {
+        computeMatrix()
+        return super.setFrame(l, t, r, b)
+    }
+
+    private fun init() {
+        scaleType = ScaleType.MATRIX
+    }
+
+    private fun computeMatrix() {
+        val drawable = drawable ?: return
+        val newMatrix = imageMatrix
+
+        val scale = width / drawable.intrinsicWidth.toFloat()
+        newMatrix.setScale(scale, scale)
+
+        if (oldMatrix != newMatrix) {
+            imageMatrix = newMatrix
+            oldMatrix.set(newMatrix)
         }
     }
 }

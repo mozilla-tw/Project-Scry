@@ -10,13 +10,15 @@
     <TextView
         android:id="@+id/text"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/toast_height"
+        android:layout_height="wrap_content"
         android:background="@drawable/rect_4dp"
         android:backgroundTint="@color/primaryTeal"
         android:paddingStart="@dimen/toast_horizontal_padding"
+        android:paddingTop="14dp"
         android:paddingEnd="@dimen/toast_horizontal_padding"
+        android:paddingBottom="14dp"
         android:textColor="@color/white"
         style="@style/Body2"
         android:gravity="center_vertical"
-        tools:text="Test" />
+        tools:text="Long message Long message Long message Long message Long message Long message Long message Long message Long message Long message Long message Long message Long message Long message " />
 </FrameLayout>

@@ -31,7 +31,7 @@ class CollectionNameDialog(private val context: Context,
          */
         fun createNewCollection(context: Context, viewModel: ScreenshotViewModel,
                                 excludeSuggestion: Boolean,
-                                callback: (collection: CollectionModel) -> Unit) {
+                                callback: ((collection: CollectionModel) -> Unit)? = null) {
             launch(UI) {
                 showNewCollectionDialog(context, viewModel, excludeSuggestion,
                         queryCollectionList(viewModel), callback)
@@ -50,13 +50,13 @@ class CollectionNameDialog(private val context: Context,
         private fun showNewCollectionDialog(context: Context, viewModel: ScreenshotViewModel,
                                             excludeSuggestion: Boolean,
                                             collections: List<CollectionModel>,
-                                            callback: (collection: CollectionModel) -> Unit) {
+                                            callback: ((collection: CollectionModel) -> Unit)?) {
             val dialog = CollectionNameDialog(context, object : CollectionNameDialog.Delegate {
 
                 override fun onPositiveAction(collectionName: String) {
                     launch(UI) {
                         val result = updateOrInsertCollection(context, collectionName, viewModel, collections)
-                        callback(result)
+                        callback?.invoke(result)
                     }
                 }
 
@@ -117,7 +117,7 @@ class CollectionNameDialog(private val context: Context,
                 collections: List<CollectionModel>
         ): CollectionModel = withContext(UI) {
             collections.find {
-                it.name == name
+                it.name.equals(name, true)
 
             }?.let {
                 launch {

@@ -40,6 +40,7 @@ import org.mozilla.scryer.*
 import org.mozilla.scryer.capture.ScreenCaptureManager
 import org.mozilla.scryer.detailpage.DetailPageActivity
 import org.mozilla.scryer.extension.dpToPx
+import org.mozilla.scryer.extension.navigateSafely
 import org.mozilla.scryer.filemonitor.ScreenshotFetcher
 import org.mozilla.scryer.permission.PermissionFlow
 import org.mozilla.scryer.permission.PermissionHelper
@@ -413,7 +414,9 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
 
         view!!.findViewById<View>(R.id.intercept_view).setOnClickListener {
             if (permissionFlow.isFinished()) {
-                Navigation.findNavController(view!!).navigate(R.id.action_navigate_to_search, Bundle())
+                Navigation.findNavController(view!!).navigateSafely(R.id.MainFragment,
+                        R.id.action_navigate_to_search,
+                        Bundle())
                 TelemetryWrapper.clickHomeSearchBar()
             }
         }

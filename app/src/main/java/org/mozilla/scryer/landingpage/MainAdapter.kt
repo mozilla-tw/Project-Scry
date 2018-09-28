@@ -19,6 +19,7 @@ import androidx.navigation.Navigation
 import com.bumptech.glide.Glide
 import org.mozilla.scryer.R
 import org.mozilla.scryer.extension.getValidPosition
+import org.mozilla.scryer.extension.navigateSafely
 import org.mozilla.scryer.persistence.CollectionModel
 import org.mozilla.scryer.persistence.ScreenshotModel
 import org.mozilla.scryer.telemetry.TelemetryWrapper
@@ -139,10 +140,9 @@ class MainAdapter(private val fragment: Fragment?): RecyclerView.Adapter<Recycle
                     putString(CollectionFragment.ARG_COLLECTION_NAME, model.name)
                 }
                 val navController = Navigation.findNavController(parent)
-                if (navController.currentDestination?.id == R.id.MainFragment) {
-                    navController.navigate(R.id.action_navigate_to_collection, bundle)
-                }
-
+                navController.navigateSafely(R.id.MainFragment,
+                        R.id.action_navigate_to_collection,
+                        bundle)
                 TelemetryWrapper.clickHomeCollectionItem(position)
             }
         }

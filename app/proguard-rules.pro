@@ -20,6 +20,9 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
+# We do not want to obfuscate - It's just painful to debug without the right mapping file.
+-dontobfuscate
+
 #   These fragment are referenced from navigation graph xml, so it's not retained during minify.
 #   This rule is a little too broad, because we might not need all the fragment in difference flavor
 -keep class org.mozilla.scryer.** extends android.support.v4.app.Fragment{}

@@ -194,7 +194,7 @@ class PermissionFlow(private var permissionState: PermissionStateProvider,
                 flow.viewDelegate.showWelcomePage(Runnable {
                     flow.pageState.setWelcomePageShown()
                     flow.viewDelegate.onStorageGranted()
-                    transfer(OverlayState(flow))
+                    flow.state = transfer(OverlayState(flow))
                 }, false)
                 return this
             }
@@ -230,7 +230,7 @@ class PermissionFlow(private var permissionState: PermissionStateProvider,
                     flow.viewDelegate.requestOverlayPermission()
                 }, Runnable {
                     flow.viewDelegate.onOverlayDenied()
-                    transfer(FinishState(flow))
+                    flow.state = transfer(FinishState(flow))
                 })
                 return this
             }

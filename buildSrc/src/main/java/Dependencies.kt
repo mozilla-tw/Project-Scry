@@ -31,4 +31,8 @@ object Versions {
 
     // Mozilla
     val telemetry = "0.5.1"
+
+    // Adjust
+    val adjust = "4.15.1"
+    val android_install_referrer = "1.0"
 }

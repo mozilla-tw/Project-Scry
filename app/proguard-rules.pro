@@ -26,3 +26,17 @@
 #   These fragment are referenced from navigation graph xml, so it's not retained during minify.
 #   This rule is a little too broad, because we might not need all the fragment in difference flavor
 -keep class org.mozilla.scryer.** extends android.support.v4.app.Fragment{}
+
+#   Adjust
+-keep public class com.adjust.sdk.** { *; }
+-keep class com.google.android.gms.common.ConnectionResult {
+    int SUCCESS;
+}
+-keep class com.google.android.gms.ads.identifier.AdvertisingIdClient {
+    com.google.android.gms.ads.identifier.AdvertisingIdClient$Info getAdvertisingIdInfo(android.content.Context);
+}
+-keep class com.google.android.gms.ads.identifier.AdvertisingIdClient$Info {
+    java.lang.String getId();
+    boolean isLimitAdTrackingEnabled();
+}
+-keep public class com.android.installreferrer.** { *; }

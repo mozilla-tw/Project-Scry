@@ -6,6 +6,9 @@
 package org.mozilla.scryer
 
 import android.app.Application
+import android.util.Log
+import com.adjust.sdk.Adjust
+import com.adjust.sdk.AdjustConfig
 import org.mozilla.scryer.repository.ScreenshotRepository
 import org.mozilla.scryer.setting.PreferenceSettingsRepository
 import org.mozilla.scryer.setting.SettingsRepository
@@ -37,9 +40,15 @@ class ScryerApplication : Application() {
         super.onCreate()
         ApplicationHolder.instance = this
         TelemetryWrapper.init(this)
+        initAdjust()
         screenshotRepository = ScreenshotRepository.createRepository(this) {
             screenshotRepository.setupDefaultContent(this)
         }
         settingsRepository = PreferenceSettingsRepository.getInstance(this)
+        com.adjust.sdk.AdjustConfig.ENVIRONMENT_SANDBOX
+    }
+
+    private fun initAdjust() {
+        Adjust.onCreate(AdjustConfig(this, BuildConfig.ADJUST_TOKEN, BuildConfig.ADJUST_ENVIRONMENT))
     }
 }

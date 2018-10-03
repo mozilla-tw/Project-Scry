@@ -1,3 +1,5 @@
+import com.android.build.gradle.api.ApplicationVariant
+
 apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
 apply plugin: 'kotlin-android'
@@ -69,6 +71,11 @@ android {
             setIgnore(true)
         }
     }
+
+    applicationVariants.all { variant ->
+        buildConfigField("String", "ADJUST_TOKEN", "\"${getAdjustToken()}\"")
+        buildConfigField("String", "ADJUST_ENVIRONMENT", getAdjustEnvironment(variant))
+    }
 }
 
 dependencies {
@@ -108,6 +115,10 @@ dependencies {
     implementation "org.mozilla.components:telemetry:${Versions.telemetry}"
 
     testImplementation "org.mockito:mockito-core:${Versions.mockito}"
+
+    implementation "com.adjust.sdk:adjust-android:${Versions.adjust}"
+    implementation "com.android.installreferrer:installreferrer:${Versions.android_install_referrer}"
+    implementation "com.google.android.gms:play-services-analytics:${Versions.firebase}" // Required by Adjust
 }
 repositories {
     mavenCentral()
@@ -118,6 +129,16 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+}
+
+static def getAdjustToken() {
+    return System.getenv("ENV_ADJUST_TOKEN") ?: ""
+}
+
+static def getAdjustEnvironment(ApplicationVariant variant) {
+    return (variant.buildType.name == "release") ?
+            "com.adjust.sdk.AdjustConfig.ENVIRONMENT_PRODUCTION" :
+            "com.adjust.sdk.AdjustConfig.ENVIRONMENT_SANDBOX"
 }
 
 apply plugin: 'com.google.gms.google-services'

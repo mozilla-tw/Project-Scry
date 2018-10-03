@@ -132,7 +132,7 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
 }
 
 static def getAdjustToken() {
-    return System.getenv("ENV_ADJUST_TOKEN") ?: ""
+    return System.getenv("ADJUST_TOKEN") ?: ""
 }
 
 static def getAdjustEnvironment(ApplicationVariant variant) {

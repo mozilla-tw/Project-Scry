@@ -459,16 +459,16 @@ fun showShareScreenshotDialog(context: Context, screenshotModel: ScreenshotModel
 
 fun showCollectionInfo(context: Context, viewModel: ScreenshotViewModel, collectionId: String?) {
     launch(UI) {
-        collectionId?.let {
-            val collection = withContext(DefaultDispatcher) {
-                viewModel.getCollection(it)
+        collectionId ?: return@launch
+
+        withContext(DefaultDispatcher) {
+            viewModel.getCollection(collectionId)
+
+        }?.let {
+            val screenshots = withContext(DefaultDispatcher) {
+                viewModel.getScreenshotList(listOf(it.id))
             }
-            collection?.let {
-                val screenshots = withContext(DefaultDispatcher) {
-                    viewModel.getScreenshotList(listOf(it.id))
-                }
-                showCollectionInfoDialog(context, it, screenshots)
-            }
+            showCollectionInfoDialog(context, it, screenshots)
         }
     }
 }
@@ -499,57 +499,56 @@ private fun showCollectionInfoDialog(context: Context, collection: CollectionMod
 
 fun showDeleteCollectionDialog(context: Context, viewModel: ScreenshotViewModel, collectionId: String?, listener: OnDeleteCollectionListener?) {
     launch(UI) {
-        collectionId?.let {
-            val collection = withContext(DefaultDispatcher) {
-                viewModel.getCollection(it)
+        collectionId ?: return@launch
+
+        withContext(DefaultDispatcher) {
+            viewModel.getCollection(collectionId)
+
+        }?.let { collection ->
+            val screenshots = withContext(DefaultDispatcher) {
+                viewModel.getScreenshotList(listOf(collection.id))
             }
-            collection?.let {
-                val screenshots = withContext(DefaultDispatcher) {
-                    viewModel.getScreenshotList(listOf(it.id))
+
+            val totalFileSize = withContext(DefaultDispatcher) {
+                var totalFileSize = 0L
+                for (screenshot in screenshots) {
+                    val file = File(screenshot.absolutePath)
+                    totalFileSize += file.length()
                 }
+                totalFileSize
+            }
 
-                val totalFileSize = withContext(DefaultDispatcher) {
-                    var totalFileSize = 0L
-                    for (screenshot in screenshots) {
-                        val file = File(screenshot.absolutePath)
-                        totalFileSize += file.length()
-                    }
-                    totalFileSize
-                }
+            // fool the lint
+            val screenshotCount: Int = screenshots.size
 
-                // fool the lint
-                val screenshotCount: Int = screenshots.size
-
-                val dialog = ConfirmationDialog.build(context,
-                        context.getString(R.string.dialogue_deletecollection_title_delete),
-                        context.getString(R.string.action_delete),
-                        DialogInterface.OnClickListener { dialog, which ->
-                            launch {
-                                viewModel.deleteCollection(it)
-                                screenshots.forEach { screenshot ->
-                                    File(screenshot.absolutePath).delete()
-                                    viewModel.deleteScreenshot(screenshot)
-                                }
+            val dialog = ConfirmationDialog.build(context,
+                    context.getString(R.string.dialogue_deletecollection_title_delete),
+                    context.getString(R.string.action_delete),
+                    DialogInterface.OnClickListener { dialog, _ ->
+                        launch {
+                            viewModel.deleteCollection(collection)
+                            screenshots.forEach { screenshot ->
+                                File(screenshot.absolutePath).delete()
+                                viewModel.deleteScreenshot(screenshot)
                             }
-                            dialog?.dismiss()
-                            listener?.onDeleteCollection()
-                        },
-                        context.getString(android.R.string.cancel),
-                        DialogInterface.OnClickListener { dialog, which ->
-                            dialog.dismiss()
-                        })
-                dialog.viewHolder.message?.text = context.getString(R.string.dialogue_delete_content_cantundo)
-                dialog.viewHolder.subMessage?.apply {
-                    visibility = View.VISIBLE
-                    text = context.getString(R.string.dialogue_deletecollection_content_shots, screenshotCount)
-                }
-                dialog.viewHolder.subMessage2?.apply {
-                    visibility = View.VISIBLE
-                    text = getFileSizeText(totalFileSize)
-                }
-                dialog.asAlertDialog().show()
+                        }
+                        dialog?.dismiss()
+                        listener?.onDeleteCollection()
+                    },
+                    context.getString(android.R.string.cancel),
+                    DialogInterface.OnClickListener { dialog, _ ->
+                        dialog.dismiss()
+                    })
+            dialog.viewHolder.message?.text = context.getString(R.string.dialogue_delete_content_cantundo)
+            dialog.viewHolder.subMessage?.apply {
+                visibility = View.VISIBLE
+                text = context.getString(R.string.dialogue_deletecollection_content_shots, screenshotCount)
             }
+            dialog.viewHolder.subMessage2?.apply {
+                visibility = View.VISIBLE
+                text = getFileSizeText(totalFileSize)
+            }
+            dialog.asAlertDialog().show()
         }
-
     }
 }

@@ -35,6 +35,7 @@ import org.mozilla.scryer.persistence.CollectionModel
 import org.mozilla.scryer.persistence.ScreenshotModel
 import org.mozilla.scryer.sortingpanel.SortingPanelActivity
 import org.mozilla.scryer.ui.CollectionNameDialog
+import org.mozilla.scryer.ui.ConfirmationDialog
 import org.mozilla.scryer.viewmodel.ScreenshotViewModel
 import java.io.File
 import java.text.DecimalFormat
@@ -417,24 +418,27 @@ fun getFileDateText(timestamp: Long): String {
 }
 
 fun showDeleteScreenshotDialog(context: Context, screenshotModel: ScreenshotModel, listener: OnDeleteScreenshotListener? = null) {
-    val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_confirmation, null as ViewGroup?)
-    dialogView.findViewById<TextView>(R.id.confirmation_message).text = context.getString(R.string.dialogue_deleteshot_content_delete)
-    dialogView.findViewById<TextView>(R.id.confirmation_message_content_first_line).text = getFileSizeText(File(screenshotModel.absolutePath).length())
-    dialogView.findViewById<TextView>(R.id.confirmation_message_content_first_line).visibility = View.VISIBLE
-
-    AlertDialog.Builder(context)
-            .setTitle(context.getString(R.string.dialogue_deleteshot_title_delete))
-            .setView(dialogView)
-            .setNegativeButton(context.getString(android.R.string.cancel)) { dialog: DialogInterface?, _: Int -> dialog?.dismiss() }
-            .setPositiveButton(context.getString(R.string.action_delete)) { dialog: DialogInterface?, _: Int ->
+    val dialog = ConfirmationDialog.build(context,
+            context.getString(R.string.dialogue_deleteshot_title_delete),
+            context.getString(R.string.action_delete),
+            DialogInterface.OnClickListener { dialog, _ ->
                 launch {
                     ScryerApplication.getScreenshotRepository().deleteScreenshot(screenshotModel)
                     File(screenshotModel.absolutePath).delete()
                 }
                 dialog?.dismiss()
                 listener?.onDeleteScreenshot()
-            }
-            .show()
+            },
+            context.getString(android.R.string.cancel),
+            DialogInterface.OnClickListener { dialog, _ ->
+                dialog.dismiss()
+            })
+    dialog.viewHolder.message?.text = context.getString(R.string.dialogue_deleteshot_content_delete)
+    dialog.viewHolder.subMessage?.apply {
+        visibility = View.VISIBLE
+        text = getFileSizeText(File(screenshotModel.absolutePath).length())
+    }
+    dialog.asAlertDialog().show()
 }
 
 fun showShareScreenshotDialog(context: Context, screenshotModel: ScreenshotModel) {
@@ -516,18 +520,10 @@ fun showDeleteCollectionDialog(context: Context, viewModel: ScreenshotViewModel,
                 // fool the lint
                 val screenshotCount: Int = screenshots.size
 
-                val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_confirmation, null as ViewGroup?)
-                dialogView.findViewById<TextView>(R.id.confirmation_message).text = context.getString(R.string.dialogue_delete_content_cantundo)
-                dialogView.findViewById<TextView>(R.id.confirmation_message_content_first_line).text = context.getString(R.string.dialogue_deletecollection_content_shots, screenshotCount)
-                dialogView.findViewById<TextView>(R.id.confirmation_message_content_first_line).visibility = View.VISIBLE
-                dialogView.findViewById<TextView>(R.id.confirmation_message_content_second_line).text = getFileSizeText(totalFileSize)
-                dialogView.findViewById<TextView>(R.id.confirmation_message_content_second_line).visibility = View.VISIBLE
-
-                AlertDialog.Builder(context)
-                        .setTitle(context.getString(R.string.dialogue_deletecollection_title_delete))
-                        .setView(dialogView)
-                        .setNegativeButton(context.getString(android.R.string.cancel)) { dialog: DialogInterface?, _: Int -> dialog?.dismiss() }
-                        .setPositiveButton(context.getString(R.string.action_delete)) { dialog: DialogInterface?, _: Int ->
+                val dialog = ConfirmationDialog.build(context,
+                        context.getString(R.string.dialogue_deletecollection_title_delete),
+                        context.getString(R.string.action_delete),
+                        DialogInterface.OnClickListener { dialog, which ->
                             launch {
                                 viewModel.deleteCollection(it)
                                 screenshots.forEach { screenshot ->
@@ -537,8 +533,21 @@ fun showDeleteCollectionDialog(context: Context, viewModel: ScreenshotViewModel,
                             }
                             dialog?.dismiss()
                             listener?.onDeleteCollection()
-                        }
-                        .show()
+                        },
+                        context.getString(android.R.string.cancel),
+                        DialogInterface.OnClickListener { dialog, which ->
+                            dialog.dismiss()
+                        })
+                dialog.viewHolder.message?.text = context.getString(R.string.dialogue_delete_content_cantundo)
+                dialog.viewHolder.subMessage?.apply {
+                    visibility = View.VISIBLE
+                    text = context.getString(R.string.dialogue_deletecollection_content_shots, screenshotCount)
+                }
+                dialog.viewHolder.subMessage2?.apply {
+                    visibility = View.VISIBLE
+                    text = getFileSizeText(totalFileSize)
+                }
+                dialog.asAlertDialog().show()
             }
         }
 

@@ -22,6 +22,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.navigation.Navigation
 import com.bumptech.glide.Glide
+import kotlinx.android.synthetic.main.dialog_collection_info.view.*
+import kotlinx.android.synthetic.main.dialog_screenshot_info.view.*
 import kotlinx.android.synthetic.main.fragment_collection.*
 import kotlinx.coroutines.experimental.DefaultDispatcher
 import kotlinx.coroutines.experimental.android.UI
@@ -67,7 +69,11 @@ class CollectionFragment : Fragment() {
 
     private var sortMenuItem: MenuItem? = null
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
+    ): View? {
         val layout = inflater.inflate(R.layout.fragment_collection, container, false)
         screenshotListView = layout.findViewById(R.id.screenshot_list)
         subtitleView = layout.findViewById(R.id.subtitle)
@@ -242,9 +248,10 @@ const val CONTEXT_MENU_ID_INFO = 1
 const val CONTEXT_MENU_ID_SHARE = 2
 const val CONTEXT_MENU_ID_DELETE = 3
 
-open class ScreenshotAdapter(val context: Context?,
-                             private val onItemClickListener: ((item: ScreenshotModel, view: View?) -> Unit)? = null)
-    : RecyclerView.Adapter<RecyclerView.ViewHolder>(), OnContextMenuActionListener {
+open class ScreenshotAdapter(
+        val context: Context?,
+        private val onItemClickListener: ((item: ScreenshotModel, view: View?) -> Unit)? = null
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), OnContextMenuActionListener {
 
     private var screenshotList: List<ScreenshotModel> = emptyList()
 
@@ -289,10 +296,21 @@ open class ScreenshotAdapter(val context: Context?,
     override fun onContextMenuAction(item: MenuItem?, itemPosition: Int) {
         val screenshotModel = getItem(itemPosition)
         when (item?.itemId) {
-            CONTEXT_MENU_ID_MOVE_TO -> context?.let { it.startActivity(SortingPanelActivity.sortOldScreenshot(it, screenshotModel.id)) }
-            CONTEXT_MENU_ID_INFO -> context?.let { showScreenshotInfoDialog(it, screenshotModel) }
-            CONTEXT_MENU_ID_SHARE -> context?.let { showShareScreenshotDialog(it, screenshotModel) }
-            CONTEXT_MENU_ID_DELETE -> context?.let { showDeleteScreenshotDialog(it, screenshotModel) }
+            CONTEXT_MENU_ID_MOVE_TO -> context?.let {
+                it.startActivity(SortingPanelActivity.sortOldScreenshot(it, screenshotModel.id))
+            }
+
+            CONTEXT_MENU_ID_INFO -> context?.let {
+                showScreenshotInfoDialog(it, screenshotModel)
+            }
+
+            CONTEXT_MENU_ID_SHARE -> context?.let {
+                showShareScreenshotDialog(it, screenshotModel)
+            }
+
+            CONTEXT_MENU_ID_DELETE -> context?.let {
+                showDeleteScreenshotDialog(it, screenshotModel)
+            }
         }
     }
 
@@ -314,7 +332,11 @@ open class ScreenshotAdapter(val context: Context?,
     }
 }
 
-class ScreenshotItemHolder(itemView: View, private val onContextMenuActionListener: OnContextMenuActionListener) : RecyclerView.ViewHolder(itemView), View.OnCreateContextMenuListener, MenuItem.OnMenuItemClickListener {
+class ScreenshotItemHolder(
+        itemView: View,
+        private val onContextMenuActionListener: OnContextMenuActionListener
+) : RecyclerView.ViewHolder(itemView), View.OnCreateContextMenuListener,
+        MenuItem.OnMenuItemClickListener {
     var title: TextView? = null
     var image: ImageView? = null
 
@@ -380,14 +402,16 @@ interface OnDeleteCollectionListener {
 
 fun showScreenshotInfoDialog(context: Context, screenshotModel: ScreenshotModel) {
     val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_screenshot_info, null as ViewGroup?)
-    dialogView.findViewById<TextView>(R.id.screenshot_info_name_content).text = getFileNameText(screenshotModel.absolutePath)
-    dialogView.findViewById<TextView>(R.id.screenshot_info_file_size_amount).text = getFileSizeText(File(screenshotModel.absolutePath).length())
-    dialogView.findViewById<TextView>(R.id.screenshot_info_last_edit_time).text = getFileDateText(File(screenshotModel.absolutePath).lastModified())
+    dialogView.screenshot_info_name_content.text = getFileNameText(screenshotModel.absolutePath)
+    dialogView.screenshot_info_file_size_amount.text = getFileSizeText(File(screenshotModel.absolutePath).length())
+    dialogView.screenshot_info_last_edit_time.text = getFileDateText(File(screenshotModel.absolutePath).lastModified())
 
     AlertDialog.Builder(context)
             .setTitle(context.getString(R.string.info_info))
             .setView(dialogView)
-            .setPositiveButton(context.getString(android.R.string.ok)) { dialog: DialogInterface?, _: Int -> dialog?.dismiss() }
+            .setPositiveButton(context.getString(android.R.string.ok)) {
+                dialog: DialogInterface?, _: Int -> dialog?.dismiss()
+            }
             .show()
 }
 
@@ -423,7 +447,11 @@ fun getFileDateText(timestamp: Long): String {
     return dateFormat.format(cal.time)
 }
 
-fun showDeleteScreenshotDialog(context: Context, screenshotModel: ScreenshotModel, listener: OnDeleteScreenshotListener? = null) {
+fun showDeleteScreenshotDialog(
+        context: Context,
+        screenshotModel: ScreenshotModel,
+        listener: OnDeleteScreenshotListener? = null
+) {
     val dialog = ConfirmationDialog.build(context,
             context.getString(R.string.dialogue_deleteshot_title_delete),
             context.getString(R.string.action_delete),
@@ -487,21 +515,33 @@ fun showCollectionInfo(context: Context, viewModel: ScreenshotViewModel, collect
     }
 }
 
-private fun showCollectionInfoDialog(context: Context, collection: CollectionModel, screenshots: List<ScreenshotModel>, totalFileSize: Long) {
+private fun showCollectionInfoDialog(
+        context: Context,
+        collection: CollectionModel,
+        screenshots: List<ScreenshotModel>,
+        totalFileSize: Long
+) {
     val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_collection_info, null as ViewGroup?)
-    dialogView.findViewById<TextView>(R.id.collection_info_name_content).text = getFileNameText(collection.name)
-    dialogView.findViewById<TextView>(R.id.collection_info_total_screenshots_count).text = screenshots.size.toString()
-    dialogView.findViewById<TextView>(R.id.collection_info_storage_used_amount).text = getFileSizeText(totalFileSize)
-    dialogView.findViewById<TextView>(R.id.collection_info_last_edit_time).text = getFileDateText(collection.date)
+    dialogView.collection_info_name_content.text = getFileNameText(collection.name)
+    dialogView.collection_info_total_screenshots_count.text = screenshots.size.toString()
+    dialogView.collection_info_storage_used_amount.text = getFileSizeText(totalFileSize)
+    dialogView.collection_info_last_edit_time.text = getFileDateText(collection.date)
 
     AlertDialog.Builder(context)
             .setTitle(context.getString(R.string.dialogue_collecitioninfo_title_info))
             .setView(dialogView)
-            .setPositiveButton(context.getString(android.R.string.ok)) { dialog: DialogInterface?, _: Int -> dialog?.dismiss() }
+            .setPositiveButton(context.getString(android.R.string.ok)) {
+                dialog: DialogInterface?, _: Int -> dialog?.dismiss()
+            }
             .show()
 }
 
-fun showDeleteCollectionDialog(context: Context, viewModel: ScreenshotViewModel, collectionId: String?, listener: OnDeleteCollectionListener?) {
+fun showDeleteCollectionDialog(
+        context: Context,
+        viewModel: ScreenshotViewModel,
+        collectionId: String?,
+        listener: OnDeleteCollectionListener?
+) {
     launch(UI) {
         collectionId ?: return@launch
 

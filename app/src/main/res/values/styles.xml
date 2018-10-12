@@ -98,4 +98,9 @@
     <style name="ScryerBottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
         <item name="android:background">@drawable/bottom_dialog_bkg</item>
     </style>
+
+    <style name="ScreenshotItemCheckboxTheme" parent="Theme.AppCompat.Light">
+        <item name="colorControlNormal">@color/disableGrey</item>
+        <item name="colorControlActivated">@color/primaryTeal</item>
+    </style>
 </resources>

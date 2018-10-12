@@ -5,16 +5,21 @@
 
 package org.mozilla.scryer.landingpage
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
+import android.graphics.Color
 import android.graphics.Rect
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.content.FileProvider
+import android.support.v4.graphics.drawable.DrawableCompat
 import android.support.v7.app.ActionBar
 import android.support.v7.app.AlertDialog
+import android.support.v7.widget.AppCompatCheckBox
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.*
@@ -127,7 +132,21 @@ class CollectionFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            android.R.id.home -> Navigation.findNavController(view).navigateUp()
+            android.R.id.home -> {
+                if (screenshotAdapter.selector.isSelectMode) {
+                    screenshotAdapter.selector.exitSelectionMode()
+
+                    (screenshotListView.layoutManager as? GridLayoutManager)?.apply {
+                        val first = findFirstVisibleItemPosition()
+                        val last = findLastVisibleItemPosition()
+                        screenshotAdapter.notifyItemRangeChanged(findFirstVisibleItemPosition(), last - first + 1)
+                    }
+
+                } else {
+                    Navigation.findNavController(view).navigateUp()
+                }
+            }
+
             R.id.action_sort -> {
                 collectionId?.takeIf {
                     screenshotAdapter.getScreenshotList().isNotEmpty()
@@ -248,12 +267,57 @@ const val CONTEXT_MENU_ID_INFO = 1
 const val CONTEXT_MENU_ID_SHARE = 2
 const val CONTEXT_MENU_ID_DELETE = 3
 
+class ListSelector<T> {
+    var isSelectMode = false
+    private val selected = mutableListOf<T>()
+    private val pendingAnimation = mutableListOf<T>()
+
+    fun enterSelectionMode(listItem: T) {
+        if (isSelectMode) {
+            return
+        }
+        isSelectMode = true
+
+        selected.add(listItem)
+        pendingAnimation.add(listItem)
+    }
+
+    fun exitSelectionMode() {
+        isSelectMode = false
+        selected.clear()
+    }
+
+    fun toggleSelection(listItem: T) {
+        if (selected.contains(listItem)) {
+            selected.remove(listItem)
+            pendingAnimation.add(listItem)
+        } else {
+            selected.add(listItem)
+            pendingAnimation.add(listItem)
+        }
+    }
+
+    fun isSelected(listItem: T): Boolean {
+        return selected.contains(listItem)
+    }
+
+    fun processSelection(listItem: T, callback: (animated: Boolean) -> Unit) {
+        if (pendingAnimation.contains(listItem)) {
+            pendingAnimation.remove(listItem)
+            callback.invoke(true)
+        } else {
+            callback.invoke(false)
+        }
+    }
+}
+
 open class ScreenshotAdapter(
         val context: Context?,
         private val onItemClickListener: ((item: ScreenshotModel, view: View?) -> Unit)? = null
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), OnContextMenuActionListener {
 
     private var screenshotList: List<ScreenshotModel> = emptyList()
+    var selector = ListSelector<ScreenshotModel>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_screenshot, parent, false)
@@ -261,12 +325,45 @@ open class ScreenshotAdapter(
         val holder = ScreenshotItemHolder(view, this)
         holder.title = view.findViewById(R.id.title)
         holder.image = view.findViewById(R.id.image_view)
+        holder.checkbox = view.findViewById(R.id.check_box)
         holder.itemView.setOnClickListener { _ ->
             holder.getValidPosition { position: Int ->
-                onItemClickListener?.invoke(screenshotList[position], holder.image)
+                if (selector.isSelectMode) {
+                    selector.toggleSelection(screenshotList[position])
+                    updateSelectionUI(holder, position)
+                } else {
+                    onItemClickListener?.invoke(screenshotList[position], holder.image)
+                }
             }
         }
+
+        holder.itemView.setOnLongClickListener { _ ->
+            holder.getValidPosition { position ->
+                if (selector.isSelectMode) {
+                    return@getValidPosition
+                }
+                selector.enterSelectionMode(screenshotList[position])
+
+                (recyclerView?.layoutManager as? GridLayoutManager)?.apply {
+                    val first = findFirstVisibleItemPosition()
+                    val last = findLastVisibleItemPosition()
+                    notifyItemRangeChanged(findFirstVisibleItemPosition(), last - first + 1)
+                }
+            }
+        }
+
         return holder
+    }
+
+    private var recyclerView: RecyclerView? = null
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        super.onAttachedToRecyclerView(recyclerView)
+        this.recyclerView = recyclerView
+    }
+
+    override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
+        super.onDetachedFromRecyclerView(recyclerView)
+        this.recyclerView = null
     }
 
     override fun getItemCount(): Int {
@@ -280,6 +377,14 @@ open class ScreenshotAdapter(
                 Glide.with(holder.itemView.context)
                         .load(File(screenshotList[position].absolutePath))
                         .into(it)
+            }
+
+            updateSelectionUI(holder, position)
+
+            holder.checkbox?.visibility = if (selector.isSelectMode) {
+                View.VISIBLE
+            } else {
+                View.INVISIBLE
             }
         }
     }
@@ -330,6 +435,57 @@ open class ScreenshotAdapter(
     fun getScreenshotList(): List<ScreenshotModel> {
         return screenshotList
     }
+
+    private fun updateSelectionUI(holder: ScreenshotItemHolder, position: Int) {
+        val selectedColor = Color.TRANSPARENT
+        val selectedScale = 0.8f
+
+        val unselectedColor = Color.parseColor("#cbcbcb")
+
+        val targetView = holder.itemView.findViewById<View>(R.id.card_view)
+
+        if (selector.isSelected(screenshotList[position])) {
+            holder.checkbox?.isChecked = true
+            DrawableCompat.setTint(holder.itemView.background, selectedColor)
+
+            selector.processSelection(screenshotList[position]) { animated ->
+                if (animated) {
+                    targetView.animate()
+                            .scaleX(selectedScale)
+                            .scaleY(selectedScale)
+                            .setListener(object : AnimatorListenerAdapter() {
+                                override fun onAnimationEnd(animation: Animator?) {
+                                    DrawableCompat.setTint(holder.itemView.background, selectedColor)
+                                }
+                            })
+                            .duration = 150
+                } else {
+                    targetView.scaleX = selectedScale
+                    targetView.scaleY = selectedScale
+                }
+            }
+
+        } else {
+            holder.checkbox?.isChecked = false
+            selector.processSelection(screenshotList[position]) { animated ->
+                if (animated) {
+                    targetView.animate()
+                            .scaleX(1f)
+                            .scaleY(1f)
+                            .setListener(object : AnimatorListenerAdapter() {
+                                override fun onAnimationEnd(animation: Animator?) {
+                                    DrawableCompat.setTint(holder.itemView.background, unselectedColor)
+                                }
+                            })
+                            .duration = 150
+                } else {
+                    targetView.scaleX = 1f
+                    targetView.scaleY = 1f
+                    DrawableCompat.setTint(holder.itemView.background, unselectedColor)
+                }
+            }
+        }
+    }
 }
 
 class ScreenshotItemHolder(
@@ -339,6 +495,7 @@ class ScreenshotItemHolder(
         MenuItem.OnMenuItemClickListener {
     var title: TextView? = null
     var image: ImageView? = null
+    var checkbox: AppCompatCheckBox? = null
 
     init {
         itemView.setOnCreateContextMenuListener(this)

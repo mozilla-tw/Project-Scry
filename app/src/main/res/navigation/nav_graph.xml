@@ -27,7 +27,7 @@
     </fragment>
     <fragment
         android:id="@+id/CollectionFragment"
-        android:name="org.mozilla.scryer.landingpage.CollectionFragment"
+        android:name="org.mozilla.scryer.collectionview.CollectionFragment"
         android:label="Collection">
         <argument android:name="collection_id" />
         <argument android:name="collection_name" />

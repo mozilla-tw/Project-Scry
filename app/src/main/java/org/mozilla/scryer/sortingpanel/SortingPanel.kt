@@ -11,7 +11,6 @@ import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.Observer
 import android.content.Context
 import android.graphics.Matrix
-import android.graphics.Rect
 import android.os.Parcel
 import android.os.Parcelable
 import android.support.design.widget.BottomSheetBehavior
@@ -27,6 +26,7 @@ import com.bumptech.glide.Glide
 import org.mozilla.scryer.R
 import org.mozilla.scryer.persistence.CollectionModel
 import org.mozilla.scryer.persistence.ScreenshotModel
+import org.mozilla.scryer.ui.InnerSpaceDecoration
 import java.io.File
 
 class SortingPanel : FrameLayout, DefaultLifecycleObserver {
@@ -115,7 +115,7 @@ class SortingPanel : FrameLayout, DefaultLifecycleObserver {
                 false)
 
         val space = resources.getDimensionPixelSize(R.dimen.sorting_panel_item_spacing)
-        this.recyclerView.addItemDecoration(SortingPanelDecoration(space) {
+        this.recyclerView.addItemDecoration(InnerSpaceDecoration(space) {
             columnCount
         })
         this.recyclerView.adapter = this.adapter
@@ -230,44 +230,6 @@ class SortingPanel : FrameLayout, DefaultLifecycleObserver {
         }
     }
 
-    class SortingPanelDecoration(private val space: Int,
-                                 private val columnCountProvider: () -> Int) : RecyclerView.ItemDecoration() {
-        override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
-            /**
-             * x: padding for left/right-most items (left-most item only have right padding, vice versa)
-             * y: padding for middle items (padding at both left & right sides)
-             *
-             * size of left/right-most items must be equal to the size of middle items
-             *   x = 2y
-             *
-             * 2x + 2(middleItemCount)y = sum of all padding
-             * => 2x + 2(itemCount - 2)y = space * (itemCount - 1)
-             * => 4y + 2(itemCount - 2)y = space * (itemCount - 1)
-             * => y = space * (itemCount  - 1) / (4 + 2 * (itemCount - 2))y
-             */
-            val position = parent.getChildAdapterPosition(view)
-            val columnCount = columnCountProvider.invoke()
-            val y = space * (columnCount - 1) / (4 + 2 * (columnCount - 2))
-            val x = y * 2
-
-            outRect.top = 0
-            outRect.bottom = space
-            when {
-                position % columnCount == 0 -> {
-                    outRect.left = 0
-                    outRect.right = x
-                }
-                position % columnCount == columnCount - 1 -> {
-                    outRect.left = x
-                    outRect.right = 0
-                }
-                else -> {
-                    outRect.left = y
-                    outRect.right = y
-                }
-            }
-        }
-    }
 }
 
 class TopInsideImageView : AppCompatImageView {

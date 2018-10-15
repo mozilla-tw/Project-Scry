@@ -38,6 +38,7 @@ import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.withContext
 import org.mozilla.scryer.*
 import org.mozilla.scryer.capture.ScreenCaptureManager
+import org.mozilla.scryer.collectionview.ScreenshotItemHolder
 import org.mozilla.scryer.detailpage.DetailPageActivity
 import org.mozilla.scryer.extension.dpToPx
 import org.mozilla.scryer.extension.navigateSafely

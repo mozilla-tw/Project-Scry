@@ -18,6 +18,10 @@ import android.widget.TextView
 import androidx.navigation.Navigation
 import com.bumptech.glide.Glide
 import org.mozilla.scryer.R
+import org.mozilla.scryer.collectionview.CollectionFragment
+import org.mozilla.scryer.collectionview.OnContextMenuActionListener
+import org.mozilla.scryer.collectionview.showCollectionInfo
+import org.mozilla.scryer.collectionview.showDeleteCollectionDialog
 import org.mozilla.scryer.extension.getValidPosition
 import org.mozilla.scryer.extension.navigateSafely
 import org.mozilla.scryer.persistence.CollectionModel

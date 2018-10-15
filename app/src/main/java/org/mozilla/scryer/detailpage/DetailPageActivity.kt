@@ -37,10 +37,10 @@ import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.withContext
 import org.mozilla.scryer.BuildConfig
 import org.mozilla.scryer.R
-import org.mozilla.scryer.landingpage.OnDeleteScreenshotListener
-import org.mozilla.scryer.landingpage.showDeleteScreenshotDialog
-import org.mozilla.scryer.landingpage.showScreenshotInfoDialog
-import org.mozilla.scryer.landingpage.showShareScreenshotDialog
+import org.mozilla.scryer.collectionview.OnDeleteScreenshotListener
+import org.mozilla.scryer.collectionview.showDeleteScreenshotDialog
+import org.mozilla.scryer.collectionview.showScreenshotInfoDialog
+import org.mozilla.scryer.collectionview.showShareScreenshotDialog
 import org.mozilla.scryer.persistence.CollectionModel
 import org.mozilla.scryer.persistence.ScreenshotModel
 import org.mozilla.scryer.sortingpanel.SortingPanelActivity

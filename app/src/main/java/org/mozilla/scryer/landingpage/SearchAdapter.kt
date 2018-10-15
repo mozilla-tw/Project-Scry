@@ -14,6 +14,8 @@ import android.text.style.BackgroundColorSpan
 import android.widget.Filter
 import android.widget.Filterable
 import com.bumptech.glide.Glide
+import org.mozilla.scryer.collectionview.ScreenshotAdapter
+import org.mozilla.scryer.collectionview.ScreenshotItemHolder
 import org.mozilla.scryer.persistence.ScreenshotModel
 import java.io.File
 

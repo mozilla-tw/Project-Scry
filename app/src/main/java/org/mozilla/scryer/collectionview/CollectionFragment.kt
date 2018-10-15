@@ -84,6 +84,7 @@ class CollectionFragment : Fragment() {
                 screenshotAdapter.exitSelectionMode()
                 return
             }
+            actionMode?.title = "${selected.size} selected (TBD)"
         }
 
         override fun onEnterSelectMode() {
@@ -236,6 +237,7 @@ class CollectionFragment : Fragment() {
 
     private fun initScreenshotList(context: Context) {
         val manager = GridLayoutManager(context, SPAN_COUNT, GridLayoutManager.VERTICAL, false)
+        screenshotListView.itemAnimator = null
         screenshotListView.layoutManager = manager
         screenshotListView.adapter = screenshotAdapter
 

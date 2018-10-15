@@ -161,19 +161,20 @@ open class ScreenshotAdapter(
         val isSelected = isSelected(screenshot)
 
         val scale = if (isSelected) { 0.8f } else { 1f }
-        val color = if (isSelected) {
-            Color.TRANSPARENT
-        } else {
-            ContextCompat.getColor(holder.itemView.context, R.color.collection_view_screenshot_item_border)
-        }
+        val selectedColor = Color.TRANSPARENT
+        val unselectedColor = ContextCompat.getColor(holder.itemView.context,
+                R.color.collection_view_screenshot_item_border)
 
         if (isSelected(screenshot)) {
             holder.checkbox?.isChecked = true
 
-            DrawableCompat.setTint(holder.itemView.background, color)
             selector.processSelection(screenshot) { stateChanged ->
+                targetView.animate().cancel()
+                DrawableCompat.setTint(holder.itemView.background, selectedColor)
                 if (stateChanged) {
-                    playSelectAnimation(holder, scale)
+                    playSelectAnimation(holder, scale) {
+                        DrawableCompat.setTint(holder.itemView.background, selectedColor)
+                    }
                 } else {
                     targetView.scaleX = scale
                     targetView.scaleY = scale
@@ -183,14 +184,16 @@ open class ScreenshotAdapter(
         } else {
             holder.checkbox?.isChecked = false
             selector.processSelection(screenshot) { stateChanged ->
+                targetView.animate().cancel()
                 if (stateChanged) {
                     playSelectAnimation(holder, scale) {
-                        DrawableCompat.setTint(holder.itemView.background, color)
+                        DrawableCompat.setTint(holder.itemView.background, unselectedColor)
                     }
                 } else {
+
                     targetView.scaleX = 1f
                     targetView.scaleY = 1f
-                    DrawableCompat.setTint(holder.itemView.background, color)
+                    DrawableCompat.setTint(holder.itemView.background, unselectedColor)
                 }
             }
         }

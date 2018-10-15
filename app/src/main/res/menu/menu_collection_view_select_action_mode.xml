@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/action_move"
+        android:title="@string/menu_shot_action_move"
+        android:icon="@drawable/move" />
+
+    <item
+        android:id="@+id/action_share"
+        android:title="@string/menu_action_share"
+        android:icon="@drawable/share" />
+
+    <item
+        android:id="@+id/action_delete"
+        android:title="@string/action_delete"
+        android:icon="@android:drawable/ic_menu_delete" />
+</menu>

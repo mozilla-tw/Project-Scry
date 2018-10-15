@@ -20,6 +20,8 @@ import android.support.v4.content.FileProvider
 import android.support.v4.graphics.drawable.DrawableCompat
 import android.support.v7.app.ActionBar
 import android.support.v7.app.AlertDialog
+import android.support.v7.app.AppCompatActivity
+import android.support.v7.view.ActionMode
 import android.support.v7.widget.*
 import android.view.*
 import android.widget.ImageView
@@ -61,7 +63,46 @@ class CollectionFragment : Fragment() {
     private lateinit var subtitleView: TextView
 
     private lateinit var screenshotAdapter: ScreenshotAdapter
-    private var selector = ListSelector<ScreenshotModel>()
+
+    private val selectActionModeCallback = object : ActionMode.Callback {
+        override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
+            return true
+        }
+
+        override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
+            val activity = activity ?: return false
+            activity.menuInflater.inflate(R.menu.menu_collection_view_select_action_mode, menu)
+            return true
+        }
+
+        override fun onPrepareActionMode(mode: ActionMode, menu: Menu): Boolean {
+            return true
+        }
+
+        override fun onDestroyActionMode(mode: ActionMode) {
+            screenshotAdapter.exitSelectionMode()
+        }
+    }
+
+    private var selector = object : ListSelector<ScreenshotModel>() {
+        private var actionMode: ActionMode? = null
+
+        override fun onSelectChanged() {
+            if (selected.isEmpty()) {
+                screenshotAdapter.exitSelectionMode()
+                return
+            }
+        }
+
+        override fun onEnterSelectMode() {
+            val activity = (activity as? AppCompatActivity) ?: return
+            actionMode = activity.startSupportActionMode(selectActionModeCallback)
+        }
+
+        override fun onExitSelectMode() {
+            actionMode?.finish()
+        }
+    }
     private var screenshotList = listOf<ScreenshotModel>()
 
     private val collectionId: String? by lazy {
@@ -133,12 +174,7 @@ class CollectionFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             android.R.id.home -> {
-                if (selector.isSelectMode) {
-                    screenshotAdapter.exitSelectionMode()
-
-                } else {
-                    Navigation.findNavController(view).navigateUp()
-                }
+                Navigation.findNavController(view).navigateUp()
             }
 
             R.id.action_sort -> {
@@ -261,9 +297,9 @@ const val CONTEXT_MENU_ID_INFO = 1
 const val CONTEXT_MENU_ID_SHARE = 2
 const val CONTEXT_MENU_ID_DELETE = 3
 
-class ListSelector<T> {
+abstract class ListSelector<T> {
     var isSelectMode = false
-    private val selected = mutableListOf<T>()
+    val selected = mutableListOf<T>()
     private val pendingTransition = mutableListOf<T>()
 
     fun enterSelectionMode() {
@@ -271,11 +307,14 @@ class ListSelector<T> {
             return
         }
         isSelectMode = true
+        onEnterSelectMode()
     }
 
     fun exitSelectionMode() {
         isSelectMode = false
+        pendingTransition.addAll(selected)
         selected.clear()
+        onExitSelectMode()
     }
 
     fun toggleSelection(listItem: T) {
@@ -286,6 +325,7 @@ class ListSelector<T> {
             selected.add(listItem)
             pendingTransition.add(listItem)
         }
+        onSelectChanged()
     }
 
     fun isSelected(listItem: T): Boolean {
@@ -300,6 +340,10 @@ class ListSelector<T> {
             callback.invoke(false)
         }
     }
+
+    abstract fun onEnterSelectMode()
+    abstract fun onExitSelectMode()
+    abstract fun onSelectChanged()
 }
 
 open class ScreenshotAdapter(

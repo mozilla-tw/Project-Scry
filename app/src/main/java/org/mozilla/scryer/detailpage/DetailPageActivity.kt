@@ -161,7 +161,7 @@ class DetailPageActivity : AppCompatActivity() {
         if (menu != null) {
             shareMenu = menu.findItem(R.id.action_share)
             shareMenu?.let {
-                val wrapped = DrawableCompat.wrap(it.icon)
+                val wrapped = DrawableCompat.wrap(it.icon).mutate()
                 DrawableCompat.setTint(wrapped, ContextCompat.getColor(this, R.color.white))
             }
 

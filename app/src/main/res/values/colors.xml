@@ -29,6 +29,9 @@
     <color name="home_background">@color/white</color>
     <color name="quick_access_background">@color/grey10</color>
 
+    <!-- Collection View -->
+    <color name="collection_view_screenshot_item_border">#cbcbcb</color>
+
     <!-- Notification -->
     <color name="foreground_notification">@color/primaryTeal</color>
 

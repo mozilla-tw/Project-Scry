@@ -9,6 +9,7 @@ import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.content.FileProvider
@@ -72,11 +73,15 @@ class CollectionFragment : Fragment() {
                 }
 
                 R.id.action_delete -> {
-                    showDeleteScreenshotDialog(activity, selector.selected, object : OnDeleteScreenshotListener {
+                    showDeleteScreenshotDialog(activity, selector.selected.toList(), object : OnDeleteScreenshotListener {
                         override fun onDeleteScreenshot() {
                             mode.finish()
                         }
                     })
+                }
+
+                R.id.action_share -> {
+                    showShareScreenshotDialog(activity, selector.selected.toList())
                 }
             }
 
@@ -387,13 +392,12 @@ fun showDeleteScreenshotDialog(
         screenshotModels: List<ScreenshotModel>,
         listener: OnDeleteScreenshotListener? = null
 ) {
-    val list = screenshotModels.toList()
     val dialog = ConfirmationDialog.build(context,
             context.getString(R.string.dialogue_deleteshot_title_delete),
             context.getString(R.string.action_delete),
             DialogInterface.OnClickListener { dialog, _ ->
                 launch {
-                    list.forEach {
+                    screenshotModels.forEach {
                         ScryerApplication.getScreenshotRepository().deleteScreenshot(it)
                         File(it.absolutePath).delete()
                     }
@@ -411,7 +415,7 @@ fun showDeleteScreenshotDialog(
     launch(UI) {
         val size = withContext(DefaultDispatcher) {
             var totalSize = 0L
-            list.forEach {
+            screenshotModels.forEach {
                 totalSize += File(it.absolutePath).length()
             }
             totalSize
@@ -423,12 +427,31 @@ fun showDeleteScreenshotDialog(
 }
 
 fun showShareScreenshotDialog(context: Context, screenshotModel: ScreenshotModel) {
+    showShareScreenshotDialog(context, listOf(screenshotModel))
+}
+
+fun showShareScreenshotDialog(context: Context, screenshotModels: List<ScreenshotModel>) {
+    if (screenshotModels.isEmpty()) {
+        return
+    }
+
     launch {
         val authorities = BuildConfig.APPLICATION_ID + ".provider.fileprovider"
-        val file = File(screenshotModel.absolutePath)
-        val fileUri = FileProvider.getUriForFile(context, authorities, file)
-        val share = Intent(Intent.ACTION_SEND)
-        share.putExtra(Intent.EXTRA_STREAM, fileUri)
+        val share = Intent()
+        if (screenshotModels.size == 1) {
+            val file = File(screenshotModels[0].absolutePath)
+            val fileUri = FileProvider.getUriForFile(context, authorities, file)
+            share.action = Intent.ACTION_SEND
+            share.putExtra(Intent.EXTRA_STREAM, fileUri)
+        } else {
+            val uriList = ArrayList<Uri>()
+            screenshotModels.forEach {
+                val file = File(it.absolutePath)
+                uriList.add(FileProvider.getUriForFile(context, authorities, file))
+            }
+            share.action = Intent.ACTION_SEND_MULTIPLE
+            share.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uriList)
+        }
         share.type = "image/*"
         share.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_GRANT_READ_URI_PERMISSION)
         try {

@@ -16,7 +16,8 @@ import android.support.v7.app.ActionBar
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.view.ActionMode
-import android.support.v7.widget.*
+import android.support.v7.widget.GridLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.view.*
 import android.widget.TextView
 import androidx.navigation.Navigation
@@ -58,14 +59,27 @@ class CollectionFragment : Fragment() {
 
     private val selectActionModeCallback: ActionMode.Callback = object : ActionMode.Callback {
         override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
+            val activity = activity ?: run {
+                mode.finish()
+                return false
+            }
+
             when (item.itemId) {
                 R.id.action_move -> {
-                    val activity = activity ?: return false
                     val intent = SortingPanelActivity.sortScreenshots(activity, selector.selected)
                     startActivity(intent)
+                    mode.finish()
+                }
+
+                R.id.action_delete -> {
+                    showDeleteScreenshotDialog(activity, selector.selected, object : OnDeleteScreenshotListener {
+                        override fun onDeleteScreenshot() {
+                            mode.finish()
+                        }
+                    })
                 }
             }
-            mode.finish()
+
             return true
         }
 
@@ -365,13 +379,24 @@ fun showDeleteScreenshotDialog(
         screenshotModel: ScreenshotModel,
         listener: OnDeleteScreenshotListener? = null
 ) {
+    showDeleteScreenshotDialog(context, listOf(screenshotModel), listener)
+}
+
+fun showDeleteScreenshotDialog(
+        context: Context,
+        screenshotModels: List<ScreenshotModel>,
+        listener: OnDeleteScreenshotListener? = null
+) {
+    val list = screenshotModels.toList()
     val dialog = ConfirmationDialog.build(context,
             context.getString(R.string.dialogue_deleteshot_title_delete),
             context.getString(R.string.action_delete),
             DialogInterface.OnClickListener { dialog, _ ->
                 launch {
-                    ScryerApplication.getScreenshotRepository().deleteScreenshot(screenshotModel)
-                    File(screenshotModel.absolutePath).delete()
+                    list.forEach {
+                        ScryerApplication.getScreenshotRepository().deleteScreenshot(it)
+                        File(it.absolutePath).delete()
+                    }
                 }
                 dialog?.dismiss()
                 listener?.onDeleteScreenshot()
@@ -381,9 +406,18 @@ fun showDeleteScreenshotDialog(
                 dialog.dismiss()
             })
     dialog.viewHolder.message?.text = context.getString(R.string.dialogue_deleteshot_content_delete)
-    dialog.viewHolder.subMessage?.apply {
-        visibility = View.VISIBLE
-        text = getFileSizeText(File(screenshotModel.absolutePath).length())
+    dialog.viewHolder.subMessage?.visibility = View.VISIBLE
+
+    launch(UI) {
+        val size = withContext(DefaultDispatcher) {
+            var totalSize = 0L
+            list.forEach {
+                totalSize += File(it.absolutePath).length()
+            }
+            totalSize
+        }
+
+        dialog.viewHolder.subMessage?.text = getFileSizeText(size)
     }
     dialog.asAlertDialog().show()
 }

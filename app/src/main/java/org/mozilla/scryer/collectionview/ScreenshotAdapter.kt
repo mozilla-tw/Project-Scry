@@ -95,11 +95,12 @@ open class ScreenshotAdapter(
 
         updateSelectionUI(holder, screenshot)
 
-        holder.checkbox?.visibility = if (selector?.isSelectMode == true) {
-            View.VISIBLE
-        } else {
-            View.INVISIBLE
-        }
+        updateNonDataRelatedUI(holder)
+    }
+
+    override fun onViewAttachedToWindow(holder: RecyclerView.ViewHolder) {
+        (holder as? ScreenshotItemHolder) ?: return
+        updateNonDataRelatedUI(holder)
     }
 
     override fun onViewRecycled(holder: RecyclerView.ViewHolder) {
@@ -199,6 +200,14 @@ open class ScreenshotAdapter(
         }
     }
 
+    private fun updateNonDataRelatedUI(holder: ScreenshotItemHolder) {
+        holder.checkbox?.visibility = if (selector?.isSelectMode == true) {
+            View.VISIBLE
+        } else {
+            View.INVISIBLE
+        }
+    }
+
     private fun playSelectAnimation(
             holder: ScreenshotItemHolder,
             scale: Float,
@@ -224,7 +233,7 @@ open class ScreenshotAdapter(
         (recyclerView.layoutManager as? LinearLayoutManager)?.apply {
             val first = findFirstVisibleItemPosition()
             val last = findLastVisibleItemPosition()
-            notifyItemRangeChanged(findFirstVisibleItemPosition(), last - first + 1)
+            notifyItemRangeChanged(first, last - first + 1)
 
         } ?: run {
             if (BuildConfig.DEBUG) {

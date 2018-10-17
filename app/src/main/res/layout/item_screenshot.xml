@@ -36,6 +36,7 @@
         android:layout_height="wrap_content"
         android:theme="@style/ScreenshotItemCheckboxTheme"
         android:elevation="3dp"
+        android:visibility="invisible"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintLeft_toLeftOf="parent" />
 

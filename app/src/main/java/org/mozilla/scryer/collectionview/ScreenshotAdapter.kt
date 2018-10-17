@@ -116,7 +116,7 @@ open class ScreenshotAdapter(
         val screenshotModel = getItem(itemPosition)
         when (item?.itemId) {
             CONTEXT_MENU_ID_MOVE_TO -> context?.let {
-                it.startActivity(SortingPanelActivity.sortOldScreenshot(it, screenshotModel.id))
+                it.startActivity(SortingPanelActivity.sortOldScreenshot(it, screenshotModel))
             }
 
             CONTEXT_MENU_ID_INFO -> context?.let {

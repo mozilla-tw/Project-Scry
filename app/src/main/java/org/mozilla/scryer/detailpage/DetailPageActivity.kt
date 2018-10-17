@@ -180,7 +180,7 @@ class DetailPageActivity : AppCompatActivity() {
                 TelemetryWrapper.clickShareButtonInDetailPage()
             }
             R.id.action_move_to -> {
-                startActivity(SortingPanelActivity.sortOldScreenshot(this, screenshots[view_pager.currentItem].id))
+                startActivity(SortingPanelActivity.sortOldScreenshot(this, screenshots[view_pager.currentItem]))
             }
             R.id.action_screenshot_info -> {
                 showScreenshotInfoDialog(this, screenshots[view_pager.currentItem])

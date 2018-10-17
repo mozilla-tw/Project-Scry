@@ -39,6 +39,7 @@ class SortingPanelActivity : AppCompatActivity() {
     companion object {
         const val EXTRA_PATH = "path"
         const val EXTRA_SCREENSHOT_ID = "screenshot_id"
+        const val EXTRA_SCREENSHOT_IDS = "screenshot_ids"
         const val EXTRA_COLLECTION_ID = "collection_id"
         const val EXTRA_SHOW_ADD_TO_COLLECTION = "collection_id"
 
@@ -55,9 +56,17 @@ class SortingPanelActivity : AppCompatActivity() {
             return intent
         }
 
-        fun sortOldScreenshot(context: Context, screenshotId: String): Intent {
+        fun sortOldScreenshot(context: Context, screenshot: ScreenshotModel): Intent {
             val intent = Intent(context, SortingPanelActivity::class.java)
-            intent.putExtra(EXTRA_SCREENSHOT_ID, screenshotId)
+            intent.putExtra(EXTRA_SCREENSHOT_ID, screenshot.id)
+            return intent
+        }
+
+        fun sortScreenshots(context: Context, screenshots: List<ScreenshotModel>): Intent {
+            val intent = Intent(context, SortingPanelActivity::class.java)
+            val list = ArrayList<String>()
+            list.addAll(screenshots.map { it.id })
+            intent.putStringArrayListExtra(EXTRA_SCREENSHOT_IDS, list)
             return intent
         }
     }
@@ -148,13 +157,13 @@ class SortingPanelActivity : AppCompatActivity() {
             val dialog = ConfirmationDialog.build(this,
                     getString(R.string.dialogue_skipsorting_title_skip),
                     getString(R.string.dialogue_skipsorting_action_skip),
-                    DialogInterface.OnClickListener { dialog, which ->
+                    DialogInterface.OnClickListener { _, _ ->
                         flushToUnsortedCollection()
                         finishAndRemoveTask()
                         TelemetryWrapper.clickCancelInSortingPage()
                     },
                     getString(android.R.string.cancel),
-                    DialogInterface.OnClickListener { dialog, which ->
+                    DialogInterface.OnClickListener { _, _ ->
                     })
             dialog.viewHolder.message?.text = getString(R.string.dialogue_skipsorting_content_moveto)
             dialog.viewHolder.subMessage?.visibility = View.VISIBLE
@@ -264,6 +273,13 @@ class SortingPanelActivity : AppCompatActivity() {
                     }
                 }
 
+                intent.hasExtra(EXTRA_SCREENSHOT_IDS) -> {
+                    val list: List<String>? = intent.getStringArrayListExtra(EXTRA_SCREENSHOT_IDS)
+                    list?.let {
+                        loadScreenshots(list)
+                    }
+                }
+
                 else -> {
                     null
                 }
@@ -273,6 +289,14 @@ class SortingPanelActivity : AppCompatActivity() {
                 onFinished.invoke(it)
 
             }?: onLoadScreenshotsFailed()
+        }
+    }
+
+    private suspend fun loadScreenshots(
+            ids: List<String>
+    ): List<ScreenshotModel> = withContext(DefaultDispatcher) {
+        ids.mapNotNull {
+            screenshotViewModel.getScreenshot(it)
         }
     }
 

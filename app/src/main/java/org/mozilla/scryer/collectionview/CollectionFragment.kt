@@ -56,8 +56,16 @@ class CollectionFragment : Fragment() {
 
     private lateinit var screenshotAdapter: ScreenshotAdapter
 
-    private val selectActionModeCallback = object : ActionMode.Callback {
+    private val selectActionModeCallback: ActionMode.Callback = object : ActionMode.Callback {
         override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
+            when (item.itemId) {
+                R.id.action_move -> {
+                    val activity = activity ?: return false
+                    val intent = SortingPanelActivity.sortScreenshots(activity, selector.selected)
+                    startActivity(intent)
+                }
+            }
+            mode.finish()
             return true
         }
 

@@ -58,20 +58,21 @@
         android:textAppearance="@style/Subtitle2"
         android:textColor="@color/grey50" />
 
-    <TextView
-        android:id="@+id/collection_info_last_edit"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/common_padding_12dp"
-        android:text="@string/dialogue_list_edit"
-        android:textAppearance="@style/Subtitle1"
-        android:textColor="@color/grey90" />
+    <!-- Remove last edit time for now to fix #320
+    <TextView-->
+        <!--android:id="@+id/collection_info_last_edit"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginTop="@dimen/common_padding_12dp"-->
+        <!--android:text="@string/dialogue_list_edit"-->
+        <!--android:textAppearance="@style/Subtitle1"-->
+        <!--android:textColor="@color/grey90" />-->
 
-    <TextView
-        android:id="@+id/collection_info_last_edit_time"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/common_padding_4dp"
-        android:textAppearance="@style/Subtitle2"
-        android:textColor="@color/grey50" />
+    <!--<TextView-->
+        <!--android:id="@+id/collection_info_last_edit_time"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginTop="@dimen/common_padding_4dp"-->
+        <!--android:textAppearance="@style/Subtitle2"-->
+        <!--android:textColor="@color/grey50" />-->
 </LinearLayout>

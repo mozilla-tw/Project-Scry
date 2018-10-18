@@ -407,10 +407,8 @@ class SortingPanelActivity : AppCompatActivity() {
                 TelemetryWrapper.clickMoveToInSortingPage()
             }
 
-            collection.date = System.currentTimeMillis()
             screenshot.collectionId = collection.id
             withContext(DefaultDispatcher) {
-                screenshotViewModel.updateCollection(collection)
                 screenshotViewModel.addScreenshot(listOf(screenshot))
             }
 

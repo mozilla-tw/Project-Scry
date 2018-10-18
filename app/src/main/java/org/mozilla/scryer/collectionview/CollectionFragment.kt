@@ -495,7 +495,6 @@ private fun showCollectionInfoDialog(
     dialogView.collection_info_name_content.text = getFileNameText(collection.name)
     dialogView.collection_info_total_screenshots_count.text = screenshots.size.toString()
     dialogView.collection_info_storage_used_amount.text = getFileSizeText(totalFileSize)
-    dialogView.collection_info_last_edit_time.text = getFileDateText(collection.date)
 
     AlertDialog.Builder(context)
             .setTitle(context.getString(R.string.dialogue_collecitioninfo_title_info))

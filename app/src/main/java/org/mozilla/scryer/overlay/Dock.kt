@@ -10,8 +10,8 @@ open class Dock(val screen: Screen) {
         private const val DOCK_OFFSET_FACTOR = 0.1f
     }
 
-    var side: Side = Side.Left
-    private var yPositionPercentage: Float = 1 / 3f
+    var side: Side = Side.Right
+    private var yPositionPercentage: Float = 1 / 2f
 
     init {
 

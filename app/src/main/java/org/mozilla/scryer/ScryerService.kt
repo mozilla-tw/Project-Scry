@@ -132,13 +132,13 @@ class ScryerService : Service(), CaptureButtonController.ClickListener, ScreenCa
     private fun dispatchOnStartCommandAction(intent: Intent): Int {
         when (intent.action) {
             ACTION_DISABLE_SERVICE -> {
-                disableScryerService()
+                disableScryerService(true)
                 return START_NOT_STICKY
             }
 
             ACTION_DISABLE_SERVICE_SOFTLY -> {
                 PreferenceWrapper(this).setShouldPromptEnableService(true)
-                disableScryerService()
+                disableScryerService(false)
                 return START_NOT_STICKY
             }
 
@@ -162,11 +162,12 @@ class ScryerService : Service(), CaptureButtonController.ClickListener, ScreenCa
         initFloatingButton()
     }
 
-    private fun disableScryerService() {
-        toast.show(getString(R.string.snackbar_disable), Toast.LENGTH_SHORT)
+    private fun disableScryerService(showToast: Boolean) {
+        if (showToast) {
+            toast.show(getString(R.string.snackbar_disable), Toast.LENGTH_SHORT)
+        }
         ScryerApplication.getSettingsRepository().serviceEnabled = false
         stopSelf()
-        sendBroadcast(Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS))
     }
 
     private fun initFloatingButton() {
@@ -323,7 +324,7 @@ class ScryerService : Service(), CaptureButtonController.ClickListener, ScreenCa
                 .setCategory(Notification.CATEGORY_PROMO)
                 .setSmallIcon(R.drawable.ic_stat_notify)
                 .setColor(ContextCompat.getColor(this, R.color.foreground_notification))
-                .setContentTitle(getString(R.string.app_full_name))
+                .setContentTitle(getString(R.string.notification_action_collect_title))
                 .setContentText(getString(R.string.notification_action_collect))
                 .setContentIntent(tapPendingIntent)
                 .setAutoCancel(true)

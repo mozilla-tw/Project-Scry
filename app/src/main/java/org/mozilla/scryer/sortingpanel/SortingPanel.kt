@@ -50,7 +50,7 @@ class SortingPanel : FrameLayout, DefaultLifecycleObserver {
             it.id != CollectionModel.CATEGORY_NONE
 
         }?.sortedBy {
-            it.date
+            it.createdDate
 
         }?.let {
             this.adapter.collections = it

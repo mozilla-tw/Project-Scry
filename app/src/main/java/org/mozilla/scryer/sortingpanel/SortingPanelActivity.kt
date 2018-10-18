@@ -136,7 +136,7 @@ class SortingPanelActivity : AppCompatActivity() {
         this.lifecycle.removeObserver(this.sortingPanel)
 
         for ((suggestCollection, createTime) in suggestCollectionCreateTime) {
-            suggestCollection.date = createTime
+            suggestCollection.createdDate = createTime
             launch {
                 screenshotViewModel.updateCollection(suggestCollection)
             }

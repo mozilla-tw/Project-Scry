@@ -484,7 +484,7 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
                 !SuggestCollectionHelper.isSuggestCollection(it)
 
             }?.sortedBy {
-                it.date
+                it.createdDate
 
             }?.let {
                 updateCollectionListView(it)

@@ -121,7 +121,7 @@ class CollectionNameDialog(private val context: Context,
 
             }?.let {
                 launch {
-                    it.date = System.currentTimeMillis()
+                    it.createdDate = System.currentTimeMillis()
                     viewModel.updateCollectionId(it, UUID.randomUUID().toString())
                 }
                 it

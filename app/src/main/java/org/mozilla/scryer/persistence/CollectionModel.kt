@@ -15,7 +15,7 @@ import java.util.*
 data class CollectionModel constructor(
         @PrimaryKey(autoGenerate = false) var id: String,
         @ColumnInfo(name = "name") var name: String,
-        @ColumnInfo(name = "date") var date: Long,
+        @ColumnInfo(name = "date") var createdDate: Long,
         @ColumnInfo(name = "color") var color: Int) {
 
     @Ignore

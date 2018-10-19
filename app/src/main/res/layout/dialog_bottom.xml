@@ -24,7 +24,7 @@
             android:layout_height="40dp"
             android:background="@drawable/capture_button_bkg"
             android:elevation="3dp"
-            android:visibility="visible">
+            android:visibility="gone">
 
             <View
                 android:layout_width="24dp"
@@ -66,6 +66,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 android:textColor="@color/grey50"
+                app:layout_goneMarginTop="0dp"
                 app:layout_constraintLeft_toRightOf="@id/image_right_guideline"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/title"

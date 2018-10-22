@@ -37,12 +37,12 @@ class SearchFragment : Fragment() {
             layout.findViewById<Button>(R.id.positive_button).visibility = View.VISIBLE
             layout.findViewById<Button>(R.id.positive_button).setOnClickListener {
                 doAfterFeedback()
-                TelemetryWrapper.clickSearchInterested()
+                TelemetryWrapper.interestedInSearch()
             }
             layout.findViewById<Button>(R.id.negative_button).visibility = View.VISIBLE
             layout.findViewById<Button>(R.id.negative_button).setOnClickListener {
                 doAfterFeedback()
-                TelemetryWrapper.clickSearchNotInterested()
+                TelemetryWrapper.notInterestedInSearch()
             }
         }
 
@@ -54,7 +54,7 @@ class SearchFragment : Fragment() {
         setHasOptionsMenu(true)
         setupActionBar()
 
-        TelemetryWrapper.showSearchPage()
+        TelemetryWrapper.visitSearchPage()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

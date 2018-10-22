@@ -142,7 +142,7 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
 
             menu.findItem(R.id.action_settings).setOnMenuItemClickListener { _ ->
                 startActivity(Intent(it, SettingsActivity::class.java))
-                TelemetryWrapper.clickHomeSettings()
+                TelemetryWrapper.enterSettings()
                 true
             }
 
@@ -337,7 +337,7 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
         if (ScryerApplication.getSettingsRepository().serviceEnabled) {
             context?.startService(Intent(context, ScryerService::class.java))
         }
-        TelemetryWrapper.showHomePage()
+        TelemetryWrapper.visitHomePage()
     }
 
     override fun requestStoragePermission() {
@@ -420,7 +420,7 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
                 Navigation.findNavController(view!!).navigateSafely(R.id.MainFragment,
                         R.id.action_navigate_to_search,
                         Bundle())
-                TelemetryWrapper.clickHomeSearchBar()
+                TelemetryWrapper.startSearch()
             }
         }
     }
@@ -429,12 +429,12 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
         quickAccessAdapter.clickListener = object : QuickAccessAdapter.ItemClickListener {
             override fun onItemClick(screenshotModel: ScreenshotModel, holder: ScreenshotItemHolder) {
                 DetailPageActivity.showDetailPage(context, screenshotModel, holder.image)
-                TelemetryWrapper.clickHomeQuickAccessItem(holder.adapterPosition)
+                TelemetryWrapper.clickOnQuickAccess(holder.adapterPosition)
             }
 
             override fun onMoreClick(holder: RecyclerView.ViewHolder) {
                 Navigation.findNavController(holder.itemView).navigate(R.id.action_navigate_to_collection, Bundle())
-                TelemetryWrapper.clickHomeQuickAccessMoreItem()
+                TelemetryWrapper.clickMoreOnQuickAccess()
             }
         }
 

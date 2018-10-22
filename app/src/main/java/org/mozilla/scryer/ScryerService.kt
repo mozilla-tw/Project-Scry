@@ -144,7 +144,7 @@ class ScryerService : Service(), CaptureButtonController.ClickListener, ScreenCa
 
             ACTION_CAPTURE_SCREEN -> {
                 postTakeScreenshot(DELAY_CAPTURE_NOTIFICATION)
-                TelemetryWrapper.clickCaptureViaNotification()
+                TelemetryWrapper.captureViaNotification()
             }
 
             ACTION_ENABLE_CAPTURE_BUTTON -> initFloatingButton()
@@ -199,14 +199,14 @@ class ScryerService : Service(), CaptureButtonController.ClickListener, ScreenCa
                     ScryerApplication.getScreenshotRepository().addScreenshot(listOf(model))
                 }
 
-                TelemetryWrapper.clickCaptureViaExternal()
+                TelemetryWrapper.captureViaExternal()
             }
         })
     }
 
     override fun onScreenshotButtonClicked() {
         postTakeScreenshot(DELAY_CAPTURE_FAB)
-        TelemetryWrapper.clickCaptureButton()
+        TelemetryWrapper.captureViaFab()
     }
 
     override fun onScreenshotButtonDismissed() {

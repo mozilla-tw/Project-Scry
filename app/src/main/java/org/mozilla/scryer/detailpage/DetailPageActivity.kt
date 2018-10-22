@@ -135,7 +135,7 @@ class DetailPageActivity : AppCompatActivity() {
 
         updateUI()
 
-        TelemetryWrapper.showDetailPage()
+        TelemetryWrapper.viewScreenshot()
     }
 
     override fun onBackPressed() {
@@ -177,7 +177,7 @@ class DetailPageActivity : AppCompatActivity() {
         when (item?.itemId) {
             R.id.action_share -> {
                 showShareScreenshotDialog(this, screenshots[view_pager.currentItem])
-                TelemetryWrapper.clickShareButtonInDetailPage()
+                TelemetryWrapper.shareScreenshot()
             }
             R.id.action_move_to -> {
                 startActivity(SortingPanelActivity.sortOldScreenshot(this, screenshots[view_pager.currentItem]))
@@ -231,7 +231,7 @@ class DetailPageActivity : AppCompatActivity() {
                 R.id.text_mode_fab -> {
                     isRecognizing = true
                     startRecognition()
-                    TelemetryWrapper.clickTextModeButton()
+                    TelemetryWrapper.extractTextFromScreenshot()
                 }
 
                 R.id.cancel_fab -> {
@@ -274,9 +274,9 @@ class DetailPageActivity : AppCompatActivity() {
                     ScryerToast.makeText(this@DetailPageActivity,
                             getString(R.string.detail_ocr_error_edgecase),
                             Toast.LENGTH_SHORT).show()
-                    TelemetryWrapper.showTextModeResult(TelemetryWrapper.Value.WEIRD_SIZE)
+                    TelemetryWrapper.viewTextInScreenshot(TelemetryWrapper.Value.WEIRD_SIZE)
                 } else {
-                    TelemetryWrapper.showTextModeResult(TelemetryWrapper.Value.SUCCESS)
+                    TelemetryWrapper.viewTextInScreenshot(TelemetryWrapper.Value.SUCCESS)
                 }
 
                 if (isRecognizing) {
@@ -290,7 +290,7 @@ class DetailPageActivity : AppCompatActivity() {
                         getString(R.string.detail_ocr_error_failed),
                         Toast.LENGTH_SHORT).show()
 
-                TelemetryWrapper.showTextModeResult(TelemetryWrapper.Value.FAIL)
+                TelemetryWrapper.viewTextInScreenshot(TelemetryWrapper.Value.FAIL)
             }
 
             isRecognizing = false

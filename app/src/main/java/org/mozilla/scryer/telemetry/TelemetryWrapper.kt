@@ -34,27 +34,27 @@ class TelemetryWrapper {
         const val VISIT_HOME_PAGE = "Visit home page"
         const val START_SEARCH = "Start search"
         const val CLICK_ON_QUICK_ACCESS = "Click on quick access"
-        const val HOME_QUICK_ACCESS_MORE = "home_quick_access_more"
-        const val HOME_COLLECTIONS = "home_collections"
-        const val HOME_CREATE_NEW_COLLECTION = "home_create_new_collection"
-        const val HOME_SETTINGS = "home_settings"
-        const val COLLECTION_PAGE = "collection_page"
-        const val COLLECTION_SORTING_BUTTON = "collection_sorting_button"
-        const val COLLECTION_ITEM = "collection_item"
-        const val SORTING_PAGE = "sorting_page"
-        const val SORTING_MOVE_TO_BUTTON = "sorting_move_to_button"
-        const val SORTING_SORT_CANCEL = "sorting_sort_cancel"
-        const val SORTING_CREATE_NEW_COLLECTION = "sorting_create_new_collection"
-        const val CAPTURE_BUTTON = "capture_button"
-        const val CAPTURE_VIA_NOTIFICATION = "capture_via_notification"
-        const val CAPTURE_VIA_EXTERNAL = "capture_via_external"
-        const val DETAIL_PAGE = "detail_page"
-        const val DETAIL_SHARE_BUTTON = "detail_share_button"
-        const val TEXT_MODE_BUTTON = "text_mode_button"
-        const val TEXT_MODE_RESULT = "text_mode_result"
-        const val SEARCH_PAGE = "search_page"
-        const val SEARCH_INTERESTED = "search_interested"
-        const val SEARCH_NOT_INTERESTED = "search_not_interested"
+        const val CLICK_MORE_ON_QUICK_ACCESS = "Click more on quick access"
+        const val CLICK_ON_COLLECTION = "Click on collection"
+        const val CREATE_COLLECTION_FROM_HOME = "Create collection from home"
+        const val ENTER_SETTINGS = "Enter settings"
+        const val VISIT_COLLECTION_PAGE = "Visit collection page"
+        const val CLICK_ON_SORTING_BUTTON = "Click on sorting button"
+        const val COLLECTION_ITEM = "Collection item"
+        const val CREATE_COLLECTION_WHEN_SORTING = "Create collection when sorting"
+        const val PROMPT_SORTING_PAGE = "Prompt sorting page"
+        const val SORT_SCREENSHOT = "Sort screenshot"
+        const val CANCEL_SORTING = "Cancel sorting"
+        const val CAPTURE_VIA_FAB = "Capture via FAB"
+        const val CAPTURE_VIA_NOTIFICATION = "Capture via notification"
+        const val CAPTURE_VIA_EXTERNAL = "Capture via external"
+        const val VIEW_SCREENSHOT = "View screenshot"
+        const val SHARE_SCREENSHOT = "Share screenshot"
+        const val EXTRACT_TEXT_FROM_SCREENSHOT = "Extract text from screenshot"
+        const val VIEW_TEXT_IN_SCREENSHOT = "View text in screenshot"
+        const val VISIT_SEARCH_PAGE = "Visit search page"
+        const val INTERESTED_IN_SEARCH = "Interested in search"
+        const val NOT_INTERESTED_IN_SEARCH = "Not interested in search"
     }
 
     private object Method {
@@ -162,104 +162,104 @@ class TelemetryWrapper {
             EventBuilder(Category.VISIT_PERMISSION_ERROR_PAGE, Method.V1, Object.GO).queue()
         }
 
-        fun showHomePage() {
+        fun visitHomePage() {
             EventBuilder(Category.VISIT_HOME_PAGE, Method.V1, Object.GO).queue()
         }
 
-        fun clickHomeSearchBar() {
+        fun startSearch() {
             EventBuilder(Category.START_SEARCH, Method.V1, Object.GO).queue()
         }
 
-        fun clickHomeQuickAccessItem(index: Int) {
+        fun clickOnQuickAccess(index: Int) {
             EventBuilder(Category.CLICK_ON_QUICK_ACCESS, Method.V1, Object.GO).extra(Extra.ON, index.toString()).queue()
         }
 
-        fun clickHomeQuickAccessMoreItem() {
-            EventBuilder(Category.HOME_QUICK_ACCESS_MORE, Method.V1, Object.GO).queue()
+        fun clickMoreOnQuickAccess() {
+            EventBuilder(Category.CLICK_MORE_ON_QUICK_ACCESS, Method.V1, Object.GO).queue()
         }
 
-        fun clickHomeCollectionItem() {
-            EventBuilder(Category.HOME_COLLECTIONS, Method.V1, Object.GO).queue()
+        fun clickOnCollection() {
+            EventBuilder(Category.CLICK_ON_COLLECTION, Method.V1, Object.GO).queue()
         }
 
-        fun clickHomeCreateNewCollectionItem() {
-            EventBuilder(Category.HOME_CREATE_NEW_COLLECTION, Method.V1, Object.GO).queue()
+        fun createCollectionFromHome() {
+            EventBuilder(Category.CREATE_COLLECTION_FROM_HOME, Method.V1, Object.GO).queue()
         }
 
-        fun clickHomeSettings() {
-            EventBuilder(Category.HOME_SETTINGS, Method.V1, Object.GO).queue()
+        fun enterSettings() {
+            EventBuilder(Category.ENTER_SETTINGS, Method.V1, Object.GO).queue()
         }
 
-        fun showCollectionPage(name: String) {
-            EventBuilder(Category.COLLECTION_PAGE, Method.V1, Object.GO).extra(Extra.ON, name).queue()
+        fun visitCollectionPage(name: String) {
+            EventBuilder(Category.VISIT_COLLECTION_PAGE, Method.V1, Object.GO).extra(Extra.ON, name).queue()
         }
 
-        fun clickCollectionItem(name: String) {
+        fun collectionItem(name: String) {
             EventBuilder(Category.COLLECTION_ITEM, Method.V1, Object.GO).extra(Extra.ON, name).queue()
         }
 
-        fun clickSortingInCollectionPage() {
-            EventBuilder(Category.COLLECTION_SORTING_BUTTON, Method.V1, Object.GO).queue()
+        fun clickOnSortingButton() {
+            EventBuilder(Category.CLICK_ON_SORTING_BUTTON, Method.V1, Object.GO).queue()
         }
 
-        fun showSingleSortingPage() {
-            EventBuilder(Category.SORTING_PAGE, Method.V1, Object.GO).extra(Extra.MODE, ExtraValue.SINGLE).queue()
+        fun createCollectionWhenSorting() {
+            EventBuilder(Category.CREATE_COLLECTION_WHEN_SORTING, Method.V1, Object.GO).queue()
         }
 
-        fun showMultipleSortingPage() {
-            EventBuilder(Category.SORTING_PAGE, Method.V1, Object.GO).extra(Extra.MODE, ExtraValue.MULTIPLE).queue()
+        fun promptSingleSortingPage() {
+            EventBuilder(Category.PROMPT_SORTING_PAGE, Method.V1, Object.GO).extra(Extra.MODE, ExtraValue.SINGLE).queue()
         }
 
-        fun clickMoveToInSortingPage() {
-            EventBuilder(Category.SORTING_MOVE_TO_BUTTON, Method.V1, Object.GO).queue()
+        fun promptMultipleSortingPage() {
+            EventBuilder(Category.PROMPT_SORTING_PAGE, Method.V1, Object.GO).extra(Extra.MODE, ExtraValue.MULTIPLE).queue()
         }
 
-        fun clickCancelInSortingPage() {
-            EventBuilder(Category.SORTING_SORT_CANCEL, Method.V1, Object.GO).queue()
+        fun sortScreenshot() {
+            EventBuilder(Category.SORT_SCREENSHOT, Method.V1, Object.GO).queue()
         }
 
-        fun clickCreateNewCollectionItemInSortingPage() {
-            EventBuilder(Category.SORTING_CREATE_NEW_COLLECTION, Method.V1, Object.GO).queue()
+        fun cancelSorting() {
+            EventBuilder(Category.CANCEL_SORTING, Method.V1, Object.GO).queue()
         }
 
-        fun clickCaptureButton() {
-            EventBuilder(Category.CAPTURE_BUTTON, Method.V1, Object.GO).queue()
+        fun captureViaFab() {
+            EventBuilder(Category.CAPTURE_VIA_FAB, Method.V1, Object.GO).queue()
         }
 
-        fun clickCaptureViaNotification() {
+        fun captureViaNotification() {
             EventBuilder(Category.CAPTURE_VIA_NOTIFICATION, Method.V1, Object.GO).queue()
         }
 
-        fun clickCaptureViaExternal() {
+        fun captureViaExternal() {
             EventBuilder(Category.CAPTURE_VIA_EXTERNAL, Method.V1, Object.GO).queue()
         }
 
-        fun showDetailPage() {
-            EventBuilder(Category.DETAIL_PAGE, Method.V1, Object.GO).queue()
+        fun viewScreenshot() {
+            EventBuilder(Category.VIEW_SCREENSHOT, Method.V1, Object.GO).queue()
         }
 
-        fun clickTextModeButton() {
-            EventBuilder(Category.TEXT_MODE_BUTTON, Method.V1, Object.GO).queue()
+        fun shareScreenshot() {
+            EventBuilder(Category.SHARE_SCREENSHOT, Method.V1, Object.GO).queue()
         }
 
-        fun clickShareButtonInDetailPage() {
-            EventBuilder(Category.DETAIL_SHARE_BUTTON, Method.V1, Object.GO).queue()
+        fun extractTextFromScreenshot() {
+            EventBuilder(Category.EXTRACT_TEXT_FROM_SCREENSHOT, Method.V1, Object.GO).queue()
         }
 
-        fun showTextModeResult(value: String) {
-            EventBuilder(Category.TEXT_MODE_RESULT, Method.V1, Object.GO, value).queue()
+        fun viewTextInScreenshot(value: String) {
+            EventBuilder(Category.VIEW_TEXT_IN_SCREENSHOT, Method.V1, Object.GO, value).queue()
         }
 
-        fun showSearchPage() {
-            EventBuilder(Category.SEARCH_PAGE, Method.V1, Object.GO).queue()
+        fun visitSearchPage() {
+            EventBuilder(Category.VISIT_SEARCH_PAGE, Method.V1, Object.GO).queue()
         }
 
-        fun clickSearchInterested() {
-            EventBuilder(Category.SEARCH_INTERESTED, Method.V1, Object.GO).queue()
+        fun interestedInSearch() {
+            EventBuilder(Category.INTERESTED_IN_SEARCH, Method.V1, Object.GO).queue()
         }
 
-        fun clickSearchNotInterested() {
-            EventBuilder(Category.SEARCH_NOT_INTERESTED, Method.V1, Object.GO).queue()
+        fun notInterestedInSearch() {
+            EventBuilder(Category.NOT_INTERESTED_IN_SEARCH, Method.V1, Object.GO).queue()
         }
     }
 
@@ -286,7 +286,7 @@ class TelemetryWrapper {
 
         override fun update(configuration: TelemetryConfiguration) {
             super.update(configuration)
-            
+
             addCustomPing(configuration, ScreenshotCountMeasurement())
         }
 

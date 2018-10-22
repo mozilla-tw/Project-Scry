@@ -7,6 +7,7 @@
   <string name="notification_action_capture">Ketuk untuk mengambil cuplikan layar</string>
   <string name="notification_action_open">Buka aplikasi</string>
   <string name="notification_action_stop">Hentikan</string>
+  <string name="notification_action_collect_title">Cuplikan layar baru</string>
   <string name="notification_action_collect">Ketuk untuk mengelompokkan cuplikan layar</string>
   <string name="multisorting_action_next">Selanjutnya</string>
   <string name="sorting_title_move">Pindahkan ke</string>
@@ -25,6 +26,9 @@
   <string name="home_separator_collection">Koleksi</string>
   <string name="home_action_unsorted">Belum Disortir</string>
   <string name="collection_separator_shots">%1$d cuplikan</string>
+  <string name="collection_header_select_all">Semua yang dipilih</string>
+  <string name="collection_header_select_none">Pilih cuplikan layar</string>
+  <string name="collection_header_viewall_all">Semua cuplikan layar</string>
   <string name="detail_ocr_error_failed">Gagal mengenali teks</string>
   <string name="detail_ocr_error_edgecase">Ada yang salah? Potong cuplikan layar dan coba kembali.</string>
   <string name="detail_ocr_error_notext">Teks tidak ditemukan</string>
@@ -65,9 +69,9 @@
   <string name="snackbar_enable">Layanan pencuplik layar diaktifkan</string>
   <string name="snackbar_addto">Ditambahkan ke %1$s</string>
   <string name="snackbar_copied">Disalin</string>
-  <string name="settings_list_capture">Aktifkan untuk mencuplik layar</string>
+  <string name="settings_list_capture">Aktifkan fitur mencuplik layar</string>
   <string name="settings_detail_capture">Memungkinkan Anda mencuplik layar dengan sekali ketuk. Bekerja dengan apa pun yang ada di layar Anda.</string>
-  <string name="settings_list_fab">Aktifkan tombol %1$s</string>
+  <string name="settings_list_fab">Tombol %1$s</string>
   <string name="settings_list_sorting">Tanyakan untuk menyortir</string>
   <string name="settings_detail_sorting">Selalu tanyakan untuk menambah cuplikan layar ke koleksi</string>
   <string name="settings_list_usagedata">Kirim data penggunaan</string>
@@ -100,7 +104,7 @@
   <string name="onboarding_rareerror_content_permission">%1$s membutuhkan izin untuk mengakses penyimpanan ponsel Anda. Temukan di bagian Izin untuk mengaktifkan Penyimpanan.</string>
   <string name="onboarding_rareerror_action_goto">Ke bagian Izin</string>
   <string name="onboarding_search_title_soon">Pencarian akan segera hadir!</string>
-  <string name="onboarding_search_content_survey">Kami sedang mengerjakan fitur pencarian untuk membantu Anda temukan cuplikan layar jauh lebih cepat. Tertarik?</string>
+  <string name="onboarding_search_content_survey">Kami sedang mengerjakan fitur canggih untuk membantu Anda mencari cuplikan layar berdasarkan teksnya. Tertarik?</string>
   <string name="onboarding_search_action_agree">Ya</string>
   <string name="onboarding_search_action_disagree">Tidak</string>
   <string name="onboarding_search_content_feedback">Terima kasih atas umpan balik Anda!</string>

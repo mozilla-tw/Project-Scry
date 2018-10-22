@@ -115,6 +115,10 @@ dependencies {
 
     implementation "org.mozilla.components:service-telemetry:${Versions.android_components}"
 
+    implementation project(':telemetry-annotation')
+    kapt project(':telemetry-compiler')
+
+
     testImplementation "org.mockito:mockito-core:${Versions.mockito}"
 
     implementation "com.adjust.sdk:adjust-android:${Versions.adjust}"

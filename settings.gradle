@@ -1,1 +1,7 @@
 include ':app'
+
+include ':telemetry-annotation'
+project(':telemetry-annotation').projectDir = new File('components/service/telemetry-annotation')
+
+include ':telemetry-compiler'
+project(':telemetry-compiler').projectDir = new File('components/service/telemetry-compiler')

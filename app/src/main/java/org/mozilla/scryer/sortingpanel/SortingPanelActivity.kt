@@ -27,6 +27,8 @@ import org.mozilla.scryer.persistence.CollectionModel
 import org.mozilla.scryer.persistence.ScreenshotModel
 import org.mozilla.scryer.persistence.SuggestCollectionHelper
 import org.mozilla.scryer.telemetry.TelemetryWrapper
+import org.mozilla.scryer.telemetry.TelemetryWrapper.ExtraValue.MULTIPLE
+import org.mozilla.scryer.telemetry.TelemetryWrapper.ExtraValue.SINGLE
 import org.mozilla.scryer.ui.CollectionNameDialog
 import org.mozilla.scryer.ui.ConfirmationDialog
 import org.mozilla.scryer.ui.ScryerToast
@@ -156,7 +158,7 @@ class SortingPanelActivity : AppCompatActivity() {
                     DialogInterface.OnClickListener { _, _ ->
                         flushToUnsortedCollection()
                         finishAndRemoveTask()
-                        TelemetryWrapper.cancelMultipleSorting()
+                        TelemetryWrapper.cancelSorting(MULTIPLE)
                     },
                     getString(android.R.string.cancel),
                     DialogInterface.OnClickListener { _, _ ->
@@ -168,7 +170,7 @@ class SortingPanelActivity : AppCompatActivity() {
             dialog.asAlertDialog().show()
         } else {
             super.onBackPressed()
-            TelemetryWrapper.cancelSingleSorting()
+            TelemetryWrapper.cancelSorting(TelemetryWrapper.ExtraValue.SINGLE)
         }
     }
 
@@ -252,20 +254,20 @@ class SortingPanelActivity : AppCompatActivity() {
         }
         collectionId = null
 
-        launch (UI) {
+        launch(UI) {
             when {
                 intent.hasExtra(EXTRA_PATH) -> {
-                    TelemetryWrapper.promptSingleSortingPage()
+                    TelemetryWrapper.promptSortingPage(TelemetryWrapper.ExtraValue.SINGLE)
                     loadNewScreenshot(getFilePath(intent))
                 }
 
                 intent.hasExtra(EXTRA_SCREENSHOT_ID) -> {
-                    TelemetryWrapper.promptSingleSortingPage()
+                    TelemetryWrapper.promptSortingPage(SINGLE)
                     loadOldScreenshot(intent.getStringExtra(EXTRA_SCREENSHOT_ID))
                 }
 
                 intent.hasExtra(EXTRA_COLLECTION_ID) -> {
-                    TelemetryWrapper.promptMultipleSortingPage()
+                    TelemetryWrapper.promptSortingPage(MULTIPLE)
                     collectionId = intent.getStringExtra(EXTRA_COLLECTION_ID)
                     collectionId?.let {
                         loadCollection(it)
@@ -360,7 +362,7 @@ class SortingPanelActivity : AppCompatActivity() {
             panelModel.onNextScreenshot()
 
             if (screenshots.size == 1) {
-                TelemetryWrapper.cancelSingleSorting()
+                TelemetryWrapper.cancelSorting(MULTIPLE)
             }
         }
 
@@ -412,9 +414,9 @@ class SortingPanelActivity : AppCompatActivity() {
             }
 
             if (isSortingSingleScreenshot) {
-                TelemetryWrapper.sortSingleScreenshot(collection.name)
+                TelemetryWrapper.sortScreenshot(collection.name, SINGLE)
             } else {
-                TelemetryWrapper.sortMultipleScreenshot(collection.name)
+                TelemetryWrapper.sortScreenshot(collection.name, MULTIPLE)
             }
         }
     }

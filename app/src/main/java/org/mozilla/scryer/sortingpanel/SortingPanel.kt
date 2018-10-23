@@ -35,7 +35,14 @@ class SortingPanel : FrameLayout, DefaultLifecycleObserver {
     private val coordinatorLayout: View by lazy { findViewById<View>(R.id.coordinator_layout) }
     private val panelView: View by lazy { findViewById<View>(R.id.panel_container) }
     private val overlay: View by lazy { findViewById<View>(R.id.background_overlay) }
-    private val imageView: ImageView by lazy { findViewById<ImageView>(R.id.image_view) }
+    private val imageView: ImageView by lazy {
+        val view = findViewById<ImageView>(R.id.image_view)
+        // Issue #341
+        // The way TopInsideImageView calculates image-matrix will cause runtime exception (Canvas:
+        // trying to draw too large bitmap) when hardware acceleration is enabled
+        view.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
+        view
+    }
     private val hintBar: View by lazy { findViewById<View>(R.id.panel_hint_bar) }
     private val progressView: TextView by lazy { findViewById<TextView>(R.id.panel_title_progress_text) }
     private val actionButton: TextView by lazy { findViewById<TextView>(R.id.panel_title_action_button) }

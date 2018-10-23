@@ -40,7 +40,7 @@ class TelemetryWrapper {
         const val ENTER_SETTINGS = "Enter settings"
         const val VISIT_COLLECTION_PAGE = "Visit collection page"
         const val CLICK_ON_SORTING_BUTTON = "Click on sorting button"
-        const val COLLECTION_ITEM = "Collection item"
+        const val COLLECTION_ITEM = "Click on collection item"
         const val CREATE_COLLECTION_WHEN_SORTING = "Create collection when sorting"
         const val PROMPT_SORTING_PAGE = "Prompt sorting page"
         const val SORT_SCREENSHOT = "Sort screenshot"

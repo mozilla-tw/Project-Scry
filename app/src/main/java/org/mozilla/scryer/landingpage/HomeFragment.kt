@@ -243,6 +243,7 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
             setOnClickListener {
                 action.run()
                 dialog.dismiss()
+                TelemetryWrapper.grantOverlayPermission()
             }
         }
 
@@ -251,6 +252,7 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
             setOnClickListener {
                 negativeAction.run()
                 dialog.dismiss()
+                TelemetryWrapper.notGrantOverlayPermission()
             }
         }
 
@@ -275,12 +277,10 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
         dialog.findViewById<View>(R.id.positive_button)?.setOnClickListener {
             action.run()
             dialog.dismiss()
-            TelemetryWrapper.grantOverlayPermission()
         }
         dialog.findViewById<View>(R.id.negative_button)?.visibility = View.GONE
         dialog.setOnCancelListener {
             negativeAction.run()
-            TelemetryWrapper.notGrantOverlayPermission()
         }
 
         val receiver = object : BroadcastReceiver() {

@@ -22,15 +22,15 @@ class MediaProviderDelegate(private val context: Context, private val handler: H
                     return
                 }
 
-                val cursor = context.contentResolver.query(uri,
+                context.contentResolver.query(uri,
                         arrayOf(MediaStore.Images.Media.DISPLAY_NAME,
                                 MediaStore.Images.Media.DATA,
                                 MediaStore.Images.Media.DATE_ADDED),
                         null,
                         null,
-                        MediaStore.Images.Media.DATE_ADDED + " DESC")
-
-                cursor.use {
+                        MediaStore.Images.Media.DATE_ADDED + " DESC"
+                ).use {
+                    val cursor = it ?: return@use
                     if (cursor.moveToFirst()) {
                         val path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA))
                         val dateAdded = cursor!!.getLong(cursor.getColumnIndex(MediaStore.Images.Media.DATE_ADDED))
@@ -42,6 +42,7 @@ class MediaProviderDelegate(private val context: Context, private val handler: H
                         }
                     }
                 }
+
                 super.onChange(selfChange, uri)
             }
         }

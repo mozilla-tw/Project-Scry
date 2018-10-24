@@ -1,6 +1,7 @@
 package org.mozilla.scryer.filemonitor
 
 import android.content.Context
+import android.database.Cursor
 import android.provider.MediaStore
 import org.mozilla.scryer.persistence.CollectionModel
 import org.mozilla.scryer.persistence.ScreenshotModel
@@ -24,8 +25,13 @@ class ScreenshotFetcher {
         val selection = "${MediaStore.Images.ImageColumns.BUCKET_ID} IS NOT NULL) GROUP BY (${MediaStore.Images.ImageColumns.BUCKET_ID}"
         val results = mutableListOf<String>()
 
-        val cursor = context.contentResolver.query(uri, columns, selection, null, null)
-        cursor.use {
+        context.contentResolver.query(uri,
+                columns,
+                selection,
+                null,
+                null
+        ).use {
+            val cursor = it ?: return@use
             while (cursor.moveToNext()) {
                 val path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA)).trim()
                 if (path.contains("screenshot", true)) {

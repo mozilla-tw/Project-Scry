@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?android:attr/activatedBackgroundIndicator"
+    android:foreground="?android:attr/selectableItemBackground"
     android:gravity="center_vertical"
     android:minHeight="@dimen/settings_list_item_height"
     android:paddingStart="?android:attr/listPreferredItemPaddingStart">

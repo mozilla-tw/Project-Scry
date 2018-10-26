@@ -54,6 +54,7 @@
 
     <!-- Settings -->
     <dimen name="settings_list_item_height">48dp</dimen>
+    <dimen name="settings_list_sub_item_padding_left">48dp</dimen>
     <dimen name="about_vertical_padding">40dp</dimen>
 
 </resources>

@@ -13,7 +13,7 @@
         <item name="windowActionModeOverlay">true</item>
         <item name="actionModeStyle">@style/ActionModeStyle</item>
         <item name="actionModeCloseButtonStyle">@style/ActionModeCloseButtonStyle</item>
-        <item name="actionModeCloseDrawable">@drawable/close_small</item>
+        <item name="actionModeCloseDrawable">@drawable/close_large</item>
     </style>
 
     <style name="AppTheme" parent="AppTheme.Base">
@@ -25,11 +25,16 @@
     </style>
 
     <style name="ActionModeStyle" parent="@style/Widget.AppCompat.ActionMode">
-        <item name="background">@color/home_background</item>
+        <item name="background">@color/primaryTeal</item>
+        <item name="titleTextStyle">@style/ActionModeTextStyle</item>
+    </style>
+
+    <style name="ActionModeTextStyle" parent="@style/TextAppearance.AppCompat.Widget.ActionMode.Title">
+        <item name="android:textColor">@color/white</item>
     </style>
 
     <style name="ActionModeCloseButtonStyle" parent="@style/Widget.AppCompat.ActionMode">
-        <item name="android:tint">@color/grey60</item>
+        <item name="android:tint">@color/white</item>
     </style>
 
     <style name="DetailPageTheme.Base" parent="AppTheme">

@@ -12,6 +12,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v4.content.ContextCompat
 import android.support.v4.content.FileProvider
 import android.support.v7.app.ActionBar
 import android.support.v7.app.AlertDialog
@@ -92,6 +93,7 @@ class CollectionFragment : Fragment() {
         override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
             val activity = activity ?: return false
             activity.menuInflater.inflate(R.menu.menu_collection_view_select_action_mode, menu)
+            activity.window?.statusBarColor = ContextCompat.getColor(activity, R.color.primaryTeal)
             return true
         }
 
@@ -101,6 +103,8 @@ class CollectionFragment : Fragment() {
 
         override fun onDestroyActionMode(mode: ActionMode) {
             screenshotAdapter.exitSelectionMode()
+            val activity = activity ?: return
+            activity.window?.statusBarColor = ContextCompat.getColor(activity, R.color.home_background)
         }
     }
 

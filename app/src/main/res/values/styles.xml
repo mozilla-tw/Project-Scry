@@ -33,8 +33,10 @@
         <item name="android:textColor">@color/white</item>
     </style>
 
-    <style name="ActionModeCloseButtonStyle" parent="@style/Widget.AppCompat.ActionMode">
+    <style name="ActionModeCloseButtonStyle" parent="Widget.AppCompat.ActionButton.CloseMode">
         <item name="android:tint">@color/white</item>
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:paddingRight">16dp</item>
     </style>
 
     <style name="DetailPageTheme.Base" parent="AppTheme">

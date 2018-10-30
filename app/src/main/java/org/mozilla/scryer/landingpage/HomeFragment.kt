@@ -222,7 +222,7 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
 
         view.findViewById<View>(R.id.action_button)?.setOnClickListener {
             action.run()
-            TelemetryWrapper.grantStoragePermission()
+            TelemetryWrapper.grantStoragePermission(pref?.getAndIncreaseGrantStoragePermissionCount() ?: 1)
         }
     }
 

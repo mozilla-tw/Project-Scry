@@ -18,6 +18,7 @@ class PreferenceWrapper(context: Context) {
     // hard-coding it here in the PreferenceManager?
     private val shouldPromptEnableService = PrefConfig("prompt_service_enable", false)
     private val isFirstTimeLaunch = PrefConfig("first_time_launch", true)
+    private val grantStoragePermissionCount = PrefConfig("grant_storage_permission_count", 1)
 
     private val pref: SharedPreferences by lazy {
         context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
@@ -37,6 +38,12 @@ class PreferenceWrapper(context: Context) {
 
     fun setShouldPromptEnableService(shouldPrompt: Boolean) {
         pref.edit().putBoolean(shouldPromptEnableService.key, shouldPrompt).apply()
+    }
+
+    fun getAndIncreaseGrantStoragePermissionCount(): Int {
+        val count = pref.getInt(grantStoragePermissionCount.key, 1)
+        pref.edit().putInt(grantStoragePermissionCount.key, (count + 1)).apply()
+        return count
     }
 }
 

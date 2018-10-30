@@ -75,6 +75,7 @@ class TelemetryWrapper {
     private object Extra {
         const val ON = "on"
         const val MODE = "mode"
+        const val TIMES = "times"
     }
 
     private object ExtraValue {
@@ -142,8 +143,8 @@ class TelemetryWrapper {
             EventBuilder(Category.VISIT_WELCOME_PAGE, Method.V1, Object.GO).queue()
         }
 
-        fun grantStoragePermission() {
-            EventBuilder(Category.GRANT_STORAGE_PERMISSION, Method.V1, Object.GO).queue()
+        fun grantStoragePermission(times: Int) {
+            EventBuilder(Category.GRANT_STORAGE_PERMISSION, Method.V1, Object.GO).extra(Extra.TIMES, times.toString()).queue()
         }
 
         fun promptOverlayPermission() {

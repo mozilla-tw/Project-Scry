@@ -20,6 +20,7 @@ import android.support.v7.app.ActionBar
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.view.ActionMode
+import android.support.v7.widget.AppCompatCheckBox
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.*
@@ -59,6 +60,7 @@ class CollectionFragment : Fragment() {
 
     private lateinit var screenshotListView: RecyclerView
     private lateinit var subtitleView: TextView
+    private lateinit var selectAllCheckbox: AppCompatCheckBox
 
     private lateinit var screenshotAdapter: ScreenshotAdapter
 
@@ -128,15 +130,22 @@ class CollectionFragment : Fragment() {
                 return
             }
             actionMode?.title = "${selected.size} selected (TBD)"
+
+            selectAllCheckbox.isChecked = screenshotAdapter.getScreenshotList().all {
+                isSelected(it)
+            }
+            selectAllCheckbox.invalidate()
         }
 
         override fun onEnterSelectMode() {
             val activity = (activity as? AppCompatActivity) ?: return
             actionMode = activity.startSupportActionMode(selectActionModeCallback)
+            selectAllCheckbox.visibility = View.VISIBLE
         }
 
         override fun onExitSelectMode() {
             actionMode?.finish()
+            selectAllCheckbox.visibility = View.GONE
         }
     }
     private var screenshotList = listOf<ScreenshotModel>()
@@ -167,6 +176,17 @@ class CollectionFragment : Fragment() {
         val layout = inflater.inflate(R.layout.fragment_collection, container, false)
         screenshotListView = layout.findViewById(R.id.screenshot_list)
         subtitleView = layout.findViewById(R.id.subtitle)
+        selectAllCheckbox = layout.findViewById(R.id.select_all_checkbox)
+        selectAllCheckbox.setOnClickListener { _ ->
+            val isChecked = selectAllCheckbox.isChecked
+            selectAllCheckbox.invalidate()
+            screenshotAdapter.getScreenshotList().forEach {
+                if (isChecked != selector.isSelected(it)) {
+                    selector.toggleSelection(it)
+                }
+            }
+            screenshotAdapter.notifyDataSetChanged()
+        }
         return layout
     }
 

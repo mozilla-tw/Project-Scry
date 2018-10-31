@@ -43,6 +43,7 @@
 
     <!-- Home: collections -->
     <dimen name="home_collection_padding_top">@dimen/section_title_vertical_padding</dimen>
+    <dimen name="home_select_mode_checkbox_size">20dp</dimen>
 
     <!-- Collection -->
     <dimen name="collection_vertical_padding">8dp</dimen>

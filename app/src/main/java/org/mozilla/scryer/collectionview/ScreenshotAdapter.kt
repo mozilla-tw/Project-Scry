@@ -5,12 +5,8 @@
 
 package org.mozilla.scryer.collectionview
 
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
 import android.content.Context
-import android.graphics.Color
 import android.support.v4.content.ContextCompat
-import android.support.v4.graphics.drawable.DrawableCompat
 import android.support.v7.widget.AppCompatCheckBox
 import android.support.v7.widget.CardView
 import android.support.v7.widget.LinearLayoutManager
@@ -43,6 +39,7 @@ open class ScreenshotAdapter(
         holder.title = view.findViewById(R.id.title)
         holder.image = view.findViewById(R.id.image_view)
         holder.checkbox = view.findViewById(R.id.check_box)
+        holder.selectOverlay = view.findViewById(R.id.selected_overlay)
         holder.itemView.setOnClickListener { _ ->
             holder.getValidPosition { position: Int ->
                 if (selector?.isSelectMode == true) {
@@ -157,77 +154,30 @@ open class ScreenshotAdapter(
 
     private fun updateSelectionUI(holder: ScreenshotItemHolder, screenshot: ScreenshotModel) {
         selector ?: return
-        val targetView = holder.cardView ?: return
-
-        val isSelected = isSelected(screenshot)
-
-        val scale = if (isSelected) { 0.8f } else { 1f }
-        val selectedColor = Color.TRANSPARENT
-        val unselectedColor = ContextCompat.getColor(holder.itemView.context,
-                R.color.collection_view_screenshot_item_border)
 
         if (isSelected(screenshot)) {
             holder.checkbox?.isChecked = true
-
-            selector.processSelection(screenshot) { stateChanged ->
-                targetView.animate().cancel()
-                DrawableCompat.setTint(holder.itemView.background, selectedColor)
-                if (stateChanged) {
-                    playSelectAnimation(holder, scale) {
-                        DrawableCompat.setTint(holder.itemView.background, selectedColor)
-                    }
-                } else {
-                    targetView.scaleX = scale
-                    targetView.scaleY = scale
-                }
-            }
+            holder.selectOverlay?.setBackgroundColor(ContextCompat.getColor(holder.itemView.context,
+                    R.color.collection_view_select_mode_selected_overlay))
 
         } else {
             holder.checkbox?.isChecked = false
-            selector.processSelection(screenshot) { stateChanged ->
-                targetView.animate().cancel()
-                if (stateChanged) {
-                    playSelectAnimation(holder, scale) {
-                        DrawableCompat.setTint(holder.itemView.background, unselectedColor)
-                    }
-                } else {
-
-                    targetView.scaleX = 1f
-                    targetView.scaleY = 1f
-                    DrawableCompat.setTint(holder.itemView.background, unselectedColor)
-                }
-            }
+            holder.selectOverlay?.setBackgroundColor(ContextCompat.getColor(holder.itemView.context,
+                    R.color.collection_view_select_mode_unselected_overlay))
         }
     }
 
     private fun updateNonDataRelatedUI(holder: ScreenshotItemHolder) {
-        holder.checkbox?.visibility = if (selector?.isSelectMode == true) {
-            View.VISIBLE
+        if (selector?.isSelectMode == true) {
+            holder.checkbox?.visibility = View.VISIBLE
+            holder.selectOverlay?.visibility = View.VISIBLE
         } else {
-            View.INVISIBLE
+            holder.checkbox?.visibility = View.INVISIBLE
+            holder.selectOverlay?.visibility = View.GONE
         }
     }
 
-    private fun playSelectAnimation(
-            holder: ScreenshotItemHolder,
-            scale: Float,
-            onAnimationEnd: (() -> Unit)? = null
-    ) {
-        val targetView = holder.cardView ?: return
-        val duration = 150L
-
-        targetView.animate()
-                .scaleX(scale)
-                .scaleY(scale)
-                .setListener(object : AnimatorListenerAdapter() {
-                    override fun onAnimationEnd(animation: Animator?) {
-                        onAnimationEnd?.invoke()
-                    }
-                })
-                .duration = duration
-    }
-
-    private fun notifyVisibleItemRangeChanged() {
+    fun notifyVisibleItemRangeChanged() {
         val recyclerView = recyclerView ?: return
 
         (recyclerView.layoutManager as? LinearLayoutManager)?.apply {
@@ -264,6 +214,7 @@ class ScreenshotItemHolder(
     var title: TextView? = null
     var image: ImageView? = null
     var checkbox: AppCompatCheckBox? = null
+    var selectOverlay: View? = null
 
     init {
         itemView.setOnCreateContextMenuListener(this)

@@ -31,6 +31,8 @@
 
     <!-- Collection View -->
     <color name="collection_view_screenshot_item_border">#cbcbcb</color>
+    <color name="collection_view_select_mode_selected_overlay">#8000bac8</color>
+    <color name="collection_view_select_mode_unselected_overlay">#1a000000</color>
 
     <!-- Notification -->
     <color name="foreground_notification">@color/primaryTeal</color>

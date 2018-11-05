@@ -15,7 +15,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/home_background"
-        android:elevation="2dp"
+        android:elevation="@dimen/collection_chrome_elevation"
         app:navigationIcon="@drawable/back"
         app:layout_constraintTop_toTopOf="parent"
         app:title="Collection" />

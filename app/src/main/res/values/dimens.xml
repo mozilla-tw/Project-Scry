@@ -49,6 +49,7 @@
     <dimen name="collection_vertical_padding">8dp</dimen>
     <dimen name="collection_horizontal_padding">16dp</dimen>
     <dimen name="collection_item_space">8dp</dimen>
+    <dimen name="collection_chrome_elevation">2dp</dimen>
 
     <!-- Search -->
     <dimen name="search_horizontal_padding">40dp</dimen>

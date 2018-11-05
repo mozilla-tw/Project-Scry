@@ -73,8 +73,21 @@ class CollectionFragment : Fragment() {
 
             when (item.itemId) {
                 R.id.action_move -> {
-                    val intent = SortingPanelActivity.sortScreenshots(activity, selector.selected)
-                    startActivity(intent)
+                    //val intent = SortingPanelActivity.sortScreenshots(activity, selector.selected)
+                    //startActivity(intent)
+                    //sortingPanelGroup.visibility = View.VISIBLE
+                    val context = context ?: return false
+                    val builder = AlertDialog.Builder(context, R.style.sorting_dialog)
+                    val view = LayoutInflater.from(context).inflate(R.layout.activity_sorting_panel, null, false)
+                    val dialog = builder.setView(view).create()
+                    dialog.show()
+
+                    val params = WindowManager.LayoutParams()
+                    params.copyFrom(dialog.window.attributes)
+                    params.width = WindowManager.LayoutParams.MATCH_PARENT
+                    params.height = WindowManager.LayoutParams.MATCH_PARENT
+                    dialog.window.attributes = params
+
                     mode.finish()
                 }
 

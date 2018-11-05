@@ -33,6 +33,15 @@
         <item name="android:textColor">@color/white</item>
     </style>
 
+    <style name="sorting_dialog" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="android:windowMinWidthMajor">100%</item>
+        <item name="android:windowMinWidthMinor">100%</item>
+        <item name="android:layout_gravity">bottom</item>
+        <item name="android:windowBackground">@null</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowIsFloating">false</item>
+    </style>
+
     <style name="ActionModeCloseButtonStyle" parent="Widget.AppCompat.ActionButton.CloseMode">
         <item name="android:tint">@color/white</item>
         <item name="android:paddingLeft">16dp</item>

@@ -148,7 +148,6 @@ class CollectionFragment : Fragment() {
             selectAllCheckbox.visibility = View.GONE
         }
     }
-    private var screenshotList = listOf<ScreenshotModel>()
 
     private val collectionId: String? by lazy {
         arguments?.getString(ARG_COLLECTION_ID)
@@ -303,7 +302,7 @@ class CollectionFragment : Fragment() {
     }
 
     private fun updateSortMenuItem(item: MenuItem?) {
-        item?.isVisible = screenshotList.isNotEmpty()
+        item?.isVisible = screenshotAdapter.getScreenshotList().isNotEmpty()
     }
 
     private fun initScreenshotList(context: Context) {
@@ -330,9 +329,6 @@ class CollectionFragment : Fragment() {
         } ?: viewModel.getScreenshots()
 
         liveData.observe(this, Observer { screenshots ->
-            screenshotList = screenshots
-            updateSortMenuItem(sortMenuItem)
-
             if (screenshots.isNotEmpty()) {
                 subtitleView.visibility = View.VISIBLE
                 subtitleView.text = getString(R.string.collection_separator_shots, screenshots.size)
@@ -346,6 +342,8 @@ class CollectionFragment : Fragment() {
                 screenshotAdapter.setScreenshotList(sorted)
                 screenshotAdapter.notifyDataSetChanged()
             }
+
+            updateSortMenuItem(sortMenuItem)
         })
 
         viewModel.getCollections().observe(this, Observer { collections ->

@@ -248,7 +248,7 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
         }
 
         dialog.findViewById<TextView>(R.id.negative_button)?.apply {
-            setText(R.string.onboarding_fab_action_later)
+            setText(R.string.action_later)
             setOnClickListener {
                 negativeAction.run()
                 dialog.dismiss()

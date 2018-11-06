@@ -7,6 +7,8 @@
     <string name="info_info">Screenshot info</string>
     <!-- Label used when no content -->
     <string name="title_noshots">No screenshots yet!</string>
+    <!-- Label used for buttons to skip the current action -->
+    <string name="action_later">Later</string>
 
     <!-- Notification: strings displayed on the notification to perform various actions -->
     <string name="notification_action_capture">Tap to take screenshot</string>
@@ -59,7 +61,7 @@
     <!-- String displayed when recognizing no text on the screenshot -->
     <string name="detail_ocr_error_notext">No text found</string>
     <!-- Detail view: string displayed on the detail view when recognizing the text on the screenshot -->
-    <string name="detail_transition_recognizing">Text recognizing&#8230;</string>
+    <string name="detail_transition_recognizing">Recognizing text&#8230;</string>
 
     <!-- Dialogue: strings displayed in the dialogues which inform users about a task, e.g. dialogue title, content and action -->
     <!-- This string also serves as menu action in collection view -->
@@ -126,7 +128,7 @@
     <!-- The string changes to serve as description of settings_list_fab -->
     <string name="settings_detail_capture">Allows you to take a screenshot with one tap. Works with whatever is on your screen.</string>
     <!-- The string displayed to enable a floating button to take screenshot, and the placeholder %1$s is "GO" from the product name -->
-    <string name="settings_list_fab">%1$s button</string>
+    <string name="settings_list_fab">Use %1$s button</string>
     <string name="settings_list_sorting">Prompt to sort</string>
     <string name="settings_detail_sorting">Always prompt to add screenshot to a collection</string>
     <string name="settings_list_usagedata">Send usage data</string>
@@ -161,8 +163,6 @@
     <string name="onboarding_fab_title_fab">Get the %1$s button</string>
     <!-- The placeholder %1$s is "GO" from the product name -->
     <string name="onboarding_fab_content_permission">The %1$s button lets you take and organize your screenshots anytime, anywhere. We’ll need your permission to enable it.</string>
-    <!-- String to allow users to dismiss the onboarding panel -->
-    <string name="onboarding_fab_action_later">Later</string>
     <!-- Auto-grant overlay permission prompt. The placeholder %1$s is "GO" from the product name -->
     <string name="onboarding_autogrant_overlay_title">Use the %1$s button to take and organize screenshots anytime, anywhere.</string>
     <string name="onboarding_autogrant_overlay_gotit">Got it</string>

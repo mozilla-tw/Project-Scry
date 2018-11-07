@@ -3,6 +3,7 @@ package org.mozilla.scryer.telemetry
 import android.content.Context
 import android.preference.PreferenceManager
 import android.support.annotation.Nullable
+import com.google.firebase.analytics.FirebaseAnalytics
 import org.mozilla.scryer.BuildConfig
 import org.mozilla.scryer.R
 import org.mozilla.scryer.ScryerApplication
@@ -266,10 +267,12 @@ class TelemetryWrapper {
 
     internal class EventBuilder @JvmOverloads constructor(category: String, method: String, @Nullable `object`: String, value: String? = null) {
         var telemetryEvent: TelemetryEvent = TelemetryEvent.create(category, method, `object`, value)
-        //TODO: Add firebase event
+        var firebaseEvent: FirebaseEvent = FirebaseEvent.create(category, method, `object`, value)
+
 
         fun extra(key: String, value: String): EventBuilder {
             telemetryEvent.extra(key, value)
+            firebaseEvent.param(key, value)
             return this
         }
 
@@ -277,6 +280,7 @@ class TelemetryWrapper {
             val context = TelemetryHolder.get().configuration.context
             if (context != null) {
                 telemetryEvent.queue()
+                firebaseEvent.event(context)
             }
         }
     }

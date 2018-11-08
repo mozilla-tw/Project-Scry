@@ -16,6 +16,7 @@ import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.support.v4.content.FileProvider
 import android.support.v4.graphics.drawable.DrawableCompat
+import android.support.v4.view.ViewCompat
 import android.support.v7.app.ActionBar
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
@@ -108,7 +109,10 @@ class CollectionFragment : Fragment() {
                 }
             }
 
-            activity.window?.statusBarColor = ContextCompat.getColor(activity, R.color.primaryTeal)
+            activity.window?.let {
+                it.statusBarColor = ContextCompat.getColor(activity, R.color.primaryTeal)
+            }
+
             return true
         }
 
@@ -119,7 +123,11 @@ class CollectionFragment : Fragment() {
         override fun onDestroyActionMode(mode: ActionMode) {
             screenshotAdapter.exitSelectionMode()
             val activity = activity ?: return
-            activity.window?.statusBarColor = ContextCompat.getColor(activity, R.color.home_background)
+
+            activity.findViewById<View>(R.id.action_mode_bar).visibility = View.INVISIBLE
+            activity.window?.let {
+                it.statusBarColor = ContextCompat.getColor(activity, R.color.statusBarColor)
+            }
         }
     }
 
@@ -209,6 +217,15 @@ class CollectionFragment : Fragment() {
         initScreenshotList(view.context)
 
         collectionNameForTelemetry?.let { TelemetryWrapper.visitCollectionPage(it) }
+
+        ViewCompat.setOnApplyWindowInsetsListener(view) { _, insets ->
+            toolbar_holder.setPadding(toolbar_holder.paddingLeft,
+                    insets.systemWindowInsetTop,
+                    toolbar_holder.paddingRight,
+                    toolbar_holder.paddingBottom)
+            view.setPadding(view.paddingLeft, view.paddingTop, view.paddingRight, insets.systemWindowInsetBottom)
+            insets
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

@@ -6,11 +6,14 @@
 package org.mozilla.scryer
 
 import android.arch.lifecycle.ViewModelProviders
+import android.graphics.Color
 import android.os.Bundle
 import android.support.v4.app.FragmentActivity
 import android.support.v7.app.ActionBar
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
+import android.view.View
+import android.view.WindowManager
 import org.mozilla.scryer.permission.PermissionViewModel
 import org.mozilla.scryer.preference.PreferenceWrapper
 import org.mozilla.scryer.telemetry.TelemetryWrapper
@@ -34,6 +37,15 @@ class MainActivity : AppCompatActivity() {
         isFirstTimeLaunched = prefs.isFirstTimeLaunch()
         if (isFirstTimeLaunched) {
             prefs.setFirstTimeLaunched()
+        }
+
+        window?.let {
+            it.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+            it.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+            it.decorView.systemUiVisibility = it.decorView.systemUiVisibility or View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
+                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
+                    View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+            it.statusBarColor = Color.TRANSPARENT
         }
     }
 

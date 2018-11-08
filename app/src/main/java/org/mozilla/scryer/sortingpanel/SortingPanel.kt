@@ -29,7 +29,7 @@ import org.mozilla.scryer.persistence.ScreenshotModel
 import org.mozilla.scryer.ui.InnerSpaceDecoration
 import java.io.File
 
-class SortingPanel : FrameLayout, DefaultLifecycleObserver {
+open class SortingPanel : FrameLayout, DefaultLifecycleObserver {
 
     private val recyclerView: RecyclerView by lazy { findViewById<RecyclerView>(R.id.panel_recycler_view) }
     private val coordinatorLayout: View by lazy { findViewById<View>(R.id.coordinator_layout) }

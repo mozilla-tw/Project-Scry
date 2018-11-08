@@ -5,21 +5,30 @@
 
 <android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/home_background"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="match_parent">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar"
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/home_background" />
+
+    <FrameLayout
+        android:id="@+id/toolbar_holder"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/home_background"
-        android:elevation="@dimen/collection_chrome_elevation"
-        app:navigationIcon="@drawable/back"
         app:layout_constraintTop_toTopOf="parent"
-        app:title="Collection" />
-
+        android:elevation="@dimen/collection_chrome_elevation"
+        android:background="@color/statusBarColor">
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/home_background"
+            app:navigationIcon="@drawable/back"
+            app:title="Collection" />
+    </FrameLayout>
 
     <LinearLayout
         android:id="@+id/subtitle_layout"
@@ -28,7 +37,7 @@
         android:orientation="horizontal"
         android:layout_marginStart="24dp"
         android:layout_marginEnd="24dp"
-        app:layout_constraintTop_toBottomOf="@id/toolbar">
+        app:layout_constraintTop_toBottomOf="@id/toolbar_holder">
         <android.support.v7.widget.AppCompatCheckBox
             android:id="@+id/select_all_checkbox"
             android:layout_width="@dimen/home_select_mode_checkbox_size"
@@ -80,5 +89,25 @@
             android:layout_gravity="center_horizontal"
             android:text="@string/title_noshots" />
     </LinearLayout>
+
+    <View
+        android:id="@+id/sorting_panel_background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:elevation="@dimen/collection_chrome_elevation"
+        android:background="#88ff0000" />
+
+    <org.mozilla.scryer.sortingpanel.SortingPanel
+        android:id="@+id/sorting_panel"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:elevation="@dimen/collection_chrome_elevation" />
+
+    <android.support.constraint.Group
+        android:id="@+id/sorting_panel_group"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:constraint_referenced_ids="sorting_panel_background,sorting_panel" />
 
 </android.support.constraint.ConstraintLayout>

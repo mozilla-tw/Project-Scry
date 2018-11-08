@@ -7,7 +7,7 @@
         <item name="colorAccent">@color/primaryTeal</item>
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
         <item name="android:windowContentTransitions">true</item>
-        <item name="android:windowBackground">@color/home_background</item>
+        <item name="android:windowBackground">@color/statusBarColor</item>
         <item name="actionOverflowButtonStyle">@style/OverflowButtonStyle</item>
         <item name="alertDialogTheme">@style/DialogTheme</item>
         <item name="windowActionModeOverlay">true</item>
@@ -27,6 +27,7 @@
     <style name="ActionModeStyle" parent="@style/Widget.AppCompat.ActionMode">
         <item name="background">@color/primaryTeal</item>
         <item name="titleTextStyle">@style/ActionModeTextStyle</item>
+        <item name="android:statusBarColor">@color/errorRed</item>
     </style>
 
     <style name="ActionModeTextStyle" parent="@style/TextAppearance.AppCompat.Widget.ActionMode.Title">
@@ -34,10 +35,7 @@
     </style>
 
     <style name="sorting_dialog" parent="Theme.AppCompat.Light.Dialog.Alert">
-        <item name="android:windowMinWidthMajor">100%</item>
-        <item name="android:windowMinWidthMinor">100%</item>
-        <item name="android:layout_gravity">bottom</item>
-        <item name="android:windowBackground">@null</item>
+        <item name="android:windowBackground">@color/dialogScrim</item>
         <item name="windowNoTitle">true</item>
         <item name="android:windowIsFloating">false</item>
     </style>

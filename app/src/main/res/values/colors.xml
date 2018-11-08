@@ -28,6 +28,7 @@
     <!-- Home -->
     <color name="home_background">@color/white</color>
     <color name="quick_access_background">@color/grey10</color>
+    <color name="statusBarColor">@color/disableGrey</color>
 
     <!-- Collection View -->
     <color name="collection_view_screenshot_item_border">#cbcbcb</color>

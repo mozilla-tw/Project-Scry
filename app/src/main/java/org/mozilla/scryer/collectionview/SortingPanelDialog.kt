@@ -6,11 +6,14 @@
 
 package org.mozilla.scryer.collectionview
 
+import android.graphics.PixelFormat
 import android.support.v4.app.FragmentActivity
-import android.support.v7.app.AlertDialog
+import android.support.v4.content.ContextCompat
+import android.view.KeyEvent
 import android.view.View
 import android.view.WindowManager
 import android.widget.TextView
+import kotlinx.android.synthetic.main.view_sorting_panel.view.*
 import kotlinx.coroutines.experimental.DefaultDispatcher
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
@@ -26,14 +29,13 @@ import org.mozilla.scryer.util.CollectionListHelper
 import org.mozilla.scryer.viewmodel.ScreenshotViewModel
 import java.util.*
 
-class SortingPanelDialog(private val activity: FragmentActivity, val screenshots: List<ScreenshotModel>) {
+class SortingPanelDialog(
+        private val activity: FragmentActivity,
+        val screenshots: List<ScreenshotModel>
+) {
     private val suggestCollectionCreateTime = mutableListOf<Pair<CollectionModel, Long>>()
     private var onDismissListener: (() -> Unit)? = null
-    private var dialog: AlertDialog? = null
-
-    fun setOnDismissListener(listener: () -> Unit) {
-        onDismissListener = listener
-    }
+    //private var dialog: AlertDialog? = null
 
     private val panelCallback = object : SortingPanelAdapter.Callback {
         override fun onClickStart(collection: CollectionModel) {
@@ -57,63 +59,57 @@ class SortingPanelDialog(private val activity: FragmentActivity, val screenshots
         }
 
         override fun onClickFinish(collection: CollectionModel) {
-            dialog?.dismiss()
+            dismiss()
         }
 
         override fun onNewCollectionClick() {
             CollectionNameDialog.createNewCollection(activity, ScreenshotViewModel.get(activity), false) {
-                //showAddedToast(it, true)
-//                            onCollectionClickStart(it)
-//                            onCollectionClickFinish(it)
+                onClickStart(it)
+                onClickFinish(it)
             }
         }
     }
 
-    fun show() {
-        dialog?.let {
-            return
+    private val panelView = object : SortingPanel(activity) {
+        override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+            return if (event.keyCode == KeyEvent.KEYCODE_BACK) {
+                dismiss()
+                true
+
+            } else {
+                super.dispatchKeyEvent(event)
+            }
         }
+    }
 
+    fun setOnDismissListener(listener: () -> Unit) {
+        onDismissListener = listener
+    }
+
+    fun show() {
         launch(UI.immediate) {
-            val panel = View.inflate(activity, R.layout.activity_sorting_panel, null) as SortingPanel
-
-            val dialog = AlertDialog.Builder(activity, R.style.sorting_dialog)
-                    .setView(panel)
-                    .create()
-                    .apply {
-                        setOnShowListener {
-                            panel.onStart(activity)
-                        }
-
-                        setOnDismissListener {
-                            panel.onStop(activity)
-                            updateCollectionOrderToRepository()
-                            onDismissListener?.invoke()
-                        }
-                    }
-
-            panel.apply {
+            panelView.apply {
                 initPanelUI(this)
                 collectionSource = withContext(DefaultDispatcher) {
                     ScreenshotViewModel.get(activity).getCollections()
                 }
                 callback = panelCallback
                 setActionCallback {
-                    dialog.dismiss()
+                    dismiss()
                 }
             }
-
-            dialog.show()
-
-            val params = WindowManager.LayoutParams()
-            params.copyFrom(dialog.window.attributes)
-            params.width = WindowManager.LayoutParams.MATCH_PARENT
-            params.height = WindowManager.LayoutParams.MATCH_PARENT
-            dialog.window.attributes = params
-            panel.requestLayout()
-
-            this@SortingPanelDialog.dialog = dialog
+            panelView.onStart(activity)
+            activity.windowManager.addView(panelView, WindowManager.LayoutParams(WindowManager.LayoutParams.TYPE_APPLICATION,
+                    WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS,
+                    PixelFormat.TRANSLUCENT))
         }
+    }
+
+    private fun dismiss() {
+        activity.windowManager.removeViewImmediate(panelView)
+        panelView.onStop(activity)
+        onDismissListener?.invoke()
+        updateCollectionOrderToRepository()
     }
 
     private fun updateCollectionOrderToRepository() {
@@ -128,5 +124,10 @@ class SortingPanelDialog(private val activity: FragmentActivity, val screenshots
     private fun initPanelUI(panel: SortingPanel) {
         val actionText = panel.findViewById<TextView>(R.id.panel_title_action_button)
         actionText.text = activity.getText(android.R.string.cancel)
+
+        panel.fake_layer.visibility = View.INVISIBLE
+        panel.image_view.visibility = View.INVISIBLE
+
+        panel.setBackgroundColor(ContextCompat.getColor(panel.context, R.color.dialogScrim))
     }
 }

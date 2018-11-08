@@ -93,6 +93,8 @@
     <string name="dialogue_skipsorting_action_skip">Skip all</string>
 
     <!-- Menu: strings displayed when triggering the overflow menu in the top-right corner of each view -->
+    <!-- String to allow users to multi-select screenshots -->
+    <string name="menu_action_select">Select</string>
     <string name="menu_shot_action_move">Move to&#8230;</string>
     <string name="menu_action_rename">Rename</string>
     <!-- Strings displayed to perform actions when selecting text on the screenshot,

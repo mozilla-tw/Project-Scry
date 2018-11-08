@@ -33,7 +33,11 @@ class ScreenshotFetcher {
         ).use {
             val cursor = it ?: return@use
             while (cursor.moveToNext()) {
-                val path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA)).trim()
+                val index = cursor.getColumnIndex(MediaStore.Images.Media.DATA)
+                if (index < 0) {
+                    continue
+                }
+                val path = cursor.getString(index).trim()
                 if (path.contains("screenshot", true)) {
                     val folder = File(path).parent?.trimEnd(File.separatorChar) ?: continue
                     results.add(folder)

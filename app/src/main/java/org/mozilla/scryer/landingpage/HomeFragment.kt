@@ -27,7 +27,6 @@ import android.support.v4.content.LocalBroadcastManager
 import android.support.v7.app.AppCompatDialog
 import android.support.v7.preference.PreferenceManager
 import android.support.v7.widget.*
-import android.util.Log
 import android.view.*
 import android.widget.TextView
 import android.widget.Toast
@@ -36,6 +35,7 @@ import kotlinx.coroutines.experimental.DefaultDispatcher
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.withContext
+import mozilla.components.support.base.log.Log
 import org.mozilla.scryer.*
 import org.mozilla.scryer.capture.ScreenCaptureManager
 import org.mozilla.scryer.collectionview.ScreenshotItemHolder
@@ -416,7 +416,7 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
         })
 
         view!!.findViewById<View>(R.id.intercept_view).setOnClickListener {
-            if (permissionFlow.isFinished()) {
+            if (this::permissionFlow.isInitialized && permissionFlow.isFinished()) {
                 Navigation.findNavController(view!!).navigateSafely(R.id.MainFragment,
                         R.id.action_navigate_to_search,
                         Bundle())
@@ -481,13 +481,13 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
         mainListView.addItemDecoration(MainAdapter.ItemDecoration(COLLECTION_COLUMN_COUNT, spaceOuter, spaceTop))
 
         viewModel.getCollections().observe(this, Observer { collections ->
-            collections?.filter {
+            collections?.asSequence()?.filter {
                 !SuggestCollectionHelper.isSuggestCollection(it)
 
             }?.sortedBy {
                 it.createdDate
 
-            }?.let {
+            }?.toList()?.let {
                 updateCollectionListView(it)
             }
         })
@@ -663,7 +663,7 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
     }
 
     private fun log(tag: String, msg: String) {
-        Log.d(tag, msg)
+        Log.log(Log.Priority.DEBUG, tag, null, msg)
     }
 
     private fun setDoNotShowDialogAgain(prefKey: String) {

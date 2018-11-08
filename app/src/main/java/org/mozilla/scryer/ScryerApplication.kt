@@ -6,6 +6,8 @@
 package org.mozilla.scryer
 
 import android.app.Application
+import mozilla.components.support.base.log.Log
+import mozilla.components.support.base.log.sink.AndroidLogSink
 import org.mozilla.scryer.repository.ScreenshotRepository
 import org.mozilla.scryer.setting.PreferenceSettingsRepository
 import org.mozilla.scryer.setting.SettingsRepository
@@ -38,6 +40,7 @@ class ScryerApplication : Application() {
         ApplicationHolder.instance = this
         TelemetryWrapper.init(this)
         AdjustHelper.init(this)
+        Log.addSink(AndroidLogSink())
 
         screenshotRepository = ScreenshotRepository.createRepository(this) {
             screenshotRepository.setupDefaultContent(this)

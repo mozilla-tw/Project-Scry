@@ -100,12 +100,16 @@ class CollectionFragment : Fragment() {
         override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
             val activity = activity ?: return false
             activity.menuInflater.inflate(R.menu.menu_collection_view_select_action_mode, menu)
+            actionModeMenu = menu
 
             (0 until menu.size()).map {
                 menu.getItem(it)
             }.forEach { item ->
                 item.icon = DrawableCompat.wrap(item.icon).mutate().apply {
                     DrawableCompat.setTint(this, Color.WHITE)
+                }
+                if (selector.selected.isEmpty()) {
+                    item.isVisible = false
                 }
             }
 
@@ -131,6 +135,8 @@ class CollectionFragment : Fragment() {
         }
     }
 
+    private var actionModeMenu: Menu? = null
+
     private var selector = object : ListSelector<ScreenshotModel>() {
         private var actionMode: ActionMode? = null
 
@@ -139,18 +145,30 @@ class CollectionFragment : Fragment() {
                 screenshotAdapter.exitSelectionMode()
                 return
             }
+
             actionMode?.title = "${selected.size} selected (TBD)"
 
             selectAllCheckbox.isChecked = screenshotAdapter.getScreenshotList().all {
                 isSelected(it)
             }
             selectAllCheckbox.invalidate()
+
+            actionModeMenu?.let { menu ->
+                (0 until menu.size()).map {
+                    menu.getItem(it)
+                }.forEach { item ->
+                    if (selected.isNotEmpty()) {
+                        item.isVisible = true
+                    }
+                }
+            }
         }
 
         override fun onEnterSelectMode() {
             val activity = (activity as? AppCompatActivity) ?: return
             actionMode = activity.startSupportActionMode(selectActionModeCallback)
             selectAllCheckbox.visibility = View.VISIBLE
+            actionMode?.title = getString(R.string.collection_header_select_none)
         }
 
         override fun onExitSelectMode() {
@@ -176,6 +194,7 @@ class CollectionFragment : Fragment() {
     }
 
     private var sortMenuItem: MenuItem? = null
+    private var selectMenuItem: MenuItem? = null
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -236,6 +255,8 @@ class CollectionFragment : Fragment() {
             null
         }
 
+        selectMenuItem = menu.findItem(R.id.action_select).apply { updateSortMenuItem(this) }
+
         val renameItem = menu.findItem(R.id.action_collection_rename)
         if (collectionId == null || collectionId == CollectionModel.CATEGORY_NONE) {
             renameItem.isVisible = false
@@ -257,6 +278,10 @@ class CollectionFragment : Fragment() {
         when (item.itemId) {
             android.R.id.home -> {
                 Navigation.findNavController(view).navigateUp()
+            }
+
+            R.id.action_select -> {
+                screenshotAdapter.enterSelectionMode()
             }
 
             R.id.action_sort -> {
@@ -363,6 +388,7 @@ class CollectionFragment : Fragment() {
             }
 
             updateSortMenuItem(sortMenuItem)
+            updateSortMenuItem(selectMenuItem)
         })
 
         viewModel.getCollections().observe(this, Observer { collections ->

@@ -1,8 +1,10 @@
 package org.mozilla.scryer.telemetry
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.preference.PreferenceManager
 import android.support.annotation.Nullable
+import android.util.Log
 import org.mozilla.scryer.BuildConfig
 import org.mozilla.scryer.R
 import org.mozilla.scryer.ScryerApplication
@@ -86,6 +88,26 @@ class TelemetryWrapper {
     companion object {
 
         private const val TELEMETRY_APP_NAME = "Scryer"
+
+        private var DebugTelemetry = false
+
+        //  static init block
+        init {
+            try {
+                val enabled = getPropertiesFromSystem ("log.tag.mozdebug")
+                DebugTelemetry = enabled.toBoolean()
+            } catch (e : Exception) {
+            }
+        }
+
+        //  TODO: move this to util class
+        @SuppressLint("PrivateApi")
+        @Throws(Exception::class)
+        internal fun getPropertiesFromSystem(key: String): String {
+            val c = Class.forName("android.os.SystemProperties")
+            val method = c.getDeclaredMethod("get", String::class.java)
+            return method.invoke(null, key) as String
+        }
 
         fun init(context: Context) {
             try {
@@ -264,7 +286,7 @@ class TelemetryWrapper {
         }
     }
 
-    internal class EventBuilder @JvmOverloads constructor(category: String, method: String, @Nullable `object`: String, value: String? = null) {
+    internal class EventBuilder @JvmOverloads constructor(val category: String, val method: String, @Nullable val `object`: String, val value: String? = null) {
         var telemetryEvent: TelemetryEvent = TelemetryEvent.create(category, method, `object`, value)
         //TODO: Add firebase event
 
@@ -274,6 +296,17 @@ class TelemetryWrapper {
         }
 
         fun queue() {
+            if(DebugTelemetry) {
+                val str = StringBuilder()
+                val append = str
+                        .append("{\n\tcategory: ").append(category)
+                        .append("\n\tmethod: ").append(method)
+                        .append("\n\tobject: ").append(`object`)
+                        .append("\n\tvalue: ").append(value)
+                        .append("\n}")
+                Log.d("DebugTelemetry˛", append.toString())
+            }
+
             val context = TelemetryHolder.get().configuration.context
             if (context != null) {
                 telemetryEvent.queue()

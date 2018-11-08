@@ -10,6 +10,7 @@ import android.database.ContentObserver
 import android.net.Uri
 import android.os.Handler
 import android.provider.MediaStore
+import org.mozilla.scryer.permission.PermissionHelper
 
 class MediaProviderDelegate(private val context: Context, private val handler: Handler?) : FileMonitorDelegate {
 
@@ -18,6 +19,10 @@ class MediaProviderDelegate(private val context: Context, private val handler: H
     override fun startMonitor(listener: FileMonitor.ChangeListener) {
         observer = object : ContentObserver(handler) {
             override fun onChange(selfChange: Boolean, uri: Uri?) {
+                if (!PermissionHelper.hasStoragePermission(context)) {
+                    return
+                }
+
                 if (!uri.toString().contains(MediaStore.Images.Media.EXTERNAL_CONTENT_URI.toString())) {
                     return
                 }

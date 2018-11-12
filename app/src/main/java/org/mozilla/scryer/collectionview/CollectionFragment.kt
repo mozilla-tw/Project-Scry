@@ -146,7 +146,11 @@ class CollectionFragment : Fragment() {
                 return
             }
 
-            actionMode?.title = "${selected.size} selected (TBD)"
+            actionMode?.title = if (selected.size == screenshotAdapter.itemCount) {
+                getString(R.string.collection_header_select_all)
+            } else {
+                "${selected.size}"
+            }
 
             selectAllCheckbox.isChecked = screenshotAdapter.getScreenshotList().all {
                 isSelected(it)

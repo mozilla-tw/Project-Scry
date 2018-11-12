@@ -169,6 +169,7 @@ class CollectionFragment : Fragment() {
             actionMode = activity.startSupportActionMode(selectActionModeCallback)
             selectAllCheckbox.visibility = View.VISIBLE
             actionMode?.title = getString(R.string.collection_header_select_none)
+            selectAllCheckbox.isChecked = false
         }
 
         override fun onExitSelectMode() {

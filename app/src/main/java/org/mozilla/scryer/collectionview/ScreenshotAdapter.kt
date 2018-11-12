@@ -90,14 +90,12 @@ open class ScreenshotAdapter(
                     .into(it)
         }
 
-        updateSelectionUI(holder, screenshot)
-
-        updateNonDataRelatedUI(holder)
+        updateItemUI(holder)
     }
 
     override fun onViewAttachedToWindow(holder: RecyclerView.ViewHolder) {
         (holder as? ScreenshotItemHolder) ?: return
-        updateNonDataRelatedUI(holder)
+        updateItemUI(holder)
     }
 
     override fun onViewRecycled(holder: RecyclerView.ViewHolder) {
@@ -167,17 +165,26 @@ open class ScreenshotAdapter(
         }
     }
 
-    private fun updateNonDataRelatedUI(holder: ScreenshotItemHolder) {
+    private fun updateItemUI(holder: ScreenshotItemHolder) {
         if (selector?.isSelectMode == true) {
             holder.checkbox?.visibility = View.VISIBLE
             holder.selectOverlay?.visibility = View.VISIBLE
+
+            recyclerView?.getChildAdapterPosition(holder.itemView)?.takeIf {
+                it >= 0
+            }?.let { itemIndex ->
+                val item = screenshotList[itemIndex]
+                updateSelectionUI(holder, item)
+            }
+
+
         } else {
             holder.checkbox?.visibility = View.INVISIBLE
             holder.selectOverlay?.visibility = View.GONE
         }
     }
 
-    fun notifyVisibleItemRangeChanged() {
+    private fun notifyVisibleItemRangeChanged() {
         val recyclerView = recyclerView ?: return
 
         (recyclerView.layoutManager as? LinearLayoutManager)?.apply {

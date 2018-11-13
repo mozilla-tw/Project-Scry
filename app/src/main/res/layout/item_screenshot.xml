@@ -45,6 +45,8 @@
         app:layout_constraintLeft_toLeftOf="parent"
         android:layout_marginTop="8dp"
         android:layout_marginStart="8dp"
-        tools:visibility="visible"/>
+        tools:visibility="visible"
+        android:focusable="false"
+        android:clickable="false" />
 
 </android.support.constraint.ConstraintLayout>

@@ -72,7 +72,7 @@
   <string name="snackbar_copied">Disalin</string>
   <string name="settings_list_capture">Aktifkan fitur mencuplik layar</string>
   <string name="settings_detail_capture">Memungkinkan Anda mencuplik layar dengan sekali ketuk. Bekerja dengan apa pun yang ada di layar Anda.</string>
-  <string name="settings_list_fab">Tombol %1$s</string>
+  <string name="settings_list_fab">Pakai tombol %1$s</string>
   <string name="settings_list_sorting">Tanyakan untuk menyortir</string>
   <string name="settings_detail_sorting">Selalu tanyakan untuk menambah cuplikan layar ke koleksi</string>
   <string name="settings_list_usagedata">Kirim data penggunaan</string>
@@ -91,13 +91,13 @@
   <string name="about_list_right">Hak Anda</string>
   <string name="about_list_privacy">Kebijakan Privasi</string>
   <string name="onboarding_storage_title_welcome">Selamat datang di %1$s</string>
-  <string name="onboarding_storage_content_permission">Untuk membantu untuk kelola dan temukan cuplikan layar Anda dengan lebih baik, kami memerlukan izin Anda untuk mengakses penyimpanan.</string>
-  <string name="onboarding_storage_content_autogrant">%1$s bantu Anda mengelola dan menemukan cuplikan layar Anda dengan lebih baik.</string>
+  <string name="onboarding_storage_content_permission">Untuk membantu Anda mengelola dan menemukan cuplikan layar dengan lebih baik, kami memerlukan izin Anda untuk mengakses penyimpanan.</string>
+  <string name="onboarding_storage_content_autogrant">%1$s membantu Anda mengelola dan menemukan cuplikan layar Anda dengan lebih baik.</string>
   <string name="onboarding_transition_loading">Memuat</string>
   <string name="onboarding_fab_title_fab">Dapatkan tombol %1$s</string>
-  <string name="onboarding_fab_content_permission">Tombol %1$s memungkinkan Anda mengambil dan mengelola cuplikan layar kapanpun, di manapun. Kami membutuhkan izin Anda untuk mengaktifkan ini.</string>
-  <string name="onboarding_autogrant_overlay_title">Gunakan tombol %1$s untuk mengambil dan mengelola cuplikan layar kapanpun, di mana pun.</string>
-  <string name="onboarding_autogrant_overlay_gotit">Mengerti</string>
+  <string name="onboarding_fab_content_permission">Tombol %1$s memungkinkan Anda mengambil dan mengelola cuplikan layar kapan pun, di mana pun. Kami membutuhkan izin Anda untuk mengaktifkan ini.</string>
+  <string name="onboarding_autogrant_overlay_title">Gunakan tombol %1$s untuk mengambil dan mengelola cuplikan layar kapan pun, di mana pun.</string>
+  <string name="onboarding_autogrant_overlay_gotit">Paham</string>
   <string name="onboarding_error_title_wrong">Ups! Ada masalah</string>
   <string name="onboarding_error_content_permission">%1$s memerlukan izin ini untuk bekerja dengan baik.</string>
   <string name="onboarding_error_action_allow">Izinkan</string>

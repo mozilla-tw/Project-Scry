@@ -4,7 +4,7 @@
 
     <item
         android:id="@+id/action_select"
-        android:title="Select (L10N)"
+        android:title="@string/menu_action_select"
         app:showAsAction="never"/>
 
     <item

@@ -52,6 +52,7 @@
   <string name="dialogue_skipsorting_content_moveto">Lewati cuplikan layar lainnya dan pindahkan ke kelompok “Belum Disortir?”</string>
   <string name="dialogue_skipsorting_content_count">%1$d lagi</string>
   <string name="dialogue_skipsorting_action_skip">Lewati semua</string>
+  <string name="menu_action_select">Pilih</string>
   <string name="menu_shot_action_move">Pindahkan ke…</string>
   <string name="menu_action_rename">Ubah nama</string>
   <string name="menu_ocr_action_web">Pencarian web</string>

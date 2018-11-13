@@ -290,7 +290,7 @@ class DetailPageActivity : AppCompatActivity() {
                         getString(R.string.detail_ocr_error_failed),
                         Toast.LENGTH_SHORT).show()
 
-                TelemetryWrapper.viewTextInScreenshot(TelemetryWrapper.Value.FAIL)
+                TelemetryWrapper.viewTextInScreenshot(TelemetryWrapper.Value.FAIL, result.msg)
             }
 
             isRecognizing = false
@@ -301,15 +301,18 @@ class DetailPageActivity : AppCompatActivity() {
     private suspend fun runTextRecognition(screenshot: ScreenshotModel): Result {
         val decoded = BitmapFactory.decodeFile(screenshot.absolutePath)
         return decoded?.let { bitmap ->
-            runTextRecognition(bitmap)?.let { result ->
-                if (isValidSize(bitmap)) {
-                    Result.Success(result)
-                } else {
-                    Result.WeiredImageSize(result,
-                            "weird image size: ${bitmap.width}x${bitmap.height}")
+            try {
+                runTextRecognition(bitmap)?.let { result ->
+                    if (isValidSize(bitmap)) {
+                        Result.Success(result)
+                    } else {
+                        Result.WeiredImageSize(result,
+                                "weird image size: ${bitmap.width}x${bitmap.height}")
+                    }
                 }
-
-            } ?: Result.Failed("recognize failed")
+            } catch (e: Exception) {
+                Result.Failed("recognize failed: " + e.message)
+            }
 
         } ?: Result.Failed("invalid bitmap")
     }
@@ -447,8 +450,8 @@ class DetailPageActivity : AppCompatActivity() {
                         .addOnSuccessListener { texts ->
                             cont.resume(texts)
                         }
-                        .addOnFailureListener { _ ->
-                            cont.resume(null)
+                        .addOnFailureListener { exception ->
+                            cont.resumeWithException(exception)
                         }
             }
 

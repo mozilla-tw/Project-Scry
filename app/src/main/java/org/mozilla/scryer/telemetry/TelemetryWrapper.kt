@@ -77,6 +77,7 @@ class TelemetryWrapper {
         const val ON = "on"
         const val MODE = "mode"
         const val TIMES = "times"
+        const val MESSAGE = "message"
     }
 
     private object ExtraValue {
@@ -248,8 +249,8 @@ class TelemetryWrapper {
             EventBuilder(Category.EXTRACT_TEXT_FROM_SCREENSHOT, Method.V1, Object.GO).queue()
         }
 
-        fun viewTextInScreenshot(value: String) {
-            EventBuilder(Category.VIEW_TEXT_IN_SCREENSHOT, Method.V1, Object.GO, value).queue()
+        fun viewTextInScreenshot(value: String, message: String = "") {
+            EventBuilder(Category.VIEW_TEXT_IN_SCREENSHOT, Method.V1, Object.GO, value).extra(Extra.MESSAGE, message).queue()
         }
 
         fun visitSearchPage() {

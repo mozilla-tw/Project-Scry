@@ -96,6 +96,13 @@ class PermissionFlow(private var permissionState: PermissionStateProvider,
         when (requestCode) {
             MainActivity.REQUEST_CODE_WRITE_EXTERNAL_PERMISSION -> {
                 pageState.setWelcomePageShown()
+
+                // Force to update the UI state when onPermissionResult() is called after StorageState.execute()
+                // and moved to the wrong StorageState. It can be reproduced on Android 6.0 devices.
+                if (state is StorageState.FirstTimeWelcome
+                        || state is StorageState.FirstTimeRequest) {
+                    state = StorageState(this).execute()
+                }
             }
         }
     }

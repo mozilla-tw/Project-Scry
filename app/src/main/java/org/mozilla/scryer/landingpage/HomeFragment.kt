@@ -477,8 +477,7 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
         mainListView.adapter = mainAdapter
 
         val spaceOuter = resources.getDimensionPixelSize(R.dimen.home_horizontal_padding)
-        val spaceTop = resources.getDimensionPixelSize(R.dimen.home_collection_padding_top)
-        mainListView.addItemDecoration(MainAdapter.ItemDecoration(COLLECTION_COLUMN_COUNT, spaceOuter, spaceTop))
+        mainListView.addItemDecoration(MainAdapter.ItemDecoration(context, COLLECTION_COLUMN_COUNT, spaceOuter, 0))
 
         viewModel.getCollections().observe(this, Observer { collections ->
             collections?.asSequence()?.filter {

@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
-    android:layout_marginTop="@dimen/quick_access_padding_top"
+    android:layout_marginTop="@dimen/quick_access_item_margin_top"
     android:layout_marginBottom="@dimen/quick_access_padding_bottom"
     android:background="@drawable/rect_3dp"
     android:backgroundTint="@color/primaryTeal"

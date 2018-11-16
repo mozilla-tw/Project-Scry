@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingTop="@dimen/section_title_vertical_padding"
+    android:paddingBottom="@dimen/section_title_vertical_padding"
     android:paddingStart="@dimen/home_horizontal_padding"
     android:paddingEnd="@dimen/home_horizontal_padding"
     android:textColor="@color/grey90"

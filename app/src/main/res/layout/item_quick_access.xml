@@ -11,7 +11,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/rect_3dp"
     android:elevation="2dp"
-    android:layout_marginTop="@dimen/quick_access_padding_top"
+    android:layout_marginTop="@dimen/quick_access_item_margin_top"
     android:layout_marginBottom="@dimen/quick_access_padding_bottom"
     tools:layout_height="156dp">
 

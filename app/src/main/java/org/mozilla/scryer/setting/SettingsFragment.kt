@@ -13,6 +13,7 @@ import android.support.v7.preference.SwitchPreferenceCompat
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Button
+import com.google.firebase.iid.FirebaseInstanceId
 import org.mozilla.scryer.*
 import org.mozilla.scryer.permission.PermissionHelper
 import org.mozilla.scryer.preference.PreferenceWrapper
@@ -28,6 +29,7 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
     private val aboutPreference: Preference by lazy { findPreference(getString(R.string.pref_key_about)) }
 
     private var overlayPermissionRequested = false
+    private var debugClicks = 0
 
     private val pref: PreferenceWrapper? by lazy {
         context?.let {
@@ -129,7 +131,12 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
     override fun onPreferenceClick(preference: Preference?): Boolean {
         when (preference) {
             giveFeedbackPreference -> context?.let { showFeedbackDialog(it); return true }
-            shareWithFriendsPreference -> context?.let { showShareAppDialog(it); return true }
+            shareWithFriendsPreference -> context?.let {
+                if (!showFirebaseDebugDialog(it)) {
+                    showShareAppDialog(it)
+                }
+                return true
+            }
             aboutPreference -> context?.let { showAboutPage(); return true }
         }
 
@@ -170,6 +177,19 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
                         context.getString(R.string.app_full_name),
                         context.getString(R.string.share_app_google_play_url)))
         context.startActivity(Intent.createChooser(sendIntent, null))
+    }
+
+    private fun showFirebaseDebugDialog(context: Context): Boolean {
+        debugClicks++
+        if (debugClicks > DEBUG_CLICKS_THRESHOLD) {
+            val sendIntent = Intent(Intent.ACTION_SEND)
+            sendIntent.type = "text/plain"
+            sendIntent.putExtra(Intent.EXTRA_TEXT, getFcmToken())
+            context.startActivity(Intent.createChooser(sendIntent, "This token is only for QA to test in Nightly and debug build"))
+            return true
+        }
+
+        return false
     }
 
     private fun showAboutPage() {
@@ -239,5 +259,19 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
         val intent = Intent(activity, ScryerService::class.java)
         intent.action = ScryerService.ACTION_ENABLE_CAPTURE_BUTTON
         activity?.startService(intent)
+    }
+
+    private fun getFcmToken(): String? {
+        return try {
+            FirebaseInstanceId.getInstance().token
+        } catch (e: Exception) {
+            // If Firebase is not initialized, getInstance() will throw an exception here
+            // Since  This method is for debugging, return empty string is acceptable
+            ""
+        }
+    }
+
+    companion object {
+        private const val DEBUG_CLICKS_THRESHOLD = 18
     }
 }

@@ -13,6 +13,7 @@ object Versions {
 
     // Google
     val firebase = "16.0.1"
+    val firebase_messageing = "17.0.0"
     val firebase_ml = "16.0.0"
     val google_service_plugin = "4.0.2"
 

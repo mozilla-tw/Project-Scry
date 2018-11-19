@@ -6,7 +6,9 @@
 package org.mozilla.scryer
 
 import android.arch.lifecycle.ViewModelProviders
+import android.content.Intent
 import android.graphics.Color
+import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.FragmentActivity
 import android.support.v7.app.ActionBar
@@ -14,6 +16,7 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.view.View
 import android.view.WindowManager
+import org.mozilla.scryer.notification.ScryerMessagingService
 import org.mozilla.scryer.permission.PermissionViewModel
 import org.mozilla.scryer.preference.PreferenceWrapper
 import org.mozilla.scryer.telemetry.TelemetryWrapper
@@ -46,6 +49,13 @@ class MainActivity : AppCompatActivity() {
                     View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
                     View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
             it.statusBarColor = Color.TRANSPARENT
+        }
+
+        intent.getStringExtra(ScryerMessagingService.PUSH_OPEN_URL)?.run {
+            val openUrlIntent = Intent()
+            openUrlIntent.data = Uri.parse(this)
+            openUrlIntent.action = Intent.ACTION_VIEW
+            startActivity(openUrlIntent)
         }
     }
 

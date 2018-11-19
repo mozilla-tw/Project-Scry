@@ -108,6 +108,7 @@ dependencies {
     implementation "com.github.bumptech.glide:glide:${Versions.glide}"
 
     implementation "com.google.firebase:firebase-core:${Versions.firebase}"
+    implementation "com.google.firebase:firebase-messaging:${Versions.firebase_messageing}"
     implementation "com.google.firebase:firebase-ml-vision:${Versions.firebase_ml}"
 
     implementation "com.crashlytics.sdk.android:crashlytics:${Versions.crashlytics}"

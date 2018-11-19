@@ -18,12 +18,17 @@
         android:gravity="center"
         app:layout_constraintDimensionRatio="100:156">
 
+        <!--
+            The original icon is "@drawable/viewmore" with size
+            "@dimen/quick_access_item_more_icon_size", however,
+            the black-friday version is of different size and aspect
+            ratio, so temporarily hard-code new size for this version
+        -->
         <View
             android:id="@+id/icon_view"
-            android:layout_width="@dimen/quick_access_item_more_icon_size"
-            android:layout_height="@dimen/quick_access_item_more_icon_size"
-            android:background="@drawable/viewmore"
-            android:backgroundTint="@color/white"
+            android:layout_width="54dp"
+            android:layout_height="70dp"
+            android:background="@drawable/viewmore_blackfriday"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintRight_toRightOf="parent" />

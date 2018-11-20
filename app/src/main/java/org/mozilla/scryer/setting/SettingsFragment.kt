@@ -17,6 +17,7 @@ import com.google.firebase.iid.FirebaseInstanceId
 import org.mozilla.scryer.*
 import org.mozilla.scryer.permission.PermissionHelper
 import org.mozilla.scryer.preference.PreferenceWrapper
+import org.mozilla.scryer.telemetry.TelemetryWrapper
 
 class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChangeListener, Preference.OnPreferenceClickListener {
 
@@ -118,6 +119,9 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
         } else if (preference == enableFloatingScreenshotButton) {
             repository.floatingEnable = newValue as Boolean
 
+            if (!repository.floatingEnable) {
+                TelemetryWrapper.closeFAB()
+            }
             return true
         } else if (preference == enableAddToCollectionButton) {
             repository.addToCollectionEnable = newValue as Boolean

@@ -56,6 +56,7 @@ class TelemetryWrapper {
         const val VISIT_SEARCH_PAGE = "Visit search page"
         const val INTERESTED_IN_SEARCH = "Interested in search"
         const val NOT_INTERESTED_IN_SEARCH = "Not interested in search"
+        const val CLOSE_FAB = "Close FAB"
     }
 
     private object Method {
@@ -263,6 +264,10 @@ class TelemetryWrapper {
 
         fun notInterestedInSearch() {
             EventBuilder(Category.NOT_INTERESTED_IN_SEARCH, Method.V1, Object.GO).queue()
+        }
+
+        fun closeFAB() {
+            EventBuilder(Category.CLOSE_FAB, Method.V1, Object.GO).queue()
         }
     }
 

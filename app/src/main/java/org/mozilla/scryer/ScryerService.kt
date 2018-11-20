@@ -213,6 +213,7 @@ class ScryerService : Service(), CaptureButtonController.ClickListener, ScreenCa
     override fun onScreenshotButtonDismissed() {
         destroyFloatingButton()
         ScryerApplication.getSettingsRepository().floatingEnable = false
+        TelemetryWrapper.closeFAB()
     }
 
     private fun postTakeScreenshot(delayed: Long) {

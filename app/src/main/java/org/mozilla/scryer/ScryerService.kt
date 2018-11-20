@@ -140,6 +140,7 @@ class ScryerService : Service(), CaptureButtonController.ClickListener, ScreenCa
             ACTION_DISABLE_SERVICE_SOFTLY -> {
                 PreferenceWrapper(this).setShouldPromptEnableService(true)
                 disableScryerService(false)
+                TelemetryWrapper.stopCaptureService(TelemetryWrapper.Value.NOTIFICATION)
                 return START_NOT_STICKY
             }
 

@@ -57,6 +57,7 @@ class TelemetryWrapper {
         const val INTERESTED_IN_SEARCH = "Interested in search"
         const val NOT_INTERESTED_IN_SEARCH = "Not interested in search"
         const val CLOSE_FAB = "Close FAB"
+        const val STOP_CAPTURE_SERVICE = "Stop capture service"
     }
 
     private object Method {
@@ -72,6 +73,8 @@ class TelemetryWrapper {
         const val SUCCESS = "success"
         const val WEIRD_SIZE = "weird_size"
         const val FAIL = "fail"
+        const val NOTIFICATION = "notification"
+        const val SETTINGS = "settings"
     }
 
     private object Extra {
@@ -268,6 +271,10 @@ class TelemetryWrapper {
 
         fun closeFAB() {
             EventBuilder(Category.CLOSE_FAB, Method.V1, Object.GO).queue()
+        }
+
+        fun stopCaptureService(value: String) {
+            EventBuilder(Category.STOP_CAPTURE_SERVICE, Method.V1, Object.GO, value).queue()
         }
     }
 

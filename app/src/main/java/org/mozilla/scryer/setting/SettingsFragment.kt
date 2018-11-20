@@ -115,6 +115,9 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
                 pref?.setShouldPromptEnableService(false)
             }
 
+            if (!enable) {
+                TelemetryWrapper.stopCaptureService(TelemetryWrapper.Value.SETTINGS)
+            }
             return true
         } else if (preference == enableFloatingScreenshotButton) {
             repository.floatingEnable = newValue as Boolean

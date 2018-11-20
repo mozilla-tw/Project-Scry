@@ -230,6 +230,10 @@ class SortingPanelActivity : AppCompatActivity() {
 
             sortingPanel.screenshot = this
             sortingPanel.setProgress(sortedScreenshots.size, sortedScreenshots.size + unsortedScreenshots.size)
+
+            if (!isSortingNewScreenshot(intent) && unsortedScreenshots.isEmpty()) {
+                sortingPanel.setActionText(getString(android.R.string.cancel))
+            }
         }
     }
 

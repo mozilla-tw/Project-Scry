@@ -69,6 +69,12 @@ class SortingPanelActivity : AppCompatActivity() {
             intent.putStringArrayListExtra(EXTRA_SCREENSHOT_IDS, list)
             return intent
         }
+
+        private fun isSortingNewScreenshot(intent: Intent?): Boolean {
+            return intent?.getStringExtra(EXTRA_PATH)?.let {
+                true
+            } ?: false
+        }
     }
 
     private val sortingPanel: SortingPanel by lazy { findViewById<SortingPanel>(R.id.sorting_panel) }
@@ -345,7 +351,11 @@ class SortingPanelActivity : AppCompatActivity() {
         this.unsortedScreenshots.addAll(sorted.subList(currentIndex, screenshots.size))
 
         if (screenshots.size == 1) {
-            sortingPanel.setActionText(getString(android.R.string.cancel))
+            sortingPanel.setActionText(getString(if (isSortingNewScreenshot(intent)) {
+                R.string.action_later
+            } else {
+                android.R.string.cancel
+            }))
             sortingPanel.setProgressVisibility(View.INVISIBLE)
             sortingPanel.setFakeLayerVisibility(View.INVISIBLE)
         } else {

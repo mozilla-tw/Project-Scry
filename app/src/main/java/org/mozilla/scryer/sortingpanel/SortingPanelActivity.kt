@@ -156,7 +156,7 @@ class SortingPanelActivity : AppCompatActivity() {
                     DialogInterface.OnClickListener { _, _ ->
                         flushToUnsortedCollection()
                         finishAndRemoveTask()
-                        TelemetryWrapper.cancelSorting()
+                        TelemetryWrapper.cancelMultipleSorting()
                     },
                     getString(android.R.string.cancel),
                     DialogInterface.OnClickListener { _, _ ->
@@ -168,7 +168,7 @@ class SortingPanelActivity : AppCompatActivity() {
             dialog.asAlertDialog().show()
         } else {
             super.onBackPressed()
-            TelemetryWrapper.cancelSorting()
+            TelemetryWrapper.cancelSingleSorting()
         }
     }
 
@@ -360,7 +360,7 @@ class SortingPanelActivity : AppCompatActivity() {
             panelModel.onNextScreenshot()
 
             if (screenshots.size == 1) {
-                TelemetryWrapper.cancelSorting()
+                TelemetryWrapper.cancelSingleSorting()
             }
         }
 
@@ -411,7 +411,11 @@ class SortingPanelActivity : AppCompatActivity() {
                 showAddedToast(collection, false)
             }
 
-            TelemetryWrapper.sortScreenshot()
+            if (isSortingSingleScreenshot) {
+                TelemetryWrapper.sortSingleScreenshot(collection.name)
+            } else {
+                TelemetryWrapper.sortMultipleScreenshot(collection.name)
+            }
         }
     }
 

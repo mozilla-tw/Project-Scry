@@ -3,7 +3,6 @@ package org.mozilla.scryer.telemetry
 import android.content.Context
 import android.preference.PreferenceManager
 import android.support.annotation.Nullable
-import com.google.firebase.analytics.FirebaseAnalytics
 import org.mozilla.scryer.BuildConfig
 import org.mozilla.scryer.R
 import org.mozilla.scryer.ScryerApplication
@@ -221,12 +220,24 @@ class TelemetryWrapper {
             EventBuilder(Category.PROMPT_SORTING_PAGE, Method.V1, Object.GO).extra(Extra.MODE, ExtraValue.MULTIPLE).queue()
         }
 
-        fun sortScreenshot() {
-            EventBuilder(Category.SORT_SCREENSHOT, Method.V1, Object.GO).queue()
+        fun sortSingleScreenshot(name: String) {
+            EventBuilder(Category.SORT_SCREENSHOT, Method.V1, Object.GO)
+                    .extra(Extra.ON, name)
+                    .extra(Extra.MODE, ExtraValue.SINGLE).queue()
         }
 
-        fun cancelSorting() {
-            EventBuilder(Category.CANCEL_SORTING, Method.V1, Object.GO).queue()
+        fun sortMultipleScreenshot(name: String) {
+            EventBuilder(Category.SORT_SCREENSHOT, Method.V1, Object.GO)
+                    .extra(Extra.ON, name)
+                    .extra(Extra.MODE, ExtraValue.MULTIPLE).queue()
+        }
+
+        fun cancelSingleSorting() {
+            EventBuilder(Category.CANCEL_SORTING, Method.V1, Object.GO).extra(Extra.MODE, ExtraValue.SINGLE).queue()
+        }
+
+        fun cancelMultipleSorting() {
+            EventBuilder(Category.CANCEL_SORTING, Method.V1, Object.GO).extra(Extra.MODE, ExtraValue.MULTIPLE).queue()
         }
 
         fun captureViaFab() {

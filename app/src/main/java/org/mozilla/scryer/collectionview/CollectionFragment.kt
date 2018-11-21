@@ -554,25 +554,27 @@ fun showShareScreenshotDialog(context: Context, screenshotModels: List<Screensho
 }
 
 fun showCollectionInfo(context: Context, viewModel: ScreenshotViewModel, collectionId: String?) {
-    launch(UI) {
+    launch(DefaultDispatcher) {
         collectionId ?: return@launch
 
-        withContext(DefaultDispatcher) {
-            viewModel.getCollection(collectionId)
+        val idList = if (collectionId == CollectionModel.CATEGORY_NONE) {
+            listOf(CollectionModel.UNCATEGORIZED, CollectionModel.CATEGORY_NONE)
+        } else {
+            listOf(collectionId)
+        }
 
-        }?.let {
-            val screenshots = withContext(DefaultDispatcher) {
-                viewModel.getScreenshotList(listOf(it.id))
-            }
-            val totalFileSize = withContext(DefaultDispatcher) {
-                var totalFileSize = 0L
-                for (screenshot in screenshots) {
-                    val file = File(screenshot.absolutePath)
-                    totalFileSize += file.length()
-                }
-                totalFileSize
-            }
-            showCollectionInfoDialog(context, it, screenshots, totalFileSize)
+        val screenshots = viewModel.getScreenshotList(idList)
+        var totalFileSize = 0L
+        for (screenshot in screenshots) {
+            val file = File(screenshot.absolutePath)
+            totalFileSize += file.length()
+        }
+
+        val collection = viewModel.getCollection(collectionId)
+
+        withContext(UI) {
+            collection ?: return@withContext
+            showCollectionInfoDialog(context, collection, screenshots, totalFileSize)
         }
     }
 }

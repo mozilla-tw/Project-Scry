@@ -170,7 +170,7 @@ class SortingPanelActivity : AppCompatActivity() {
             dialog.asAlertDialog().show()
         } else {
             super.onBackPressed()
-            TelemetryWrapper.cancelSorting(TelemetryWrapper.ExtraValue.SINGLE)
+            TelemetryWrapper.cancelSorting(SINGLE)
         }
     }
 
@@ -257,7 +257,7 @@ class SortingPanelActivity : AppCompatActivity() {
         launch(UI) {
             when {
                 intent.hasExtra(EXTRA_PATH) -> {
-                    TelemetryWrapper.promptSortingPage(TelemetryWrapper.ExtraValue.SINGLE)
+                    TelemetryWrapper.promptSortingPage(SINGLE)
                     loadNewScreenshot(getFilePath(intent))
                 }
 
@@ -362,7 +362,7 @@ class SortingPanelActivity : AppCompatActivity() {
             panelModel.onNextScreenshot()
 
             if (screenshots.size == 1) {
-                TelemetryWrapper.cancelSorting(MULTIPLE)
+                TelemetryWrapper.cancelSorting(SINGLE)
             }
         }
 

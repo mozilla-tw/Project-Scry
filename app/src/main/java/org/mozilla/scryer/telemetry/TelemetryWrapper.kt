@@ -358,7 +358,7 @@ class TelemetryWrapper {
         fun sortScreenshot(name: String, mode: String) {
             EventBuilder(Category.SORT_SCREENSHOT, Method.V1, Object.GO)
                     .extra(Extra.ON, name)
-                    .extra(Extra.MODE, ExtraValue.SINGLE)
+                    .extra(Extra.MODE, mode)
                     .queue()
         }
 

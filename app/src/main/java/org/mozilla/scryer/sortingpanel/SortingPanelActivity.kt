@@ -170,7 +170,12 @@ class SortingPanelActivity : AppCompatActivity() {
             dialog.asAlertDialog().show()
         } else {
             super.onBackPressed()
-            TelemetryWrapper.cancelSorting(SINGLE)
+
+            if (isSortingSingleScreenshot) {
+                TelemetryWrapper.cancelSorting(SINGLE)
+            } else {
+                TelemetryWrapper.cancelSorting(MULTIPLE)
+            }
         }
     }
 

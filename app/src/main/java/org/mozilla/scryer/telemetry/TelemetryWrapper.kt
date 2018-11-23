@@ -3,9 +3,7 @@ package org.mozilla.scryer.telemetry
 import android.content.Context
 import android.preference.PreferenceManager
 import android.support.annotation.Nullable
-import org.mozilla.scryer.BuildConfig
-import org.mozilla.scryer.R
-import org.mozilla.scryer.ScryerApplication
+import org.mozilla.scryer.*
 import org.mozilla.telemetry.Telemetry
 import org.mozilla.telemetry.TelemetryHolder
 import org.mozilla.telemetry.annotation.TelemetryDoc
@@ -76,6 +74,7 @@ class TelemetryWrapper {
         const val FAIL = "fail"
         const val NOTIFICATION = "notification"
         const val SETTINGS = "settings"
+        const val POSITIVE = "positive"
     }
 
     private object Extra {
@@ -246,6 +245,7 @@ class TelemetryWrapper {
                 extras = [])
         fun startSearch() {
             EventBuilder(Category.START_SEARCH, Method.V1, Object.GO).queue()
+            AdjustHelper.trackEvent(ADJUST_EVENT_START_SEARCH)
         }
 
         @TelemetryDoc(
@@ -360,6 +360,7 @@ class TelemetryWrapper {
                     .extra(Extra.ON, name)
                     .extra(Extra.MODE, mode)
                     .queue()
+            AdjustHelper.trackEvent(ADJUST_EVENT_SORT_SCREENSHOT)
         }
 
         @TelemetryDoc(
@@ -395,6 +396,7 @@ class TelemetryWrapper {
                 extras = [])
         fun captureViaFab() {
             EventBuilder(Category.CAPTURE_VIA_FAB, Method.V1, Object.GO).queue()
+            AdjustHelper.trackEvent(ADJUST_EVENT_CAPTURE_VIA_FAB)
         }
 
         @TelemetryDoc(
@@ -462,6 +464,7 @@ class TelemetryWrapper {
                 extras = [TelemetryExtra(name = Extra.MESSAGE, value = "empty or failing reason")])
         fun viewTextInScreenshot(value: String, message: String = "") {
             EventBuilder(Category.VIEW_TEXT_IN_SCREENSHOT, Method.V1, Object.GO, value).extra(Extra.MESSAGE, message).queue()
+            AdjustHelper.trackEvent(ADJUST_EVENT_VIEW_TEXT_IN_SCREENSHOT)
         }
 
         @TelemetryDoc(
@@ -503,6 +506,16 @@ class TelemetryWrapper {
 
         fun stopCaptureService(value: String) {
             EventBuilder(Category.STOP_CAPTURE_SERVICE, Method.V1, Object.GO, value).queue()
+        }
+
+        fun shareApp() {
+            AdjustHelper.trackEvent(ADJUST_EVENT_SHARE_APP)
+        }
+
+        fun feedback(value: String) {
+            if (value == Value.POSITIVE) {
+                AdjustHelper.trackEvent(ADJUST_EVENT_FEEDBACK_POSITIVE)
+            }
         }
     }
 

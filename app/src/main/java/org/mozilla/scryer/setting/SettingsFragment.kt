@@ -142,6 +142,7 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
                 if (!showFirebaseDebugDialog(it)) {
                     showShareAppDialog(it)
                 }
+                TelemetryWrapper.shareApp()
                 return true
             }
             aboutPreference -> context?.let { showAboutPage(); return true }
@@ -165,6 +166,7 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
         dialogView.findViewById<Button>(R.id.dialog_give_feedback_btn_go_rate).setOnClickListener {
             goToPlayStore(context)
             dialog?.dismiss()
+            TelemetryWrapper.feedback(TelemetryWrapper.Value.POSITIVE)
         }
         dialogView.findViewById<Button>(R.id.dialog_give_feedback_btn_feedback).setOnClickListener {
             goToFeedback(context)

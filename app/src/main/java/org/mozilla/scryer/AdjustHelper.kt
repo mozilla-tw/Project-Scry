@@ -10,7 +10,15 @@ import android.app.Application
 import android.os.Bundle
 import com.adjust.sdk.Adjust
 import com.adjust.sdk.AdjustConfig
+import com.adjust.sdk.AdjustEvent
 import com.adjust.sdk.LogLevel
+
+const val ADJUST_EVENT_CAPTURE_VIA_FAB = "ltd7wr"
+const val ADJUST_EVENT_FEEDBACK_POSITIVE = "i7wmh5"
+const val ADJUST_EVENT_SHARE_APP = "er82lg"
+const val ADJUST_EVENT_SORT_SCREENSHOT = "3odfiz"
+const val ADJUST_EVENT_START_SEARCH = "g6icdf"
+const val ADJUST_EVENT_VIEW_TEXT_IN_SCREENSHOT = "t7ubav"
 
 class AdjustHelper {
     companion object {
@@ -45,6 +53,10 @@ class AdjustHelper {
                 override fun onActivityCreated(activity: Activity?, savedInstanceState: Bundle?) {
                 }
             })
+        }
+
+        fun trackEvent(eventToken: String) {
+            Adjust.trackEvent(AdjustEvent(eventToken))
         }
     }
 }

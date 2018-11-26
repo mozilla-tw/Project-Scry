@@ -25,7 +25,15 @@ class SuggestCollectionHelper {
             return suggestCollections.any { it.id == collection.id }
         }
 
-        fun isSuggestCollectionName(context: Context?, name: String?): Boolean {
+        fun getSuggestCollectionNameForTelemetry(context: Context?, name: String?): String {
+            return if (SuggestCollectionHelper.isSuggestCollectionName(context, name)) {
+                name ?: ""
+            } else {
+                "user-defined"
+            }
+        }
+
+        private fun isSuggestCollectionName(context: Context?, name: String?): Boolean {
             return name != null && suggestCollectionsIds.any { context?.getString(it) == name }
         }
     }

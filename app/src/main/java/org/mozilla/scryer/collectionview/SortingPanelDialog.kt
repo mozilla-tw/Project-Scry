@@ -60,9 +60,9 @@ class SortingPanelDialog(
                 }
 
                 if (screenshots.size > 1) {
-                    TelemetryWrapper.sortScreenshot(collection.name, MULTIPLE)
+                    TelemetryWrapper.sortScreenshot(SuggestCollectionHelper.getSuggestCollectionNameForTelemetry(activity, collection.name), MULTIPLE)
                 } else {
-                    TelemetryWrapper.sortScreenshot(collection.name, SINGLE)
+                    TelemetryWrapper.sortScreenshot(SuggestCollectionHelper.getSuggestCollectionNameForTelemetry(activity, collection.name), SINGLE)
                 }
             }
         }

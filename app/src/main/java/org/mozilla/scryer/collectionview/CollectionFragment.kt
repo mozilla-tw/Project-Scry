@@ -190,14 +190,6 @@ class CollectionFragment : Fragment() {
         arguments?.getString(ARG_COLLECTION_NAME)
     }
 
-    private val collectionNameForTelemetry: String? by lazy {
-        if (SuggestCollectionHelper.isSuggestCollectionName(context, collectionName)) {
-            collectionName
-        } else {
-            "user-defined"
-        }
-    }
-
     private var sortMenuItem: MenuItem? = null
     private var selectMenuItem: MenuItem? = null
 
@@ -233,14 +225,14 @@ class CollectionFragment : Fragment() {
             val context = context ?: return@ScreenshotAdapter
             DetailPageActivity.showDetailPage(context, item, view, collectionId)
 
-            collectionNameForTelemetry?.let { TelemetryWrapper.collectionItem(it) }
+            TelemetryWrapper.collectionItem(SuggestCollectionHelper.getSuggestCollectionNameForTelemetry(context, collectionName))
         }
 
         setHasOptionsMenu(true)
         setupActionBar()
         initScreenshotList(view.context)
 
-        collectionNameForTelemetry?.let { TelemetryWrapper.visitCollectionPage(it) }
+        TelemetryWrapper.visitCollectionPage(SuggestCollectionHelper.getSuggestCollectionNameForTelemetry(context, collectionName))
 
         ViewCompat.setOnApplyWindowInsetsListener(view) { _, insets ->
             toolbar_holder.setPadding(toolbar_holder.paddingLeft,

@@ -376,7 +376,9 @@ class SortingPanelActivity : AppCompatActivity() {
         }
 
         sortingPanel.setActionCallback {
-            showAddedToast(unsortedCollection, unsortedScreenshots.isNotEmpty())
+            if (isSortingUncategorized) {
+                showAddedToast(unsortedCollection, unsortedScreenshots.isNotEmpty())
+            }
             onNewModelAvailable()
             panelModel.onNextScreenshot()
 

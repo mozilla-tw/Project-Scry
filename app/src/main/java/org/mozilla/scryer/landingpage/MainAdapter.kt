@@ -25,6 +25,7 @@ import org.mozilla.scryer.collectionview.CollectionFragment
 import org.mozilla.scryer.collectionview.OnContextMenuActionListener
 import org.mozilla.scryer.collectionview.showCollectionInfo
 import org.mozilla.scryer.collectionview.showDeleteCollectionDialog
+import org.mozilla.scryer.extension.dpToPx
 import org.mozilla.scryer.extension.getValidPosition
 import org.mozilla.scryer.extension.navigateSafely
 import org.mozilla.scryer.persistence.CollectionModel
@@ -300,12 +301,12 @@ class MainAdapter(private val fragment: Fragment?): RecyclerView.Adapter<Recycle
     class ItemDecoration(context: Context, columnCount: Int, space: Int, top: Int)
         : GridItemDecoration(columnCount, space, top, space, space, space) {
 
-        private val shoppingDude = ContextCompat.getDrawable(context, R.drawable.shoppingdude)
+        private val shoppingDude = ContextCompat.getDrawable(context, R.drawable.ornaments)
         private val shoppingDudePattern = ContextCompat.getDrawable(context,
-                R.drawable.shoppingdude_pattern)
-        private val shoppingBag = ContextCompat.getDrawable(context, R.drawable.shoppingbag)
+                R.drawable.santadeer)
+        private val shoppingBag = ContextCompat.getDrawable(context, R.drawable.gifts)
 
-        private val blackFridayLogo = ContextCompat.getDrawable(context, R.drawable.blackfriday)
+        private val blackFridayLogo = ContextCompat.getDrawable(context, R.drawable.christmastree)
 
         private val quickAccessBkg = ColorDrawable(ContextCompat.getColor(context,
                 R.color.quick_access_background))
@@ -332,7 +333,6 @@ class MainAdapter(private val fragment: Fragment?): RecyclerView.Adapter<Recycle
                 when (pos) {
                     POS_QUICK_ACCESS_TITLE -> {
                         drawQuickAccessTitle(c, child)
-                        decorateQuickAccessTitle(c, child)
                     }
 
                     POS_COLLECTION_LIST_TITLE -> {
@@ -353,6 +353,10 @@ class MainAdapter(private val fragment: Fragment?): RecyclerView.Adapter<Recycle
                     parent.adapter.itemCount - 1 -> {
                         decorateLastItem(c, child)
                     }
+
+                    POS_QUICK_ACCESS_TITLE -> {
+                        decorateQuickAccessTitle(c, child)
+                    }
                 }
             }
         }
@@ -370,13 +374,13 @@ class MainAdapter(private val fragment: Fragment?): RecyclerView.Adapter<Recycle
             val logoWidth = logo.intrinsicWidth
             val logoHeight = logo.intrinsicHeight
 
-            val targetHeight = (verticalSpace * 0.7f).toInt()
+            val targetHeight = (verticalSpace * 1f).toInt()
             val targetWidth = (logoWidth * (targetHeight / logoHeight.toFloat())).toInt()
 
-            val vPadding = (verticalSpace - targetHeight) / 2
-            val hPadding = view.paddingEnd
+            val vPadding = view.resources.getDimensionPixelSize(R.dimen.quick_access_item_margin_top)
+            val hPadding = view.paddingEnd + 48f.dpToPx(view.resources.displayMetrics)
 
-            val bottom = view.bottom - vPadding
+            val bottom = view.bottom + vPadding
             val top = bottom - targetHeight
             val right = view.right - hPadding
             val left = right - targetWidth
@@ -400,19 +404,22 @@ class MainAdapter(private val fragment: Fragment?): RecyclerView.Adapter<Recycle
             val logoHeight = dude.intrinsicHeight
 
             val targetHeight = (verticalSpace * 0.9f).toInt()
-            val targetWidth = (logoWidth * (targetHeight / logoHeight.toFloat())).toInt()
+
+            val ornamentHeight = (verticalSpace * 0.55f).toInt()
+            val ornamentWidth = (logoWidth * (ornamentHeight / logoHeight.toFloat())).toInt()
 
             val hPadding = view.resources.getDimensionPixelSize(R.dimen.home_horizontal_padding)
 
-            val bottom = view.bottom
-            var top = bottom - targetHeight
+            var top = view.top
+            var bottom = top + ornamentHeight
             var right = view.right - hPadding
-            var left = right - targetWidth
+            var left = right - ornamentWidth
 
             dude.setBounds(left, top, right, bottom)
 
-            top = view.top
-            right = dude.bounds.left
+            bottom = view.bottom
+            top = bottom - targetHeight
+            right = dude.bounds.left - 4f.dpToPx(view.resources.displayMetrics)
             left = right - (pattern.intrinsicWidth * ((bottom - top) / pattern.intrinsicHeight.toFloat())).toInt()
             pattern.setBounds(left, top, right, bottom)
 

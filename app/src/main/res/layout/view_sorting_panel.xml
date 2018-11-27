@@ -118,10 +118,10 @@
 
             <ImageView
                 android:id="@+id/tagdude"
-                android:layout_width="51dp"
-                android:layout_height="62dp"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
                 android:elevation="@dimen/sorting_panel_panel_elevation"
-                android:src="@drawable/tagdude"
+                android:src="@drawable/ornaments2"
                 app:layout_constraintTop_toTopOf="@id/panel_expend_button"
                 app:layout_constraintRight_toLeftOf="@id/tagdude_guideline" />
 

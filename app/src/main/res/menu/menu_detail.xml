@@ -3,15 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/action_move_to"
+        android:title="@string/menu_shot_action_move"
+        android:icon="@drawable/move"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/action_share"
         android:icon="@drawable/share"
         android:title="@string/menu_action_share"
         app:showAsAction="always" />
-
-    <item
-        android:id="@+id/action_move_to"
-        android:title="@string/menu_shot_action_move"
-        app:showAsAction="never" />
 
     <item
         android:id="@+id/action_screenshot_info"

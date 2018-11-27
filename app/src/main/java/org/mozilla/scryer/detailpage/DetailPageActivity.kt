@@ -166,6 +166,13 @@ class DetailPageActivity : AppCompatActivity() {
             }
 
             moveToMenu = menu.findItem(R.id.action_move_to)
+            if (srcCollectionId == CollectionModel.CATEGORY_NONE) {
+                moveToMenu?.let {
+                    val wrapped = DrawableCompat.wrap(it.icon).mutate()
+                    DrawableCompat.setTint(wrapped, ContextCompat.getColor(this, R.color.white))
+                    it.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+                }
+            }
             screenshotInfoMenu = menu.findItem(R.id.action_screenshot_info)
             deleteMenu = menu.findItem(R.id.action_delete)
         }

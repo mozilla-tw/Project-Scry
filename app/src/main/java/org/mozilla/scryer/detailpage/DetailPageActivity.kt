@@ -302,8 +302,9 @@ class DetailPageActivity : AppCompatActivity() {
         val decoded = try {
             BitmapFactory.decodeFile(screenshot.absolutePath)
         } catch (e: Error) {
-            null
+            return Result.Failed("decode failed: " + e.message)
         }
+
         return decoded?.let { bitmap ->
             try {
                 runTextRecognition(bitmap)?.let { result ->

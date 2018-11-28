@@ -11,6 +11,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.media.MediaScannerConnection
 import android.os.Build
 import android.os.Handler
 import android.os.IBinder
@@ -266,6 +267,7 @@ class ScryerService : Service(), CaptureButtonController.ClickListener, ScreenCa
         captureButtonController?.show()
         if (!TextUtils.isEmpty(path)) {
             startSortingPanelActivity(path)
+            MediaScannerConnection.scanFile(applicationContext, arrayOf(path), null, null)
         }
     }
 

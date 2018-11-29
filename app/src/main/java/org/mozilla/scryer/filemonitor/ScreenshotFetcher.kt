@@ -3,6 +3,7 @@ package org.mozilla.scryer.filemonitor
 import android.content.Context
 import android.database.Cursor
 import android.provider.MediaStore
+import com.crashlytics.android.Crashlytics
 import org.mozilla.scryer.persistence.CollectionModel
 import org.mozilla.scryer.persistence.ScreenshotModel
 import java.io.File
@@ -54,6 +55,7 @@ class ScreenshotFetcher {
             // Permission Denial: reading com.android.providers.media.MediaProvider uri
             // content://media/external/images/media from pid=4453, uid=1410264 requires null,
             // or grantUriPermission()
+            Crashlytics.logException(e)
         }
 
         return results

@@ -11,6 +11,7 @@ import android.os.Build
 import android.view.Gravity
 import android.view.View
 import android.view.WindowManager
+import com.crashlytics.android.Crashlytics
 
 class WindowController internal constructor(private val windowManager: WindowManager) {
     private val tmp: Point = Point()
@@ -33,7 +34,14 @@ class WindowController internal constructor(private val windowManager: WindowMan
         params.x = 0
         params.y = 0
 
-        windowManager.addView(view, params)
+        try {
+            windowManager.addView(view, params)
+        } catch (e: WindowManager.BadTokenException) {
+            Crashlytics.logException(e)
+
+        } catch (e: WindowManager.InvalidDisplayException) {
+            Crashlytics.logException(e)
+        }
     }
 
     fun getViewPositionX(view: View): Int {

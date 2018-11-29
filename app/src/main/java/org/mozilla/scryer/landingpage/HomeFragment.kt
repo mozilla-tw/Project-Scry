@@ -286,7 +286,15 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
         val receiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context, intent: Intent) {
                 LocalBroadcastManager.getInstance(context).unregisterReceiver(this)
-                dialog.dismiss()
+
+                val activity = activity ?: return
+                if (activity.isFinishing || activity.isDestroyed) {
+                    return
+                }
+
+                if (dialog.isShowing) {
+                    dialog.dismiss()
+                }
             }
         }
 

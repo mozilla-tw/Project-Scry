@@ -32,3 +32,8 @@
 |Visit search page|Visit search page|1|go|""|"" 
 |Interested in search|Interested in search|1|go|""|"" 
 |Not interested in search|Not interested in search|1|go|""|"" 
+|Close FAB|Close FAB|1|go|""|"" 
+|Stop capture service|Stop capture service|1|go|"notification,settings"|"" 
+|Prompt feedback dialog|Prompt feedback dialog|1|go|""|"" 
+|Click feedback|Click feedback|1|go|"positive,negative"|"" 
+|Prompt share dialog|Prompt share dialog|1|go|""|"" 

@@ -57,6 +57,9 @@ class TelemetryWrapper {
         const val NOT_INTERESTED_IN_SEARCH = "Not interested in search"
         const val CLOSE_FAB = "Close FAB"
         const val STOP_CAPTURE_SERVICE = "Stop capture service"
+        const val PROMPT_FEEDBACK_DIALOG = "Prompt feedback dialog"
+        const val CLICK_FEEDBACK = "Click feedback"
+        const val PROMPT_SHARE_DIALOG = "Prompt share dialog"
     }
 
     private object Method {
@@ -75,6 +78,7 @@ class TelemetryWrapper {
         const val NOTIFICATION = "notification"
         const val SETTINGS = "settings"
         const val POSITIVE = "positive"
+        const val NEGATIVE = "negative"
     }
 
     private object Extra {
@@ -500,22 +504,66 @@ class TelemetryWrapper {
             EventBuilder(Category.NOT_INTERESTED_IN_SEARCH, Method.V1, Object.GO).queue()
         }
 
+        @TelemetryDoc(
+                name = Category.CLOSE_FAB,
+                category = Category.CLOSE_FAB,
+                method = Method.V1,
+                `object` = Object.GO,
+                value = "",
+                extras = [])
         fun closeFAB() {
             EventBuilder(Category.CLOSE_FAB, Method.V1, Object.GO).queue()
         }
 
+        @TelemetryDoc(
+                name = Category.STOP_CAPTURE_SERVICE,
+                category = Category.STOP_CAPTURE_SERVICE,
+                method = Method.V1,
+                `object` = Object.GO,
+                value = "notification,settings",
+                extras = [])
         fun stopCaptureService(value: String) {
             EventBuilder(Category.STOP_CAPTURE_SERVICE, Method.V1, Object.GO, value).queue()
         }
 
-        fun shareApp() {
-            AdjustHelper.trackEvent(ADJUST_EVENT_SHARE_APP)
+        @TelemetryDoc(
+                name = Category.PROMPT_FEEDBACK_DIALOG,
+                category = Category.PROMPT_FEEDBACK_DIALOG,
+                method = Method.V1,
+                `object` = Object.GO,
+                value = "",
+                extras = [])
+        fun promptFeedbackDialog() {
+            EventBuilder(Category.PROMPT_FEEDBACK_DIALOG, Method.V1, Object.GO).queue()
         }
 
-        fun feedback(value: String) {
+        @TelemetryDoc(
+                name = Category.CLICK_FEEDBACK,
+                category = Category.CLICK_FEEDBACK,
+                method = Method.V1,
+                `object` = Object.GO,
+                value = "positive,negative",
+                extras = [])
+        fun clickFeedback(value: String) {
+            EventBuilder(Category.CLICK_FEEDBACK, Method.V1, Object.GO, value).queue()
             if (value == Value.POSITIVE) {
                 AdjustHelper.trackEvent(ADJUST_EVENT_FEEDBACK_POSITIVE)
             }
+        }
+
+        @TelemetryDoc(
+                name = Category.PROMPT_SHARE_DIALOG,
+                category = Category.PROMPT_SHARE_DIALOG,
+                method = Method.V1,
+                `object` = Object.GO,
+                value = "",
+                extras = [])
+        fun promptShareDialog() {
+            EventBuilder(Category.PROMPT_SHARE_DIALOG, Method.V1, Object.GO).queue()
+        }
+
+        fun shareApp() {
+            AdjustHelper.trackEvent(ADJUST_EVENT_SHARE_APP)
         }
     }
 

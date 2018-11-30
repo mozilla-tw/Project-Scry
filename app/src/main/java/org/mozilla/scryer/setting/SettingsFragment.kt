@@ -166,15 +166,18 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
         dialogView.findViewById<Button>(R.id.dialog_give_feedback_btn_go_rate).setOnClickListener {
             goToPlayStore(context)
             dialog?.dismiss()
-            TelemetryWrapper.feedback(TelemetryWrapper.Value.POSITIVE)
+            TelemetryWrapper.clickFeedback(TelemetryWrapper.Value.POSITIVE)
         }
         dialogView.findViewById<Button>(R.id.dialog_give_feedback_btn_feedback).setOnClickListener {
             goToFeedback(context)
             dialog?.dismiss()
+            TelemetryWrapper.clickFeedback(TelemetryWrapper.Value.NEGATIVE)
         }
         dialog.setView(dialogView)
         dialog.setCanceledOnTouchOutside(true)
         dialog.show()
+
+        TelemetryWrapper.promptFeedbackDialog()
     }
 
     private fun showShareAppDialog(context: Context) {
@@ -186,6 +189,8 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
                         context.getString(R.string.app_full_name),
                         context.getString(R.string.share_app_google_play_url)))
         context.startActivity(Intent.createChooser(sendIntent, null))
+
+        TelemetryWrapper.promptShareDialog()
     }
 
     private fun showFirebaseDebugDialog(context: Context): Boolean {

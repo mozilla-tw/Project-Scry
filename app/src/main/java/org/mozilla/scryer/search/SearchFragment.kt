@@ -15,8 +15,8 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
-import androidx.navigation.Navigation
 import org.mozilla.scryer.R
+import org.mozilla.scryer.extension.getNavController
 import org.mozilla.scryer.getSupportActionBar
 import org.mozilla.scryer.setSupportActionBar
 import org.mozilla.scryer.telemetry.TelemetryWrapper
@@ -59,18 +59,16 @@ class SearchFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            android.R.id.home -> Navigation.findNavController(view).navigateUp()
+            android.R.id.home -> getNavController()?.navigateUp()
         }
 
         return super.onOptionsItemSelected(item)
     }
 
-    override fun getView(): View {
-        return super.getView()!!
-    }
-
     private fun setupActionBar() {
-        setSupportActionBar(activity, view.findViewById(R.id.toolbar))
+        view?.let {
+            setSupportActionBar(activity, it.findViewById(R.id.toolbar))
+        }
         getSupportActionBar(activity).apply {
             setDisplayHomeAsUpEnabled(true)
         }
@@ -79,7 +77,7 @@ class SearchFragment : Fragment() {
     private fun doAfterFeedback() {
         setSearchFeedbackHasShown()
         toast.show(getString(R.string.onboarding_search_content_feedback), Toast.LENGTH_SHORT)
-        Navigation.findNavController(view).navigateUp()
+        getNavController()?.navigateUp()
     }
 
     private fun setSearchFeedbackHasShown() {

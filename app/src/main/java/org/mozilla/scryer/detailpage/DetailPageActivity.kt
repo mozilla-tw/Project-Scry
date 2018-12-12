@@ -19,6 +19,7 @@ import android.support.v4.app.ActivityOptionsCompat
 import android.support.v4.content.ContextCompat
 import android.support.v4.graphics.drawable.DrawableCompat
 import android.support.v4.view.ViewCompat
+import android.support.v4.view.ViewPager
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.view.Menu
@@ -43,6 +44,7 @@ import org.mozilla.scryer.collectionview.showScreenshotInfoDialog
 import org.mozilla.scryer.collectionview.showShareScreenshotDialog
 import org.mozilla.scryer.persistence.CollectionModel
 import org.mozilla.scryer.persistence.ScreenshotModel
+import org.mozilla.scryer.promote.Promoter
 import org.mozilla.scryer.sortingpanel.SortingPanelActivity
 import org.mozilla.scryer.telemetry.TelemetryWrapper
 import org.mozilla.scryer.ui.ScryerToast
@@ -102,6 +104,9 @@ class DetailPageActivity : AppCompatActivity() {
     private var isRecognizing = false
     private var isTextMode = false
     private var isEnterTransitionPostponed = true
+
+    /* whether the user has run ocr on the current image before swiping to the next one */
+    private var hasRunOcr = false
 
     private val screenSize: RectF by lazy {
         val size = Point().apply {
@@ -226,6 +231,11 @@ class DetailPageActivity : AppCompatActivity() {
                 this.screenshots = this@DetailPageActivity.screenshots
                 this.itemCallback = this@DetailPageActivity.itemCallback
             }
+            view_pager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
+                override fun onPageSelected(position: Int) {
+                    hasRunOcr = false
+                }
+            })
             view_pager.currentItem = screenshots.indexOfFirst { it.id == screenshotId }
         }
     }
@@ -269,6 +279,7 @@ class DetailPageActivity : AppCompatActivity() {
     }
 
     private fun startRecognition() {
+        val appContext = applicationContext
         launch(UI) {
             updateUI()
 
@@ -290,6 +301,10 @@ class DetailPageActivity : AppCompatActivity() {
                     processTextRecognitionResult(result.value)
                     isTextMode = true
                     updateUI()
+                    if (!hasRunOcr) {
+                        hasRunOcr = true
+                        Promoter.onOcrButtonClicked(appContext)
+                    }
                 }
 
             } else if (result is Result.Failed) {

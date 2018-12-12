@@ -34,6 +34,7 @@ import org.mozilla.scryer.permission.PermissionHelper
 import org.mozilla.scryer.persistence.CollectionModel
 import org.mozilla.scryer.persistence.ScreenshotModel
 import org.mozilla.scryer.preference.PreferenceWrapper
+import org.mozilla.scryer.promote.Promoter
 import org.mozilla.scryer.sortingpanel.SortingPanelActivity
 import org.mozilla.scryer.telemetry.CaptureServiceHeartbeatWorker
 import org.mozilla.scryer.telemetry.TelemetryWrapper
@@ -287,6 +288,7 @@ class ScryerService : Service(), CaptureButtonController.ClickListener, ScreenCa
         if (!TextUtils.isEmpty(path)) {
             startSortingPanelActivity(path)
             MediaScannerConnection.scanFile(applicationContext, arrayOf(path), null, null)
+            Promoter.onScreenshotTaken(this)
         }
     }
 

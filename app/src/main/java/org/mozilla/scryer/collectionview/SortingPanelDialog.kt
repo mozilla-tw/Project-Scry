@@ -22,6 +22,7 @@ import org.mozilla.scryer.R
 import org.mozilla.scryer.persistence.CollectionModel
 import org.mozilla.scryer.persistence.ScreenshotModel
 import org.mozilla.scryer.persistence.SuggestCollectionHelper
+import org.mozilla.scryer.promote.Promoter
 import org.mozilla.scryer.sortingpanel.SortingPanel
 import org.mozilla.scryer.sortingpanel.SortingPanelAdapter
 import org.mozilla.scryer.telemetry.TelemetryWrapper
@@ -69,6 +70,7 @@ class SortingPanelDialog(
 
         override fun onClickFinish(collection: CollectionModel) {
             dismiss()
+            Promoter.onScreenshotSorted(activity)
         }
 
         override fun onNewCollectionClick() {

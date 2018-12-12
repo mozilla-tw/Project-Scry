@@ -82,11 +82,12 @@ class CollectionFragment : Fragment() {
                 }
 
                 R.id.action_delete -> {
-                    showDeleteScreenshotDialog(activity, selector.selected.toList(), object : OnDeleteScreenshotListener {
-                        override fun onDeleteScreenshot() {
-                            mode.finish()
-                        }
-                    })
+                    showDeleteScreenshotDialog(activity, selector.selected.toList(),
+                            object : OnDeleteScreenshotListener {
+                                override fun onDeleteScreenshot() {
+                                    mode.finish()
+                                }
+                            })
                 }
 
                 R.id.action_share -> {
@@ -223,7 +224,8 @@ class CollectionFragment : Fragment() {
             val context = context ?: return@ScreenshotAdapter
             DetailPageActivity.showDetailPage(context, item, view, collectionId)
 
-            TelemetryWrapper.collectionItem(SuggestCollectionHelper.getSuggestCollectionNameForTelemetry(context, collectionName))
+            TelemetryWrapper.collectionItem(
+                    SuggestCollectionHelper.getSuggestCollectionNameForTelemetry(context, collectionName))
         }
 
         setHasOptionsMenu(true)
@@ -231,7 +233,8 @@ class CollectionFragment : Fragment() {
 
         initScreenshotList(activity)
 
-        TelemetryWrapper.visitCollectionPage(SuggestCollectionHelper.getSuggestCollectionNameForTelemetry(context, collectionName))
+        TelemetryWrapper.visitCollectionPage(
+                SuggestCollectionHelper.getSuggestCollectionNameForTelemetry(context, collectionName))
 
         setupWindowInsets()
     }

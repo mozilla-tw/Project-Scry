@@ -26,6 +26,7 @@ import org.mozilla.scryer.R
 import org.mozilla.scryer.persistence.CollectionModel
 import org.mozilla.scryer.persistence.ScreenshotModel
 import org.mozilla.scryer.persistence.SuggestCollectionHelper
+import org.mozilla.scryer.promote.Promoter
 import org.mozilla.scryer.telemetry.TelemetryWrapper
 import org.mozilla.scryer.telemetry.TelemetryWrapper.ExtraValue.MULTIPLE
 import org.mozilla.scryer.telemetry.TelemetryWrapper.ExtraValue.SINGLE
@@ -107,6 +108,9 @@ class SortingPanelActivity : AppCompatActivity() {
     /*  Update the timestamp of each suggest collection at once in onStop(), so
         the order of collections will keep static during multiple-sorting */
     private val suggestCollectionCreateTime = mutableListOf<Pair<CollectionModel, Long>>()
+
+    /*  Notify promoter the first time one of the screenshots is sorted to any collection */
+    private var hasNotifiedPromoter = false
 
     private val toast: ScryerToast by lazy {
         ScryerToast(this)
@@ -446,6 +450,16 @@ class SortingPanelActivity : AppCompatActivity() {
     private fun onCollectionClickFinish(collection: CollectionModel) {
         onNewModelAvailable()
         persistModel.onNextScreenshot()
+
+        onScreenshotSorted()
+    }
+
+    private fun onScreenshotSorted() {
+        if (hasNotifiedPromoter) {
+            return
+        }
+        hasNotifiedPromoter = true
+        Promoter.onScreenshotSorted(this)
     }
 
     private fun onNewCollectionClicked() {

@@ -331,7 +331,7 @@ class ScryerService : Service(), CaptureButtonController.ClickListener, ScreenCa
 
         return NotificationCompat.Builder(this, channelId)
                 .setCategory(Notification.CATEGORY_PROMO)
-                .setSmallIcon(R.drawable.ic_stat_notify)
+                .setSmallIcon(R.drawable.ic_stat_notify_sort)
                 .setColor(ContextCompat.getColor(this, R.color.foreground_notification))
                 .setContentTitle(getString(R.string.notification_action_collect_title))
                 .setContentText(getString(R.string.notification_action_collect))

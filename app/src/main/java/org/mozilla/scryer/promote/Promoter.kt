@@ -11,9 +11,9 @@ import android.support.v7.preference.PreferenceManager
 class Promoter {
     companion object {
 
-        private const val KEY_TAKE_SCREENSHOT = "promote_cond_take_screenshot"
-        private const val KEY_SORT_SCREENSHOT = "promote_cond_sort_screenshot"
-        private const val KEY_TAP_OCR = "promote_cond_tap_ocr_button"
+        const val KEY_TAKE_SCREENSHOT = "promote_cond_take_screenshot"
+        const val KEY_SORT_SCREENSHOT = "promote_cond_sort_screenshot"
+        const val KEY_TAP_OCR = "promote_cond_tap_ocr_button"
 
         fun onScreenshotTaken(context: Context) {
             incPref(context, KEY_TAKE_SCREENSHOT)

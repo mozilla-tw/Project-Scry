@@ -185,4 +185,19 @@
     <!-- The string should represent an informal variant of no -->
     <string name="onboarding_search_action_disagree">Nope</string>
     <string name="onboarding_search_content_feedback">Thanks for your feedback!</string>
+
+    <!-- In-app promote dialog -->
+    <string name="promote_feedback_dialog_title">Love Firefox ScreenshotGo?</string>
+    <string name="promote_feedback_dialog_subtitle">Let us know how you feel.</string>
+    <string name="promote_feedback_dialog_positive">Rate 5 Stars</string>
+    <string name="promote_feedback_dialog_negative">Send Feedback</string>
+
+    <string name="promote_share_dialog_title">Share Firefox ScreenshotGo with Friends!</string>
+
+    <string name="promote_share_dialog_subtitle_shot">Enjoy taking screenshots? Share it now!</string>
+    <string name="promote_share_dialog_subtitle_sort">Enjoy organizing screenshots? Share it now!</string>
+    <string name="promote_share_dialog_subtitle_ocr">Found screenshot-to-text useful? Share it now!</string>
+
+    <string name="promote_share_dialog_positive">@string/menu_action_share</string>
+    <string name="promote_share_dialog_negative">@string/sheet_action_no</string>
 </resources>

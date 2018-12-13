@@ -24,6 +24,7 @@ import android.support.design.widget.BottomSheetDialog
 import android.support.v4.app.ActivityCompat
 import android.support.v4.app.Fragment
 import android.support.v4.content.LocalBroadcastManager
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatDialog
 import android.support.v7.preference.PreferenceManager
 import android.support.v7.widget.*
@@ -31,6 +32,7 @@ import android.view.*
 import android.widget.TextView
 import android.widget.Toast
 import androidx.navigation.Navigation
+import kotlinx.android.synthetic.main.dialog_promote.view.*
 import kotlinx.coroutines.experimental.DefaultDispatcher
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
@@ -50,6 +52,8 @@ import org.mozilla.scryer.persistence.CollectionModel
 import org.mozilla.scryer.persistence.ScreenshotModel
 import org.mozilla.scryer.persistence.SuggestCollectionHelper
 import org.mozilla.scryer.preference.PreferenceWrapper
+import org.mozilla.scryer.promote.PromoteRatingHelper
+import org.mozilla.scryer.promote.PromoteShareHelper
 import org.mozilla.scryer.setting.SettingsActivity
 import org.mozilla.scryer.sortingpanel.SortingPanelActivity
 import org.mozilla.scryer.telemetry.TelemetryWrapper
@@ -134,6 +138,87 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
     override fun onResume() {
         super.onResume()
         permissionFlow.start()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        checkPromotion()
+    }
+
+    private fun checkPromotion() {
+        val context = context ?: return
+        if (PromoteRatingHelper.shouldPromote(context)) {
+            PromoteRatingHelper.onRatingPromoted(context)
+            showPromoteDialog(context, getString(R.string.promote_feedback_dialog_title),
+                    getString(R.string.promote_feedback_dialog_subtitle),
+                    getString(R.string.promote_feedback_dialog_positive),
+                    {
+                        PromoteRatingHelper.goToPlayStore(context)
+                    },
+                    getString(R.string.promote_feedback_dialog_negative),
+                    {
+                        PromoteRatingHelper.goToFeedback(context)
+                    })
+
+        } else {
+            val subtitle = when (PromoteShareHelper.getShareReason(context)) {
+                PromoteShareHelper.REASON_SHOT -> {
+                    getString(R.string.promote_share_dialog_subtitle_shot)
+                }
+
+                PromoteShareHelper.REASON_SORT -> {
+                    getString(R.string.promote_share_dialog_subtitle_sort)
+                }
+
+                PromoteShareHelper.REASON_OCR -> {
+                    getString(R.string.promote_share_dialog_subtitle_ocr)
+                }
+
+                else -> return
+            }
+
+            PromoteShareHelper.onSharingPromoted(context)
+            showPromoteDialog(context, getString(R.string.promote_share_dialog_title),
+                    subtitle,
+                    getString(R.string.promote_share_dialog_positive),
+                    {
+                        PromoteShareHelper.showShareAppDialog(context)
+                    },
+                    getString(R.string.promote_share_dialog_negative),
+                    {})
+        }
+    }
+
+    private fun showPromoteDialog(
+            context: Context,
+            title: String,
+            subtitle: String,
+            positiveText: String,
+            positiveListener: () -> Unit,
+            negativeText: String,
+            negativeListener: () -> Unit
+    ) {
+        val dialog = AlertDialog.Builder(context).create()
+        val dialogView = View.inflate(context, R.layout.dialog_promote, null).let {
+            it.title.text = title
+            it.subtitle.text = subtitle
+
+            it.positive_button.text = positiveText
+            it.positive_button.setOnClickListener { _ ->
+                dialog.dismiss()
+                positiveListener.invoke()
+            }
+
+            it.negative_button.text = negativeText
+            it.negative_button.setOnClickListener { _ ->
+                dialog.dismiss()
+                negativeListener.invoke()
+            }
+            it
+        }
+        dialog.setView(dialogView)
+        dialog.setCanceledOnTouchOutside(true)
+        dialogQueue.tryShow(dialog, null)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

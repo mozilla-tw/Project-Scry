@@ -109,4 +109,19 @@
   <string name="onboarding_search_action_agree">Ya</string>
   <string name="onboarding_search_action_disagree">Tidak</string>
   <string name="onboarding_search_content_feedback">Terima kasih atas umpan balik Anda!</string>
+
+  <!-- In-app promote dialog -->
+  <string name="promote_feedback_dialog_title">Suka Firefox ScreenshotGo?</string>
+  <string name="promote_feedback_dialog_subtitle">Beri tahu kami bagaimana perasaan Anda.</string>
+  <string name="promote_feedback_dialog_positive">Beri kami 5 Bintang</string>
+  <string name="promote_feedback_dialog_negative">Kirim masukan anda</string>
+
+  <string name="promote_share_dialog_title">Bagikan Firefox ScreenshotGo dengan Teman!</string>
+
+  <string name="promote_share_dialog_subtitle_shot">Menikmati pengambilan screenshot? Bagikan sekarang!</string>
+  <string name="promote_share_dialog_subtitle_sort">Menikmati mengatur tangkapan layar? Bagikan sekarang!</string>
+  <string name="promote_share_dialog_subtitle_ocr">Merasa tangkapan layar-ke-teks sangat berguna? Bagikan sekarang!</string>
+
+  <string name="promote_share_dialog_positive">@string/menu_action_share</string>
+  <string name="promote_share_dialog_negative">@string/sheet_action_no</string>
 </resources>

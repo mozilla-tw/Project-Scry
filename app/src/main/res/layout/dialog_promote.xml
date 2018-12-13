@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp">
+
+        <ImageView
+            android:layout_width="144dp"
+            android:layout_height="144dp"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/image_feedback" />
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="28dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="28dp"
+        android:gravity="center"
+        android:text="@string/feedback_title_lovefeedback"
+        android:textAppearance="@style/H2"
+        android:textColor="@color/grey90" />
+
+    <TextView
+        android:id="@+id/subtitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="28dp"
+        android:layout_marginTop="@dimen/common_padding_4dp"
+        android:layout_marginRight="28dp"
+        android:gravity="center"
+        android:text="@string/feedback_detail_letusknow"
+        android:textAppearance="@style/Subtitle2"
+        android:textColor="@color/grey50" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="20dp"
+        android:background="@color/grey20" />
+
+    <Button
+        android:id="@+id/positive_button"
+        style="@android:style/Widget.DeviceDefault.Button.Borderless"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/settings_list_item_height"
+        android:text="@string/feedback_action_rate"
+        android:textAppearance="@style/ButtonText" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/grey20" />
+
+    <Button
+        android:id="@+id/negative_button"
+        style="@android:style/Widget.DeviceDefault.Button.Borderless"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/settings_list_item_height"
+        android:text="@string/feedback_action_feedback"
+        android:textAppearance="@style/ButtonText" />
+</LinearLayout>

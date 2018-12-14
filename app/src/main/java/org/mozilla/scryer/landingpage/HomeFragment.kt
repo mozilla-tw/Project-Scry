@@ -332,6 +332,12 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
 
     override fun onOverlayGranted() {
         log(LOG_TAG, "onOverlayGranted")
+
+        ScryerApplication.getSettingsRepository().floatingEnable = true
+        val intent = Intent(activity, ScryerService::class.java)
+        intent.action = ScryerService.ACTION_ENABLE_CAPTURE_BUTTON
+        activity?.startService(intent)
+
         dismissPermissionDialog()
     }
 

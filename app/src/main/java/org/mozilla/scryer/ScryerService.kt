@@ -21,6 +21,8 @@ import android.support.v4.content.ContextCompat
 import android.support.v4.content.LocalBroadcastManager
 import android.text.TextUtils
 import android.widget.Toast
+import androidx.work.PeriodicWorkRequest
+import androidx.work.WorkManager
 import kotlinx.coroutines.experimental.launch
 import org.mozilla.scryer.capture.RequestCaptureActivity
 import org.mozilla.scryer.capture.ScreenCaptureListener
@@ -33,8 +35,10 @@ import org.mozilla.scryer.persistence.CollectionModel
 import org.mozilla.scryer.persistence.ScreenshotModel
 import org.mozilla.scryer.preference.PreferenceWrapper
 import org.mozilla.scryer.sortingpanel.SortingPanelActivity
+import org.mozilla.scryer.telemetry.CaptureServiceHeartbeatWorker
 import org.mozilla.scryer.telemetry.TelemetryWrapper
 import org.mozilla.scryer.ui.ScryerToast
+import java.util.concurrent.TimeUnit
 
 
 class ScryerService : Service(), CaptureButtonController.ClickListener, ScreenCaptureListener {
@@ -127,6 +131,7 @@ class ScryerService : Service(), CaptureButtonController.ClickListener, ScreenCa
             isRunning = false
             destroyFloatingButton()
             fileMonitor.stopMonitor()
+            stopHeartbeatTracking()
         }
         super.onDestroy()
     }
@@ -163,6 +168,7 @@ class ScryerService : Service(), CaptureButtonController.ClickListener, ScreenCa
         startForeground(getForegroundNotificationId(), getForegroundNotification())
         initFileMonitors()
         initFloatingButton()
+        startHeartbeatTracking()
     }
 
     private fun disableScryerService(showToast: Boolean) {
@@ -184,6 +190,19 @@ class ScryerService : Service(), CaptureButtonController.ClickListener, ScreenCa
             captureButtonController?.setOnClickListener(this)
             captureButtonController?.init()
         }
+    }
+
+    private fun startHeartbeatTracking() {
+        stopHeartbeatTracking()
+
+        val heartbeatWorkBuilder = PeriodicWorkRequest
+                .Builder(CaptureServiceHeartbeatWorker::class.java, 24, TimeUnit.HOURS)
+        heartbeatWorkBuilder.addTag(CaptureServiceHeartbeatWorker.TAG)
+        WorkManager.getInstance().enqueue(heartbeatWorkBuilder.build())
+    }
+
+    private fun stopHeartbeatTracking() {
+        WorkManager.getInstance().cancelAllWorkByTag(CaptureServiceHeartbeatWorker.TAG)
     }
 
     private fun destroyFloatingButton() {

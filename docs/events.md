@@ -37,3 +37,4 @@
 |Prompt feedback dialog|Prompt feedback dialog|1|go|""|"" 
 |Click feedback|Click feedback|1|go|"positive,negative"|"" 
 |Prompt share dialog|Prompt share dialog|1|go|""|"" 
+|Background service active|Background service active|1|go|""|"" 

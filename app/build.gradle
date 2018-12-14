@@ -102,6 +102,8 @@ dependencies {
     implementation "android.arch.navigation:navigation-fragment:${Versions.arch_navigation}"
     implementation "android.arch.navigation:navigation-ui:${Versions.arch_navigation}"
 
+    implementation "android.arch.work:work-runtime:${Versions.arch_work}"
+
     implementation "android.arch.persistence.room:runtime:${Versions.arch_room}"
     kapt "android.arch.persistence.room:compiler:${Versions.arch_room}"
 

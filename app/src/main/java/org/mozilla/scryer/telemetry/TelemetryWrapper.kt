@@ -60,6 +60,7 @@ class TelemetryWrapper {
         const val PROMPT_FEEDBACK_DIALOG = "Prompt feedback dialog"
         const val CLICK_FEEDBACK = "Click feedback"
         const val PROMPT_SHARE_DIALOG = "Prompt share dialog"
+        const val BACKGROUND_SERVICE_ACTIVE = "Background service active"
     }
 
     private object Method {
@@ -564,6 +565,19 @@ class TelemetryWrapper {
 
         fun shareApp() {
             AdjustHelper.trackEvent(ADJUST_EVENT_SHARE_APP)
+        }
+
+        @TelemetryDoc(
+                name = Category.BACKGROUND_SERVICE_ACTIVE,
+                category = Category.BACKGROUND_SERVICE_ACTIVE,
+                method = Method.V1,
+                `object` = Object.GO,
+                value = "",
+                extras = [])
+        fun logActiveBackgroundService() {
+            EventBuilder(Category.BACKGROUND_SERVICE_ACTIVE, Method.V1, Object.GO).queue()
+            // force to upload event since it came from service instead of MainActivity
+            TelemetryHolder.get().queuePing(TelemetryEventPingBuilder.TYPE).scheduleUpload()
         }
     }
 

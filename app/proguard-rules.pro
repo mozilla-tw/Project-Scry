@@ -23,6 +23,10 @@
 # We do not want to obfuscate - It's just painful to debug without the right mapping file.
 -dontobfuscate
 
+# Should remove this flag after updating support libraries to 28.x.x
+# https://github.com/googlecodelabs/android-workmanager/issues/34
+-ignorewarnings
+
 #   These fragment are referenced from navigation graph xml, so it's not retained during minify.
 #   This rule is a little too broad, because we might not need all the fragment in difference flavor
 -keep class org.mozilla.scryer.** extends android.support.v4.app.Fragment{}

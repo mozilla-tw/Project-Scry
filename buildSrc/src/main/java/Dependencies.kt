@@ -6,6 +6,7 @@ object Versions {
     val arch_lifecycle = "1.1.1"
     val arch_room = "1.1.1"
     val arch_navigation = "1.0.0-alpha05"
+    val arch_work = "1.0.0-alpha12"
 
     // Crashlytics
     val fabric_gradle_plugin = "1.26.0"

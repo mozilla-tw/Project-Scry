@@ -1,3 +1,7 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
 package org.mozilla.scryer.promote
 
 import android.content.ActivityNotFoundException
@@ -5,6 +9,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
+import android.support.v4.content.ContextCompat
+import android.support.v7.app.AlertDialog
 import android.support.v7.preference.PreferenceManager
 import org.mozilla.scryer.R
 
@@ -43,6 +49,27 @@ class PromoteRatingHelper {
                     Uri.parse(context.getString(R.string.give_us_feedback_url)))
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             context.startActivity(intent)
+        }
+
+        fun getRatingDialog(
+                context: Context,
+                onPositive: () -> Unit,
+                onNegative: () -> Unit
+        ): AlertDialog {
+            return PromoteDialogHelper.showPromoteDialog(context,
+                    context.getString(R.string.dialogue_feedback_title),
+                    context.getString(R.string.dialogue_feedback_description),
+                    ContextCompat.getDrawable(context, R.drawable.image_feedback),
+                    context.getString(R.string.dialogue_feedback_action_5stars),
+                    {
+                        PromoteRatingHelper.goToPlayStore(context)
+                        onPositive.invoke()
+                    },
+                    context.getString(R.string.dialogue_feedback_action_send),
+                    {
+                        PromoteRatingHelper.goToFeedback(context)
+                        onNegative.invoke()
+                    })
         }
 
         private fun getPref(context: Context): SharedPreferences {

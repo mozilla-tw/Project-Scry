@@ -14,7 +14,6 @@ import android.arch.lifecycle.ViewModelProviders
 import android.content.*
 import android.graphics.Color
 import android.graphics.Rect
-import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -24,18 +23,14 @@ import android.support.constraint.Group
 import android.support.design.widget.BottomSheetDialog
 import android.support.v4.app.ActivityCompat
 import android.support.v4.app.Fragment
-import android.support.v4.content.ContextCompat
 import android.support.v4.content.LocalBroadcastManager
-import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatDialog
 import android.support.v7.preference.PreferenceManager
 import android.support.v7.widget.*
 import android.view.*
-import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.navigation.Navigation
-import kotlinx.android.synthetic.main.dialog_promote.view.*
 import kotlinx.coroutines.experimental.DefaultDispatcher
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
@@ -145,100 +140,7 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
 
     override fun onStart() {
         super.onStart()
-        checkPromotion()
-    }
-
-    private fun checkPromotion() {
-        val context = context ?: return
-        val from = TelemetryWrapper.ExtraValue.FROM_PROMPT
-        if (PromoteRatingHelper.shouldPromote(context)) {
-            PromoteRatingHelper.onRatingPromoted(context)
-            showPromoteDialog(context, getString(R.string.dialogue_feedback_title),
-                    getString(R.string.dialogue_feedback_description),
-                    ContextCompat.getDrawable(context, R.drawable.image_feedback),
-                    getString(R.string.dialogue_feedback_action_5stars),
-                    {
-                        PromoteRatingHelper.goToPlayStore(context)
-                        TelemetryWrapper.clickFeedback(TelemetryWrapper.Value.POSITIVE, from)
-                    },
-                    getString(R.string.dialogue_feedback_action_send),
-                    {
-                        PromoteRatingHelper.goToFeedback(context)
-                        TelemetryWrapper.clickFeedback(TelemetryWrapper.Value.NEGATIVE, from)
-                    }).takeIf { it }?.run {
-                        TelemetryWrapper.promptFeedbackDialog(from)
-                    }
-
-        } else {
-            val (reason, subtitleId) = when (PromoteShareHelper.getShareReason(context)) {
-                PromoteShareHelper.REASON_SHOT -> {
-                    Pair(TelemetryWrapper.ExtraValue.TRIGGER_CAPTURE,
-                            R.string.dialogue_take_share_description)
-                }
-
-                PromoteShareHelper.REASON_SORT -> {
-                    Pair(TelemetryWrapper.ExtraValue.TRIGGER_SORT,
-                            R.string.dialogue_sort_share_description)
-                }
-
-                PromoteShareHelper.REASON_OCR -> {
-                    Pair(TelemetryWrapper.ExtraValue.TRIGGER_OCR,
-                            R.string.dialogue_ocr_share_description)
-                }
-
-                else -> return
-            }
-
-            PromoteShareHelper.onSharingPromoted(context)
-            showPromoteDialog(context, getString(R.string.dialogue_share_title),
-                    getString(subtitleId),
-                    ContextCompat.getDrawable(context, R.drawable.image_share),
-                    getString(R.string.menu_action_share),
-                    {
-                        PromoteShareHelper.showShareAppDialog(context)
-                        TelemetryWrapper.shareApp()
-                    },
-                    getString(R.string.sheet_action_no),
-                    {
-                    }).takeIf { it }?.run {
-                        TelemetryWrapper.promptShareDialog(from, reason)
-                    }
-        }
-    }
-
-    private fun showPromoteDialog(
-            context: Context,
-            title: String,
-            subtitle: String,
-            drawable: Drawable?,
-            positiveText: String,
-            positiveListener: () -> Unit,
-            negativeText: String,
-            negativeListener: () -> Unit
-    ): Boolean {
-        val dialog = AlertDialog.Builder(context).create()
-        val dialogView = View.inflate(context, R.layout.dialog_promote, null).let {
-            it.title.text = title
-            it.subtitle.text = subtitle
-            drawable?.let { image ->
-                it.findViewById<ImageView>(R.id.image).setImageDrawable(image)
-            }
-
-            it.positive_button.text = positiveText
-            it.positive_button.setOnClickListener { _ ->
-                dialog.dismiss()
-                positiveListener.invoke()
-            }
-
-            it.negative_button.text = negativeText
-            it.negative_button.setOnClickListener { _ ->
-                dialog.dismiss()
-                negativeListener.invoke()
-            }
-            it
-        }
-        dialog.setView(dialogView)
-        return dialogQueue.tryShow(dialog, null)
+        promptPromotionIfNeeded()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -806,6 +708,51 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
     private fun isFirstTimeLaunched(): Boolean {
         // TODO: Better way?
         return (activity as? MainActivity)?.isFirstTimeLaunched ?: false
+    }
+
+    private fun promptPromotionIfNeeded() {
+        val context = context ?: return
+        val shareReason = PromoteShareHelper.getShareReason(context)
+        if (shareReason >= 0) {
+            promptShareDialog(context, shareReason)
+
+        } else if (PromoteRatingHelper.shouldPromote(context)) {
+            promptRatingDialog(context)
+        }
+    }
+
+    private fun promptRatingDialog(context: Context) {
+        val from = TelemetryWrapper.ExtraValue.FROM_PROMPT
+
+        PromoteRatingHelper.onRatingPromoted(context)
+        val dialog = PromoteRatingHelper.getRatingDialog(context, {
+            TelemetryWrapper.clickFeedback(TelemetryWrapper.Value.POSITIVE, from)
+        }, {
+            TelemetryWrapper.clickFeedback(TelemetryWrapper.Value.NEGATIVE, from)
+        })
+
+        if (dialogQueue.tryShow(dialog, null)) {
+            TelemetryWrapper.promptFeedbackDialog(from)
+        }
+    }
+
+    private fun promptShareDialog(context: Context, reason: Int) {
+        val reasonForTelemetry = when (reason) {
+            PromoteShareHelper.REASON_SHOT -> TelemetryWrapper.ExtraValue.TRIGGER_CAPTURE
+            PromoteShareHelper.REASON_SORT -> TelemetryWrapper.ExtraValue.TRIGGER_SORT
+            PromoteShareHelper.REASON_OCR -> TelemetryWrapper.ExtraValue.TRIGGER_OCR
+            else -> return
+        }
+
+        PromoteShareHelper.onSharingPromoted(context)
+        PromoteShareHelper.getShareDialog(context, reason, {
+            TelemetryWrapper.shareApp()
+        })?.let {
+            if (dialogQueue.tryShow(it, null)) {
+                TelemetryWrapper.promptShareDialog(TelemetryWrapper.ExtraValue.FROM_PROMPT,
+                        reasonForTelemetry)
+            }
+        }
     }
 
     private class DialogQueue {

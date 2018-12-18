@@ -1,8 +1,14 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
 package org.mozilla.scryer.promote
 
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.support.v4.content.ContextCompat
+import android.support.v7.app.AlertDialog
 import android.support.v7.preference.PreferenceManager
 import org.mozilla.scryer.R
 
@@ -44,6 +50,34 @@ class PromoteShareHelper {
                             context.getString(R.string.app_full_name),
                             context.getString(R.string.share_app_google_play_url)))
             context.startActivity(Intent.createChooser(sendIntent, null))
+        }
+
+        fun getShareDialog(
+                context: Context,
+                reason: Int,
+                onPositive: (() -> Unit)? = null,
+                onNegative: (() -> Unit)? = null
+        ): AlertDialog? {
+            val subtitleId = when (reason) {
+                PromoteShareHelper.REASON_SHOT -> R.string.dialogue_take_share_description
+                PromoteShareHelper.REASON_SORT -> R.string.dialogue_sort_share_description
+                PromoteShareHelper.REASON_OCR -> R.string.dialogue_ocr_share_description
+                else -> return null
+            }
+
+            return PromoteDialogHelper.showPromoteDialog(context,
+                    context.getString(R.string.dialogue_share_title),
+                    context.getString(subtitleId),
+                    ContextCompat.getDrawable(context, R.drawable.image_share),
+                    context.getString(R.string.menu_action_share),
+                    {
+                        PromoteShareHelper.showShareAppDialog(context)
+                        onPositive?.invoke()
+                    },
+                    context.getString(R.string.sheet_action_no),
+                    {
+                        onNegative?.invoke()
+                    })
         }
 
         private fun getPref(context: Context): SharedPreferences {

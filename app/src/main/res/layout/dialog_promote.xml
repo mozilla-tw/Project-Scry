@@ -12,7 +12,8 @@
         android:layout_marginTop="32dp">
 
         <ImageView
-            android:layout_width="144dp"
+            android:id="@+id/image"
+            android:layout_width="match_parent"
             android:layout_height="144dp"
             android:layout_centerHorizontal="true"
             android:src="@drawable/image_feedback" />

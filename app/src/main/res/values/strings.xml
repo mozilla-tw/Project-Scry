@@ -187,17 +187,14 @@
     <string name="onboarding_search_content_feedback">Thanks for your feedback!</string>
 
     <!-- In-app promote dialog -->
-    <string name="promote_feedback_dialog_title">Love Firefox ScreenshotGo?</string>
-    <string name="promote_feedback_dialog_subtitle">Let us know how you feel.</string>
-    <string name="promote_feedback_dialog_positive">Rate 5 Stars</string>
-    <string name="promote_feedback_dialog_negative">Send Feedback</string>
+    <string name="dialogue_feedback_title">Love Firefox ScreenshotGo?</string>
+    <string name="dialogue_feedback_description">Let us know how you feel.</string>
+    <string name="dialogue_feedback_action_5stars">Rate 5 Stars</string>
+    <string name="dialogue_feedback_action_send">Send Feedback</string>
 
-    <string name="promote_share_dialog_title">Share Firefox ScreenshotGo with Friends!</string>
+    <string name="dialogue_share_title">Share Firefox ScreenshotGo with Friends!</string>
 
-    <string name="promote_share_dialog_subtitle_shot">Enjoy taking screenshots? Share it now!</string>
-    <string name="promote_share_dialog_subtitle_sort">Enjoy organizing screenshots? Share it now!</string>
-    <string name="promote_share_dialog_subtitle_ocr">Found screenshot-to-text useful? Share it now!</string>
-
-    <string name="promote_share_dialog_positive">@string/menu_action_share</string>
-    <string name="promote_share_dialog_negative">@string/sheet_action_no</string>
+    <string name="dialogue_take_share_description">Enjoy taking screenshots? Share it now!</string>
+    <string name="dialogue_sort_share_description">Enjoy organizing screenshots? Share it now!</string>
+    <string name="dialogue_ocr_share_description">Found screenshot-to-text useful? Share it now!</string>
 </resources>

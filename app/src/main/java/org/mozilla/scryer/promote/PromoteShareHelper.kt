@@ -10,6 +10,7 @@ import android.content.SharedPreferences
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import android.support.v7.preference.PreferenceManager
+import android.view.View
 import org.mozilla.scryer.R
 
 class PromoteShareHelper {
@@ -65,7 +66,7 @@ class PromoteShareHelper {
                 else -> return null
             }
 
-            return PromoteDialogHelper.showPromoteDialog(context,
+            val dialog = PromoteDialogHelper.createPromoteDialog(context,
                     context.getString(R.string.dialogue_share_title),
                     context.getString(subtitleId),
                     ContextCompat.getDrawable(context, R.drawable.image_share),
@@ -78,6 +79,11 @@ class PromoteShareHelper {
                     {
                         onNegative?.invoke()
                     })
+            dialog.setOnShowListener {
+                dialog.findViewById<View>(R.id.button_divider)?.visibility = View.GONE
+                dialog.findViewById<View>(R.id.negative_button)?.visibility = View.GONE
+            }
+            return dialog
         }
 
         private fun getPref(context: Context): SharedPreferences {

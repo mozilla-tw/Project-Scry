@@ -56,7 +56,7 @@ class PromoteRatingHelper {
                 onPositive: () -> Unit,
                 onNegative: () -> Unit
         ): AlertDialog {
-            return PromoteDialogHelper.showPromoteDialog(context,
+            return PromoteDialogHelper.createPromoteDialog(context,
                     context.getString(R.string.dialogue_feedback_title),
                     context.getString(R.string.dialogue_feedback_description),
                     ContextCompat.getDrawable(context, R.drawable.image_feedback),

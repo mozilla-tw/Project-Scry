@@ -14,7 +14,7 @@ import org.mozilla.scryer.R
 
 class PromoteDialogHelper {
     companion object {
-        fun showPromoteDialog(
+        fun createPromoteDialog(
                 context: Context,
                 title: String,
                 subtitle: String,

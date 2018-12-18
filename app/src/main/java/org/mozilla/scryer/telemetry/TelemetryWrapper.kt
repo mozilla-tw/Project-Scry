@@ -87,11 +87,20 @@ class TelemetryWrapper {
         const val MODE = "mode"
         const val TIMES = "times"
         const val MESSAGE = "message"
+        const val TRIGGER = "trigger"
+        const val FROM = "from"
     }
 
     object ExtraValue {
         const val SINGLE = "single"
         const val MULTIPLE = "multiple"
+
+        const val FROM_PROMPT = "prompt"
+        const val FROM_SETTINGS = "settings"
+
+        const val TRIGGER_CAPTURE = "capture"
+        const val TRIGGER_SORT = "sort"
+        const val TRIGGER_OCR = "ocr"
     }
 
     companion object {
@@ -533,9 +542,22 @@ class TelemetryWrapper {
                 method = Method.V1,
                 `object` = Object.GO,
                 value = "",
-                extras = [])
-        fun promptFeedbackDialog() {
-            EventBuilder(Category.PROMPT_FEEDBACK_DIALOG, Method.V1, Object.GO).queue()
+                extras = [
+                    TelemetryExtra(
+                            name = Extra.FROM,
+                            value = ExtraValue.FROM_PROMPT + "," + ExtraValue.FROM_SETTINGS
+                    ),
+                    TelemetryExtra(
+                            name = Extra.TRIGGER,
+                            value = ExtraValue.TRIGGER_CAPTURE
+                                    + "," + ExtraValue.TRIGGER_SORT
+                                    + "," + ExtraValue.TRIGGER_OCR
+                    )])
+        fun promptFeedbackDialog(from: String, trigger: String = "") {
+            EventBuilder(Category.PROMPT_FEEDBACK_DIALOG, Method.V1, Object.GO)
+                    .extra(Extra.FROM, from)
+                    .extra(Extra.TRIGGER, trigger)
+                    .queue()
         }
 
         @TelemetryDoc(
@@ -544,9 +566,22 @@ class TelemetryWrapper {
                 method = Method.V1,
                 `object` = Object.GO,
                 value = "positive,negative",
-                extras = [])
-        fun clickFeedback(value: String) {
-            EventBuilder(Category.CLICK_FEEDBACK, Method.V1, Object.GO, value).queue()
+                extras = [
+                    TelemetryExtra(
+                            name = Extra.FROM,
+                            value = ExtraValue.FROM_PROMPT + "," + ExtraValue.FROM_SETTINGS
+                    ),
+                    TelemetryExtra(
+                            name = Extra.TRIGGER,
+                            value = ExtraValue.TRIGGER_CAPTURE
+                                    + "," + ExtraValue.TRIGGER_SORT
+                                    + "," + ExtraValue.TRIGGER_OCR
+                    )])
+        fun clickFeedback(value: String, from: String, trigger: String = "") {
+            EventBuilder(Category.CLICK_FEEDBACK, Method.V1, Object.GO, value)
+                    .extra(Extra.FROM, from)
+                    .extra(Extra.TRIGGER, trigger)
+                    .queue()
             if (value == Value.POSITIVE) {
                 AdjustHelper.trackEvent(ADJUST_EVENT_FEEDBACK_POSITIVE)
             }
@@ -558,9 +593,22 @@ class TelemetryWrapper {
                 method = Method.V1,
                 `object` = Object.GO,
                 value = "",
-                extras = [])
-        fun promptShareDialog() {
-            EventBuilder(Category.PROMPT_SHARE_DIALOG, Method.V1, Object.GO).queue()
+                extras = [
+                    TelemetryExtra(
+                            name = Extra.FROM,
+                            value = ExtraValue.FROM_PROMPT + "," + ExtraValue.FROM_SETTINGS
+                    ),
+                    TelemetryExtra(
+                            name = Extra.TRIGGER,
+                            value = ExtraValue.TRIGGER_CAPTURE
+                                    + "," + ExtraValue.TRIGGER_SORT
+                                    + "," + ExtraValue.TRIGGER_OCR
+                    )])
+        fun promptShareDialog(from: String, trigger: String = "") {
+            EventBuilder(Category.PROMPT_SHARE_DIALOG, Method.V1, Object.GO)
+                    .extra(Extra.FROM, from)
+                    .extra(Extra.TRIGGER, trigger)
+                    .queue()
         }
 
         fun shareApp() {

@@ -1,9 +1,7 @@
 package org.mozilla.scryer.setting
 
-import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.support.v7.app.ActionBar
 import android.support.v7.app.AlertDialog
@@ -168,23 +166,25 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
         dialogView.findViewById<Button>(R.id.dialog_give_feedback_btn_go_rate).setOnClickListener {
             goToPlayStore(context)
             dialog?.dismiss()
-            TelemetryWrapper.clickFeedback(TelemetryWrapper.Value.POSITIVE)
+            TelemetryWrapper.clickFeedback(TelemetryWrapper.Value.POSITIVE,
+                    TelemetryWrapper.ExtraValue.FROM_SETTINGS)
         }
         dialogView.findViewById<Button>(R.id.dialog_give_feedback_btn_feedback).setOnClickListener {
             goToFeedback(context)
             dialog?.dismiss()
-            TelemetryWrapper.clickFeedback(TelemetryWrapper.Value.NEGATIVE)
+            TelemetryWrapper.clickFeedback(TelemetryWrapper.Value.NEGATIVE,
+                    TelemetryWrapper.ExtraValue.FROM_SETTINGS)
         }
         dialog.setView(dialogView)
         dialog.setCanceledOnTouchOutside(true)
         dialog.show()
 
-        TelemetryWrapper.promptFeedbackDialog()
+        TelemetryWrapper.promptFeedbackDialog(TelemetryWrapper.ExtraValue.FROM_SETTINGS)
     }
 
     private fun showShareAppDialog(context: Context) {
         PromoteShareHelper.showShareAppDialog(context)
-        TelemetryWrapper.promptShareDialog()
+        TelemetryWrapper.promptShareDialog(TelemetryWrapper.ExtraValue.FROM_SETTINGS)
     }
 
     private fun showFirebaseDebugDialog(context: Context): Boolean {

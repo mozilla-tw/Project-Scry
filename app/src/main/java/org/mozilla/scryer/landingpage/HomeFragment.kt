@@ -147,6 +147,7 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
 
     private fun checkPromotion() {
         val context = context ?: return
+        val from = TelemetryWrapper.ExtraValue.FROM_PROMPT
         if (PromoteRatingHelper.shouldPromote(context)) {
             PromoteRatingHelper.onRatingPromoted(context)
             showPromoteDialog(context, getString(R.string.promote_feedback_dialog_title),
@@ -154,24 +155,32 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
                     getString(R.string.promote_feedback_dialog_positive),
                     {
                         PromoteRatingHelper.goToPlayStore(context)
+                        TelemetryWrapper.clickFeedback(TelemetryWrapper.Value.POSITIVE, from)
                     },
                     getString(R.string.promote_feedback_dialog_negative),
                     {
                         PromoteRatingHelper.goToFeedback(context)
+                        TelemetryWrapper.clickFeedback(TelemetryWrapper.Value.NEGATIVE, from)
                     })
+                    .takeIf { it }?.run {
+                        TelemetryWrapper.promptFeedbackDialog(from)
+                    }
 
         } else {
-            val subtitle = when (PromoteShareHelper.getShareReason(context)) {
+            val (trigger, stringId) = when (PromoteShareHelper.getShareReason(context)) {
                 PromoteShareHelper.REASON_SHOT -> {
-                    getString(R.string.promote_share_dialog_subtitle_shot)
+                    Pair(TelemetryWrapper.ExtraValue.TRIGGER_CAPTURE,
+                            R.string.promote_share_dialog_subtitle_shot)
                 }
 
                 PromoteShareHelper.REASON_SORT -> {
-                    getString(R.string.promote_share_dialog_subtitle_sort)
+                    Pair(TelemetryWrapper.ExtraValue.TRIGGER_SORT,
+                            R.string.promote_share_dialog_subtitle_sort)
                 }
 
                 PromoteShareHelper.REASON_OCR -> {
-                    getString(R.string.promote_share_dialog_subtitle_ocr)
+                    Pair(TelemetryWrapper.ExtraValue.TRIGGER_OCR,
+                            R.string.promote_share_dialog_subtitle_ocr)
                 }
 
                 else -> return
@@ -179,13 +188,17 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
 
             PromoteShareHelper.onSharingPromoted(context)
             showPromoteDialog(context, getString(R.string.promote_share_dialog_title),
-                    subtitle,
+                    getString(stringId),
                     getString(R.string.promote_share_dialog_positive),
                     {
                         PromoteShareHelper.showShareAppDialog(context)
+                        TelemetryWrapper.shareApp()
                     },
                     getString(R.string.promote_share_dialog_negative),
                     {})
+                    .takeIf { it }?.run {
+                        TelemetryWrapper.promptShareDialog(from, trigger)
+                    }
         }
     }
 
@@ -197,7 +210,7 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
             positiveListener: () -> Unit,
             negativeText: String,
             negativeListener: () -> Unit
-    ) {
+    ): Boolean {
         val dialog = AlertDialog.Builder(context).create()
         val dialogView = View.inflate(context, R.layout.dialog_promote, null).let {
             it.title.text = title
@@ -218,7 +231,7 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
         }
         dialog.setView(dialogView)
         dialog.setCanceledOnTouchOutside(true)
-        dialogQueue.tryShow(dialog, null)
+        return dialogQueue.tryShow(dialog, null)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

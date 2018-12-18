@@ -724,7 +724,6 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
     private fun promptRatingDialog(context: Context) {
         val from = TelemetryWrapper.ExtraValue.FROM_PROMPT
 
-        PromoteRatingHelper.onRatingPromoted(context)
         val dialog = PromoteRatingHelper.getRatingDialog(context, {
             TelemetryWrapper.clickFeedback(TelemetryWrapper.Value.POSITIVE, from)
         }, {
@@ -732,6 +731,7 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
         })
 
         if (dialogQueue.tryShow(dialog, null)) {
+            PromoteRatingHelper.onRatingPromoted(context)
             TelemetryWrapper.promptFeedbackDialog(from)
         }
     }
@@ -744,11 +744,11 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
             else -> return
         }
 
-        PromoteShareHelper.onSharingPromoted(context)
         PromoteShareHelper.getShareDialog(context, reason, {
             TelemetryWrapper.shareApp()
         })?.let {
             if (dialogQueue.tryShow(it, null)) {
+                PromoteShareHelper.onSharingPromoted(context)
                 TelemetryWrapper.promptShareDialog(TelemetryWrapper.ExtraValue.FROM_PROMPT,
                         reasonForTelemetry)
             }

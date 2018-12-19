@@ -6,11 +6,11 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 28
     defaultConfig {
         applicationId "org.mozilla.screenshot.go"
         minSdkVersion 21
-        targetSdkVersion 27
+        targetSdkVersion 28
         versionCode 1
         versionName "0.8"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -87,6 +87,8 @@ dependencies {
     implementation "com.android.support:transition:${Versions.support}"
     implementation "com.android.support:preference-v14:${Versions.support}"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:${Versions.kotlin_coroutine}"
+    implementation "com.android.support:support-media-compat:${Versions.support}"
+    implementation "com.android.support:support-v4:${Versions.support}"
 
     implementation "com.android.support.constraint:constraint-layout:${Versions.constraint_layout}"
 

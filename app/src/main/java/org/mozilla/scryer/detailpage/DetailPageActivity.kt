@@ -63,9 +63,11 @@ class DetailPageActivity : AppCompatActivity() {
                            collectionId: String? = null) {
             val intent = Intent(context, DetailPageActivity::class.java)
             val bundle = srcView?.let {
-                val option = ActivityOptionsCompat.makeSceneTransitionAnimation(
-                        context as Activity, srcView, ViewCompat.getTransitionName(it))
-                option.toBundle()
+                ViewCompat.getTransitionName(it)?.let { transitionName ->
+                    val option = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                            context as Activity, srcView, transitionName)
+                    option.toBundle()
+                }
             }
             intent.putExtra(EXTRA_SCREENSHOT_ID, screenshot.id)
             collectionId?.let {
@@ -395,18 +397,18 @@ class DetailPageActivity : AppCompatActivity() {
     private fun updateFabUI(isTextMode: Boolean, isLoading: Boolean) {
         when {
             isTextMode -> {
-                cancel_fab.visibility = View.INVISIBLE
-                text_mode_fab.verticalScrollbarPosition = View.INVISIBLE
+                cancel_fab.hide()
+                text_mode_fab.hide()
             }
 
             isLoading -> {
-                cancel_fab.visibility = View.VISIBLE
-                text_mode_fab.visibility = View.INVISIBLE
+                cancel_fab.show()
+                text_mode_fab.hide()
             }
 
             else -> {
-                cancel_fab.visibility = View.INVISIBLE
-                text_mode_fab.visibility = View.VISIBLE
+                cancel_fab.hide()
+                text_mode_fab.show()
             }
         }
     }
@@ -461,15 +463,15 @@ class DetailPageActivity : AppCompatActivity() {
             toolbar_background.visibility = View.VISIBLE
             supportActionBar?.show()
             window?.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
-            text_mode_fab.visibility = View.VISIBLE
-            cancel_fab.visibility = View.INVISIBLE
+            text_mode_fab.show()
+            cancel_fab.hide()
 
         } else {
             toolbar_background.visibility = View.INVISIBLE
             supportActionBar?.hide()
             window?.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
-            text_mode_fab.visibility = View.INVISIBLE
-            cancel_fab.visibility = View.INVISIBLE
+            text_mode_fab.hide()
+            cancel_fab.hide()
         }
     }
 

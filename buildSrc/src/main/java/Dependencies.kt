@@ -1,7 +1,7 @@
 object Versions {
     // Android
     val android_gradle_plugin = "3.1.3"
-    val support = "27.1.1"
+    val support = "28.0.0"
     val constraint_layout = "1.1.2"
     val arch_lifecycle = "1.1.1"
     val arch_room = "1.1.1"

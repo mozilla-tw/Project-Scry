@@ -349,14 +349,11 @@ class MainAdapter(private val fragment: Fragment?): RecyclerView.Adapter<Recycle
             val childCount = parent.childCount
             for (child in (0 until childCount).map { parent.getChildAt(it) }) {
                 val pos = parent.getChildAdapterPosition(child)
-                when (pos) {
-                    parent.adapter.itemCount - 1 -> {
-                        decorateLastItem(c, child)
-                    }
-
-                    POS_QUICK_ACCESS_TITLE -> {
-                        decorateQuickAccessTitle(c, child)
-                    }
+                val lastIndex = (parent.adapter?.itemCount ?: 0) - 1
+                if (lastIndex > POS_COLLECTION_LIST_TITLE && pos == lastIndex) {
+                    decorateLastItem(c, child)
+                } else if (pos == POS_QUICK_ACCESS_TITLE) {
+                    decorateQuickAccessTitle(c, child)
                 }
             }
         }

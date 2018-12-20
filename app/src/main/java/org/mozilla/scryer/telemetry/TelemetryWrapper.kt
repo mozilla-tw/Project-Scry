@@ -61,6 +61,7 @@ class TelemetryWrapper {
         const val CLICK_FEEDBACK = "Click feedback"
         const val PROMPT_SHARE_DIALOG = "Prompt share dialog"
         const val BACKGROUND_SERVICE_ACTIVE = "Background service active"
+        const val SHARE_APP = "Share app"
     }
 
     private object Method {
@@ -609,6 +610,14 @@ class TelemetryWrapper {
                     .extra(Extra.FROM, from)
                     .extra(Extra.TRIGGER, trigger)
                     .queue()
+        }
+
+        fun clickShareApp(from: String, trigger: String = "") {
+            EventBuilder(Category.SHARE_APP, Method.V1, Object.GO)
+                    .extra(Extra.FROM, from)
+                    .extra(Extra.TRIGGER, trigger)
+                    .queue()
+            shareApp()
         }
 
         fun shareApp() {

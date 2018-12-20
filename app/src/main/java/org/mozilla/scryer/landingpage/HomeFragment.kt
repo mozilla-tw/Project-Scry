@@ -739,7 +739,8 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
         }
 
         PromoteShareHelper.getShareDialog(context, reason, {
-            TelemetryWrapper.shareApp()
+            TelemetryWrapper.clickShareApp(TelemetryWrapper.ExtraValue.FROM_PROMPT,
+                    reasonForTelemetry)
         })?.let {
             if (dialogQueue.tryShow(it, null)) {
                 PromoteShareHelper.onSharingPromoted(context)

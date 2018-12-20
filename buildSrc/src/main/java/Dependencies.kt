@@ -1,6 +1,6 @@
 object Versions {
     // Android
-    val android_gradle_plugin = "3.1.3"
+    val android_gradle_plugin = "3.2.1"
     val support = "28.0.0"
     val constraint_layout = "1.1.2"
     val arch_lifecycle = "1.1.1"
@@ -9,14 +9,14 @@ object Versions {
     val arch_work = "1.0.0-alpha12"
 
     // Crashlytics
-    val fabric_gradle_plugin = "1.26.0"
-    val crashlytics = "2.9.5"
+    val fabric_gradle_plugin = "1.26.1"
+    val crashlytics = "2.9.7"
 
     // Google
     val firebase = "16.0.1"
     val firebase_messageing = "17.0.0"
     val firebase_ml = "16.0.0"
-    val google_service_plugin = "4.0.2"
+    val google_service_plugin = "4.2.0"
 
     // Kotlin
     val kotlin = "1.2.60"

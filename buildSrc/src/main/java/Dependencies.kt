@@ -19,8 +19,8 @@ object Versions {
     val google_service_plugin = "4.2.0"
 
     // Kotlin
-    val kotlin = "1.2.60"
-    val kotlin_coroutine = "0.24.0"
+    val kotlin = "1.2.71"
+    val kotlin_coroutine = "0.30.0"
 
     // Test
     val junit = "4.12"

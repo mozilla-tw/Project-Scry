@@ -37,4 +37,5 @@
 |Prompt feedback dialog|Prompt feedback dialog|1|go|""|"from=prompt,settings,trigger=capture,sort,ocr," 
 |Click feedback|Click feedback|1|go|"positive,negative"|"from=prompt,settings,trigger=capture,sort,ocr," 
 |Prompt share dialog|Prompt share dialog|1|go|""|"from=prompt,settings,trigger=capture,sort,ocr," 
+|Share app|Share app|1|go|""|"from=prompt,settings,trigger=capture,sort,ocr," 
 |Background service active|Background service active|1|go|""|"" 

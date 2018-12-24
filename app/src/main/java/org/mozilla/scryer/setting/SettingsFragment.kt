@@ -3,11 +3,11 @@ package org.mozilla.scryer.setting
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.app.ActionBar
-import android.support.v7.app.AlertDialog
-import android.support.v7.preference.Preference
-import android.support.v7.preference.PreferenceFragmentCompat
-import android.support.v7.preference.SwitchPreferenceCompat
+import androidx.appcompat.app.ActionBar
+import androidx.appcompat.app.AlertDialog
+import androidx.preference.Preference
+import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.SwitchPreferenceCompat
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Button

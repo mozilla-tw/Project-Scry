@@ -5,9 +5,9 @@
 
 package org.mozilla.scryer.repository
 
-import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.MutableLiveData
-import android.arch.lifecycle.Transformations
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 import android.content.Context
 import kotlinx.coroutines.experimental.launch
 import org.mozilla.scryer.R

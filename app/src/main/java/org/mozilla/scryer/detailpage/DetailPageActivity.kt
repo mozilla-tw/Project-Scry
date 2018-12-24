@@ -12,21 +12,20 @@ import android.graphics.BitmapFactory
 import android.graphics.Point
 import android.graphics.RectF
 import android.os.Bundle
-import android.support.design.widget.BottomSheetBehavior
-import android.support.design.widget.FloatingActionButton
-import android.support.v4.app.ActivityOptionsCompat
-import android.support.v4.content.ContextCompat
-import android.support.v4.graphics.drawable.DrawableCompat
-import android.support.v4.view.ViewCompat
-import android.support.v4.view.ViewPager
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.WindowManager
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import androidx.core.app.ActivityOptionsCompat
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
+import androidx.core.view.ViewCompat
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.text.FirebaseVisionText
@@ -233,7 +232,7 @@ class DetailPageActivity : AppCompatActivity() {
                 this.screenshots = this@DetailPageActivity.screenshots
                 this.itemCallback = this@DetailPageActivity.itemCallback
             }
-            view_pager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
+            view_pager.addOnPageChangeListener(object : androidx.viewpager.widget.ViewPager.SimpleOnPageChangeListener() {
                 override fun onPageSelected(position: Int) {
                     hasRunOcr = false
                 }

@@ -5,8 +5,8 @@
 
 package org.mozilla.scryer.persistence
 
-import android.arch.persistence.room.Database
-import android.arch.persistence.room.RoomDatabase
+import androidx.room.Database
+import androidx.room.RoomDatabase
 
 @Database(entities = [CollectionModel::class, ScreenshotModel::class], version = 1)
 abstract class ScreenshotDatabase: RoomDatabase() {

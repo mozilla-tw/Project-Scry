@@ -2,7 +2,7 @@ package org.mozilla.scryer.telemetry
 
 import android.content.Context
 import android.preference.PreferenceManager
-import android.support.annotation.Nullable
+import androidx.annotation.Nullable
 import org.mozilla.scryer.*
 import org.mozilla.telemetry.Telemetry
 import org.mozilla.telemetry.TelemetryHolder

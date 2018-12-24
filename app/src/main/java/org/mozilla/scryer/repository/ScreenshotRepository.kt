@@ -5,10 +5,10 @@
 
 package org.mozilla.scryer.repository
 
-import android.arch.lifecycle.LiveData
-import android.arch.persistence.db.SupportSQLiteDatabase
-import android.arch.persistence.room.Room
-import android.arch.persistence.room.RoomDatabase
+import androidx.lifecycle.LiveData
+import androidx.sqlite.db.SupportSQLiteDatabase
+import androidx.room.Room
+import androidx.room.RoomDatabase
 import android.content.Context
 import org.mozilla.scryer.persistence.CollectionModel
 import org.mozilla.scryer.persistence.ScreenshotDatabase

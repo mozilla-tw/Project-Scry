@@ -6,7 +6,7 @@ package org.mozilla.scryer.promote
 
 import android.content.Context
 import android.graphics.drawable.Drawable
-import android.support.v7.app.AlertDialog
+import androidx.appcompat.app.AlertDialog
 import android.view.View
 import android.widget.ImageView
 import kotlinx.android.synthetic.main.dialog_promote.view.*

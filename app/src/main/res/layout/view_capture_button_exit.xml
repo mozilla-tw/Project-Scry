@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -8,7 +8,7 @@
     android:background="@drawable/capture_button_exit_bkg"
     tools:background="#000000">
 
-    <android.support.constraint.Guideline
+    <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline"
         android:layout_width="01dp"
         android:layout_height="0dp"
@@ -35,4 +35,4 @@
         app:layout_constraintBottom_toBottomOf="@id/border"
         app:layout_constraintRight_toRightOf="@id/border" />
 
-</android.support.constraint.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

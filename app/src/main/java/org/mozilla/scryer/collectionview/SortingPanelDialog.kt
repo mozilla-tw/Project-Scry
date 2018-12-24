@@ -7,8 +7,8 @@
 package org.mozilla.scryer.collectionview
 
 import android.graphics.PixelFormat
-import android.support.v4.app.FragmentActivity
-import android.support.v4.content.ContextCompat
+import androidx.fragment.app.FragmentActivity
+import androidx.core.content.ContextCompat
 import android.view.KeyEvent
 import android.view.View
 import android.view.WindowManager
@@ -34,7 +34,7 @@ import org.mozilla.scryer.viewmodel.ScreenshotViewModel
 import java.util.*
 
 class SortingPanelDialog(
-        private val activity: FragmentActivity,
+        private val activity: androidx.fragment.app.FragmentActivity,
         val screenshots: List<ScreenshotModel>
 ) {
     private val suggestCollectionCreateTime = mutableListOf<Pair<CollectionModel, Long>>()

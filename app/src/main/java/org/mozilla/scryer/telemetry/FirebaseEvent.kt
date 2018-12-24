@@ -7,7 +7,7 @@ package org.mozilla.scryer.telemetry
 
 import android.content.Context
 import android.os.Bundle
-import android.support.annotation.CheckResult
+import androidx.annotation.CheckResult
 import com.google.firebase.analytics.FirebaseAnalytics
 import org.mozilla.scryer.BuildConfig
 import java.util.*

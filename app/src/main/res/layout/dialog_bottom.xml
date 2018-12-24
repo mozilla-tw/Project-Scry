@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -11,7 +11,7 @@
     android:paddingRight="24dp"
     android:paddingBottom="20dp">
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/top_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -72,7 +72,7 @@
                 app:layout_constraintTop_toBottomOf="@id/title"
                 tools:text="Contentasdfkljas;dkfja;skdjfa;ksldjf;lkasjdf;kasdf;a;skldfja;skldjfa;lskdjfa;skdjfa;skdjf;lskjdfl;aksjdfl;skdjf;lksdjf;aksldjfa;lskdjf" />
 
-            <android.support.v7.widget.AppCompatCheckBox
+            <androidx.appcompat.widget.AppCompatCheckBox
                 android:id="@+id/dont_ask_again_checkbox"
                 android:layout_width="wrap_content"
                 android:layout_height="32dp"
@@ -87,9 +87,9 @@
                 app:layout_constraintTop_toBottomOf="@id/subtitle" />
 
         <!--</android.support.constraint.ConstraintLayout>-->
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/button_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -97,7 +97,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/top_layout">
 
-        <android.support.constraint.Guideline
+        <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -139,7 +139,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintWidth_max="180dp" />
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-</android.support.constraint.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -4,8 +4,8 @@ package org.mozilla.scryer.setting
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.support.v7.preference.PreferenceViewHolder
-import android.support.v7.preference.SwitchPreferenceCompat
+import androidx.preference.PreferenceViewHolder
+import androidx.preference.SwitchPreferenceCompat
 import android.util.AttributeSet
 import android.widget.TextView
 import org.mozilla.scryer.R

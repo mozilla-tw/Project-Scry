@@ -1,9 +1,9 @@
 package org.mozilla.scryer.ui
 
 import android.content.Context
-import android.support.annotation.LayoutRes
-import android.support.design.widget.BottomSheetBehavior
-import android.support.design.widget.BottomSheetDialog
+import androidx.annotation.LayoutRes
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver

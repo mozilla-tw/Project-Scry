@@ -1,7 +1,7 @@
 package org.mozilla.scryer.util
 
 import android.content.Context
-import android.support.v4.content.ContextCompat
+import androidx.core.content.ContextCompat
 import kotlinx.coroutines.experimental.DefaultDispatcher
 import kotlinx.coroutines.experimental.withContext
 import org.mozilla.scryer.R

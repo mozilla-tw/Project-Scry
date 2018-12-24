@@ -5,11 +5,11 @@
 
 package org.mozilla.scryer.viewmodel
 
-import android.arch.lifecycle.ViewModel
-import android.arch.lifecycle.ViewModelProvider
-import android.arch.lifecycle.ViewModelProviders
-import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentActivity
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import kotlinx.coroutines.experimental.*
 import org.mozilla.scryer.ScryerApplication
 import org.mozilla.scryer.persistence.ScreenshotModel
@@ -18,11 +18,11 @@ import org.mozilla.scryer.repository.ScreenshotRepository
 class ScreenshotViewModel(private val delegate: ScreenshotRepository) : ViewModel(),
         ScreenshotRepository by delegate {
     companion object {
-        fun get(fragment: Fragment): ScreenshotViewModel {
+        fun get(fragment: androidx.fragment.app.Fragment): ScreenshotViewModel {
             return ViewModelProviders.of(fragment, getFactory()).get(ScreenshotViewModel::class.java)
         }
 
-        fun get(activity: FragmentActivity): ScreenshotViewModel {
+        fun get(activity: androidx.fragment.app.FragmentActivity): ScreenshotViewModel {
             return ViewModelProviders.of(activity, getFactory()).get(ScreenshotViewModel::class.java)
         }
 

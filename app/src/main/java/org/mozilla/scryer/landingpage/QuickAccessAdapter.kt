@@ -6,7 +6,7 @@
 package org.mozilla.scryer.landingpage
 
 import android.content.Context
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.ViewGroup
@@ -18,7 +18,7 @@ import org.mozilla.scryer.extension.getValidPosition
 import org.mozilla.scryer.persistence.ScreenshotModel
 import java.io.File
 
-class QuickAccessAdapter(val context: Context?) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), OnContextMenuActionListener {
+class QuickAccessAdapter(val context: Context?) : androidx.recyclerview.widget.RecyclerView.Adapter<androidx.recyclerview.widget.RecyclerView.ViewHolder>(), OnContextMenuActionListener {
     companion object {
         const val TYPE_ITEM = 0
         const val TYPE_MORE = 1
@@ -29,7 +29,7 @@ class QuickAccessAdapter(val context: Context?) : RecyclerView.Adapter<RecyclerV
 
     private val maxItemsToDisplay = HomeFragment.QUICK_ACCESS_ITEM_COUNT
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): androidx.recyclerview.widget.RecyclerView.ViewHolder {
         return when (viewType) {
             TYPE_MORE -> createMoreHolder(parent)
             TYPE_ITEM -> createItemHolder(parent)
@@ -52,7 +52,7 @@ class QuickAccessAdapter(val context: Context?) : RecyclerView.Adapter<RecyclerV
         return TYPE_ITEM
     }
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: androidx.recyclerview.widget.RecyclerView.ViewHolder, position: Int) {
         val viewType = getItemViewType(position)
         when (viewType) {
             TYPE_ITEM -> bindItemHolder(holder, position)
@@ -75,7 +75,7 @@ class QuickAccessAdapter(val context: Context?) : RecyclerView.Adapter<RecyclerV
         }
     }
 
-    private fun createItemHolder(parent: ViewGroup): RecyclerView.ViewHolder {
+    private fun createItemHolder(parent: ViewGroup): androidx.recyclerview.widget.RecyclerView.ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_quick_access, parent, false)
 
         val holder = ScreenshotItemHolder(view, this)
@@ -88,9 +88,9 @@ class QuickAccessAdapter(val context: Context?) : RecyclerView.Adapter<RecyclerV
         return holder
     }
 
-    private fun createMoreHolder(parent: ViewGroup): RecyclerView.ViewHolder {
+    private fun createMoreHolder(parent: ViewGroup): androidx.recyclerview.widget.RecyclerView.ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_quick_access_more, parent, false)
-        val holder = object : RecyclerView.ViewHolder(view) {
+        val holder = object : androidx.recyclerview.widget.RecyclerView.ViewHolder(view) {
         }
         view.setOnClickListener {
             clickListener?.onMoreClick(holder)
@@ -98,7 +98,7 @@ class QuickAccessAdapter(val context: Context?) : RecyclerView.Adapter<RecyclerV
         return holder
     }
 
-    private fun bindItemHolder(holder: RecyclerView.ViewHolder, position: Int) {
+    private fun bindItemHolder(holder: androidx.recyclerview.widget.RecyclerView.ViewHolder, position: Int) {
         val path = list[position].absolutePath
         val fileName = path.substring(path.lastIndexOf(File.separator) + 1)
         (holder as? ScreenshotItemHolder)?.apply {
@@ -110,7 +110,7 @@ class QuickAccessAdapter(val context: Context?) : RecyclerView.Adapter<RecyclerV
         }
     }
 
-    override fun onViewRecycled(holder: RecyclerView.ViewHolder) {
+    override fun onViewRecycled(holder: androidx.recyclerview.widget.RecyclerView.ViewHolder) {
         super.onViewRecycled(holder)
         (holder as? ScreenshotItemHolder)?.image?.let {
             Glide.with(holder.itemView.context).clear(it)
@@ -123,6 +123,6 @@ class QuickAccessAdapter(val context: Context?) : RecyclerView.Adapter<RecyclerV
 
     interface ItemClickListener {
         fun onItemClick(screenshotModel: ScreenshotModel, holder: ScreenshotItemHolder)
-        fun onMoreClick(holder: RecyclerView.ViewHolder)
+        fun onMoreClick(holder: androidx.recyclerview.widget.RecyclerView.ViewHolder)
     }
 }

@@ -16,9 +16,9 @@ import android.os.Build
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
-import android.support.v4.app.NotificationCompat
-import android.support.v4.content.ContextCompat
-import android.support.v4.content.LocalBroadcastManager
+import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import android.text.TextUtils
 import android.widget.Toast
 import androidx.work.PeriodicWorkRequest
@@ -246,7 +246,7 @@ class ScryerService : Service(), CaptureButtonController.ClickListener, ScreenCa
     }
 
     private fun takeScreenshot() {
-        LocalBroadcastManager.getInstance(this).sendBroadcast(Intent(EVENT_TAKE_SCREENSHOT))
+        androidx.localbroadcastmanager.content.LocalBroadcastManager.getInstance(this).sendBroadcast(Intent(EVENT_TAKE_SCREENSHOT))
 
         if (screenCapturePermissionIntent != null) {
             screenCaptureManager?.captureScreen()
@@ -254,7 +254,7 @@ class ScryerService : Service(), CaptureButtonController.ClickListener, ScreenCa
             requestCaptureFilter = IntentFilter(RequestCaptureActivity.getResultBroadcastAction(applicationContext))
             requestCaptureReceiver = object : BroadcastReceiver() {
                 override fun onReceive(context: Context, intent: Intent) {
-                    LocalBroadcastManager.getInstance(applicationContext).unregisterReceiver(requestCaptureReceiver)
+                    androidx.localbroadcastmanager.content.LocalBroadcastManager.getInstance(applicationContext).unregisterReceiver(requestCaptureReceiver)
 
                     val resultCode = intent.getIntExtra(RequestCaptureActivity.RESULT_EXTRA_CODE, Activity.RESULT_CANCELED)
                     if (resultCode != Activity.RESULT_OK) {
@@ -276,7 +276,7 @@ class ScryerService : Service(), CaptureButtonController.ClickListener, ScreenCa
                 }
             }
 
-            LocalBroadcastManager.getInstance(applicationContext).registerReceiver(requestCaptureReceiver, requestCaptureFilter)
+            androidx.localbroadcastmanager.content.LocalBroadcastManager.getInstance(applicationContext).registerReceiver(requestCaptureReceiver, requestCaptureFilter)
             val intent = Intent(applicationContext, RequestCaptureActivity::class.java)
             intent.flags = intent.flags or Intent.FLAG_ACTIVITY_NEW_TASK
             applicationContext.startActivity(intent)

@@ -4,9 +4,9 @@ import android.content.Context
 import android.content.Intent
 import android.media.projection.MediaProjectionManager
 import android.os.Bundle
-import android.support.v4.content.ContextCompat
-import android.support.v4.content.LocalBroadcastManager
-import android.support.v7.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.appcompat.app.AppCompatActivity
 import android.view.WindowManager
 
 class RequestCaptureActivity : AppCompatActivity() {
@@ -33,7 +33,7 @@ class RequestCaptureActivity : AppCompatActivity() {
             intent.putExtra(RESULT_EXTRA_CODE, resultCode)
             intent.putExtra(RESULT_EXTRA_DATA, data)
             intent.putExtra(RESULT_EXTRA_PROMPT_SHOWN, promptShown())
-            LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
+            androidx.localbroadcastmanager.content.LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
             finish()
         } else {
             super.onActivityResult(requestCode, resultCode, data)

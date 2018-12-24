@@ -5,7 +5,7 @@
 
 package org.mozilla.scryer.setting
 
-import android.arch.lifecycle.LiveData
+import androidx.lifecycle.LiveData
 import android.content.Context
 
 interface SettingsRepository {

@@ -6,12 +6,12 @@
 package org.mozilla.scryer.ui
 
 import android.graphics.Rect
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 
 class InnerSpaceDecoration(private val space: Int,
-                           private val columnCountProvider: () -> Int) : RecyclerView.ItemDecoration() {
-    override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
+                           private val columnCountProvider: () -> Int) : androidx.recyclerview.widget.RecyclerView.ItemDecoration() {
+    override fun getItemOffsets(outRect: Rect, view: View, parent: androidx.recyclerview.widget.RecyclerView, state: androidx.recyclerview.widget.RecyclerView.State) {
         /**
          * x: padding for left/right-most items (left-most item only have right padding, vice versa)
          * y: padding for middle items (padding at both left & right sides)

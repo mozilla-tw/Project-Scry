@@ -12,18 +12,18 @@ import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v4.content.ContextCompat
-import android.support.v4.content.FileProvider
-import android.support.v4.graphics.drawable.DrawableCompat
-import android.support.v4.view.ViewCompat
-import android.support.v7.app.ActionBar
-import android.support.v7.app.AlertDialog
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.view.ActionMode
-import android.support.v7.widget.AppCompatCheckBox
-import android.support.v7.widget.GridLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.fragment.app.Fragment
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
+import androidx.core.graphics.drawable.DrawableCompat
+import androidx.core.view.ViewCompat
+import androidx.appcompat.app.ActionBar
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.view.ActionMode
+import androidx.appcompat.widget.AppCompatCheckBox
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import android.view.*
 import android.widget.TextView
 import kotlinx.android.synthetic.main.dialog_collection_info.view.*
@@ -51,7 +51,7 @@ import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
-class CollectionFragment : Fragment() {
+class CollectionFragment : androidx.fragment.app.Fragment() {
     companion object {
         const val ARG_COLLECTION_ID = "collection_id"
         const val ARG_COLLECTION_NAME = "collection_name"
@@ -59,7 +59,7 @@ class CollectionFragment : Fragment() {
         private const val SPAN_COUNT = 3
     }
 
-    private lateinit var screenshotListView: RecyclerView
+    private lateinit var screenshotListView: androidx.recyclerview.widget.RecyclerView
     private lateinit var subtitleView: TextView
     private lateinit var selectAllCheckbox: AppCompatCheckBox
 
@@ -357,7 +357,7 @@ class CollectionFragment : Fragment() {
     }
 
     private fun initScreenshotList(context: Context) {
-        val manager = GridLayoutManager(context, SPAN_COUNT, GridLayoutManager.VERTICAL, false)
+        val manager = androidx.recyclerview.widget.GridLayoutManager(context, SPAN_COUNT, androidx.recyclerview.widget.GridLayoutManager.VERTICAL, false)
         screenshotListView.itemAnimator = null
         screenshotListView.layoutManager = manager
         screenshotListView.adapter = screenshotAdapter

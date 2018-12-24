@@ -5,7 +5,7 @@
 
 package org.mozilla.scryer
 
-import android.arch.lifecycle.Observer
+import androidx.lifecycle.Observer
 
 open class Event<out T>(private val content: T) {
     private var handled = false

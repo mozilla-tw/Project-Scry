@@ -7,7 +7,7 @@ package org.mozilla.scryer.permission
 
 import android.content.Context
 import android.preference.PreferenceManager
-import android.support.v4.app.FragmentActivity
+import androidx.fragment.app.FragmentActivity
 import org.mozilla.scryer.MainActivity
 
 class PermissionFlow(private var permissionState: PermissionStateProvider,
@@ -18,7 +18,7 @@ class PermissionFlow(private var permissionState: PermissionStateProvider,
         private const val KEY_OVERLAY_PAGE_SHOWN = "overlay_page_shown"
         private const val KEY_CAPTURE_PAGE_SHOWN = "capture_page_shown"
 
-        fun createDefaultPermissionProvider(activity: FragmentActivity?): PermissionStateProvider {
+        fun createDefaultPermissionProvider(activity: androidx.fragment.app.FragmentActivity?): PermissionStateProvider {
             return object : PermissionFlow.PermissionStateProvider {
 
                 override fun isStorageGranted(): Boolean {

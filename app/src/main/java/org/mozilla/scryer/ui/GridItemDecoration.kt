@@ -6,7 +6,7 @@
 package org.mozilla.scryer.ui
 
 import android.graphics.Rect
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 
 open class GridItemDecoration(private val columnCount: Int,
@@ -14,12 +14,12 @@ open class GridItemDecoration(private val columnCount: Int,
                               private val top: Int,
                               private val right: Int,
                               private val vSpace: Int,
-                              private val hSpace: Int) : RecyclerView.ItemDecoration() {
+                              private val hSpace: Int) : androidx.recyclerview.widget.RecyclerView.ItemDecoration() {
 
     constructor(columnCount: Int, space: Int) : this(columnCount, space, space, space, space, space)
 
     override fun getItemOffsets(outRect: Rect, view: View,
-                                parent: RecyclerView, state: RecyclerView.State) {
+                                parent: androidx.recyclerview.widget.RecyclerView, state: androidx.recyclerview.widget.RecyclerView.State) {
         val position = parent.getChildViewHolder(view).adapterPosition
         if (position < 0) {
             return

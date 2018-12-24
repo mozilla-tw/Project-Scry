@@ -5,8 +5,8 @@
 
 package org.mozilla.scryer.permission
 
-import android.arch.lifecycle.MutableLiveData
-import android.arch.lifecycle.ViewModel
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import android.content.pm.PackageManager
 import org.mozilla.scryer.Event
 

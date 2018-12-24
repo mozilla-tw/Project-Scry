@@ -8,7 +8,7 @@ package org.mozilla.scryer.overlay
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.content.Context
-import android.support.v4.view.animation.FastOutSlowInInterpolator
+import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager

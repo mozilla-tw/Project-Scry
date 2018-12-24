@@ -4,10 +4,10 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.os.Bundle
-import android.support.v4.content.ContextCompat
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.GridLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.core.content.ContextCompat
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -18,11 +18,11 @@ class SvgViewerActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_svg_viewer)
 
-        val recyclerView = findViewById<RecyclerView>(R.id.recycler_view)
-        recyclerView.layoutManager = GridLayoutManager(this, 3, GridLayoutManager.VERTICAL, false)
+        val recyclerView = findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.recycler_view)
+        recyclerView.layoutManager = androidx.recyclerview.widget.GridLayoutManager(this, 3, androidx.recyclerview.widget.GridLayoutManager.VERTICAL, false)
         recyclerView.adapter = IconAdapter()
 
-        recyclerView.addItemDecoration(object : RecyclerView.ItemDecoration() {
+        recyclerView.addItemDecoration(object : androidx.recyclerview.widget.RecyclerView.ItemDecoration() {
             private val paint = Paint()
 
             init {
@@ -31,7 +31,7 @@ class SvgViewerActivity : AppCompatActivity() {
                 paint.strokeWidth = 1f
             }
 
-            override fun onDrawOver(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
+            override fun onDrawOver(c: Canvas, parent: androidx.recyclerview.widget.RecyclerView, state: androidx.recyclerview.widget.RecyclerView.State) {
                 (0 until parent.childCount).forEach {
                     val child = parent.getChildAt(it)
                     c.drawRect(child.left.toFloat(),
@@ -45,7 +45,7 @@ class SvgViewerActivity : AppCompatActivity() {
 
     }
 
-    private class IconAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    private class IconAdapter : androidx.recyclerview.widget.RecyclerView.Adapter<androidx.recyclerview.widget.RecyclerView.ViewHolder>() {
         val iconIds = listOf(
                 R.drawable.debug_broken_svg,
                 R.drawable.add,
@@ -65,7 +65,7 @@ class SvgViewerActivity : AppCompatActivity() {
                 R.drawable.image_noaccess
         )
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): androidx.recyclerview.widget.RecyclerView.ViewHolder {
             val frameLayout = FrameLayout(parent.context)
             val view = ImageView(parent.context)
             view.scaleType = ImageView.ScaleType.CENTER_INSIDE
@@ -73,7 +73,7 @@ class SvgViewerActivity : AppCompatActivity() {
                     ViewGroup.LayoutParams.WRAP_CONTENT))
 
             var color = Color.WHITE
-            val holder = object : RecyclerView.ViewHolder(frameLayout) {}
+            val holder = object : androidx.recyclerview.widget.RecyclerView.ViewHolder(frameLayout) {}
             frameLayout.setOnClickListener {
                 holder.itemView.setBackgroundColor(if (color == Color.WHITE) {
                     color = Color.BLACK
@@ -92,14 +92,14 @@ class SvgViewerActivity : AppCompatActivity() {
 //                    return false
 //                }
 //            })
-            return object : RecyclerView.ViewHolder(frameLayout) {}
+            return object : androidx.recyclerview.widget.RecyclerView.ViewHolder(frameLayout) {}
         }
 
         override fun getItemCount(): Int {
             return iconIds.size
         }
 
-        override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        override fun onBindViewHolder(holder: androidx.recyclerview.widget.RecyclerView.ViewHolder, position: Int) {
             val iconId = iconIds[position]
             holder.itemView.setBackgroundColor(if (iconId == R.drawable.debug_broken_svg) Color.RED else Color.TRANSPARENT)
             ((holder.itemView as ViewGroup).getChildAt(0) as ImageView)

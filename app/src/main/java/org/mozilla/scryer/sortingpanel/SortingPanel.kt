@@ -5,18 +5,18 @@
 
 package org.mozilla.scryer.sortingpanel
 
-import android.arch.lifecycle.DefaultLifecycleObserver
-import android.arch.lifecycle.LifecycleOwner
-import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.Observer
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
 import android.content.Context
 import android.graphics.Matrix
 import android.os.Parcel
 import android.os.Parcelable
-import android.support.design.widget.BottomSheetBehavior
-import android.support.v7.widget.AppCompatImageView
-import android.support.v7.widget.GridLayoutManager
-import android.support.v7.widget.RecyclerView
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import androidx.appcompat.widget.AppCompatImageView
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import android.util.AttributeSet
 import android.view.View
 import android.widget.FrameLayout
@@ -31,7 +31,7 @@ import java.io.File
 
 open class SortingPanel : FrameLayout, DefaultLifecycleObserver {
 
-    private val recyclerView: RecyclerView by lazy { findViewById<RecyclerView>(R.id.panel_recycler_view) }
+    private val recyclerView: androidx.recyclerview.widget.RecyclerView by lazy { findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.panel_recycler_view) }
     private val coordinatorLayout: View by lazy { findViewById<View>(R.id.coordinator_layout) }
     private val panelView: View by lazy { findViewById<View>(R.id.panel_container) }
     private val overlay: View by lazy { findViewById<View>(R.id.background_overlay) }
@@ -117,8 +117,8 @@ open class SortingPanel : FrameLayout, DefaultLifecycleObserver {
     }
 
     private fun initRecyclerView() {
-        this.recyclerView.layoutManager = GridLayoutManager(context, columnCount,
-                GridLayoutManager.VERTICAL,
+        this.recyclerView.layoutManager = androidx.recyclerview.widget.GridLayoutManager(context, columnCount,
+                androidx.recyclerview.widget.GridLayoutManager.VERTICAL,
                 false)
 
         val space = resources.getDimensionPixelSize(R.dimen.sorting_panel_item_spacing)

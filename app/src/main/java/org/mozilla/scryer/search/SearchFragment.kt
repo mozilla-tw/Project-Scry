@@ -6,8 +6,8 @@
 package org.mozilla.scryer.search
 
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v7.preference.PreferenceManager
+import androidx.fragment.app.Fragment
+import androidx.preference.PreferenceManager
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -22,7 +22,7 @@ import org.mozilla.scryer.setSupportActionBar
 import org.mozilla.scryer.telemetry.TelemetryWrapper
 import org.mozilla.scryer.ui.ScryerToast
 
-class SearchFragment : Fragment() {
+class SearchFragment : androidx.fragment.app.Fragment() {
     private val PREF_SEARCH_FEEDBACK_HAS_SHOWN = "pref_search_feedback_has_shown"
 
     private val toast: ScryerToast by lazy {

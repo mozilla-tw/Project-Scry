@@ -1,9 +1,9 @@
 package org.mozilla.scryer.ui
 
 import android.graphics.Color
-import android.support.design.widget.Snackbar
-import android.support.v4.content.ContextCompat
-import android.support.v4.graphics.drawable.DrawableCompat
+import com.google.android.material.snackbar.Snackbar
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
 import android.view.View
 import android.view.ViewGroup
 import org.mozilla.scryer.R

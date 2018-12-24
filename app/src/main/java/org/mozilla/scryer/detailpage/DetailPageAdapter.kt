@@ -6,7 +6,7 @@
 package org.mozilla.scryer.detailpage
 
 import android.graphics.drawable.Drawable
-import android.support.v4.view.PagerAdapter
+import androidx.viewpager.widget.PagerAdapter
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -17,7 +17,7 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import org.mozilla.scryer.persistence.ScreenshotModel
 
-class DetailPageAdapter : PagerAdapter() {
+class DetailPageAdapter : androidx.viewpager.widget.PagerAdapter() {
 
     var screenshots = listOf<ScreenshotModel>()
     var itemCallback: ItemCallback? = null

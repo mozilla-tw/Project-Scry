@@ -7,7 +7,7 @@ package org.mozilla.scryer.landingpage
 
 import android.content.Context
 import android.graphics.Color
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.BackgroundColorSpan
@@ -28,7 +28,7 @@ class SearchAdapter(context: Context?) : ScreenshotAdapter(context), Filterable 
         super.setScreenshotList(list)
     }
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: androidx.recyclerview.widget.RecyclerView.ViewHolder, position: Int) {
         val titleView = (holder as? ScreenshotItemHolder)?.title
         titleView?.apply {
             val name = getItemFileName(position)

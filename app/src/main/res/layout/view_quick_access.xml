@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -44,7 +44,7 @@
         app:layout_constraintRight_toRightOf="@id/empty_view"
         app:layout_constraintBottom_toBottomOf="@id/empty_view" />
 
-    <android.support.constraint.Group
+    <androidx.constraintlayout.widget.Group
         android:id="@+id/empty_view_group"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -60,10 +60,10 @@
         bottom padding is 16dp. Final height: 156 + 12 + 16 = 184, thus the size ratio here is 360:184
      -->
     <!-- TODO: Will it be better to simply use different dimen for each resolution? -->
-    <android.support.v7.widget.RecyclerView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/list_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintDimensionRatio="360:184" />
 
-</android.support.constraint.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -11,7 +11,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
-import androidx.fragment.app.FragmentActivity
 import androidx.core.content.ContextCompat
 import org.mozilla.scryer.overlay.OverlayPermission
 

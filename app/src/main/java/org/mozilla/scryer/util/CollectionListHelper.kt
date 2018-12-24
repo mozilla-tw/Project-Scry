@@ -2,7 +2,7 @@ package org.mozilla.scryer.util
 
 import android.content.Context
 import androidx.core.content.ContextCompat
-import kotlinx.coroutines.experimental.DefaultDispatcher
+import kotlinx.coroutines.experimental.Dispatchers
 import kotlinx.coroutines.experimental.withContext
 import org.mozilla.scryer.R
 import org.mozilla.scryer.ScryerApplication
@@ -14,7 +14,7 @@ class CollectionListHelper {
     companion object {
 
         suspend fun nextCollectionColor(context: Context, excludeSuggestion: Boolean = false): Int {
-            val collections = withContext(DefaultDispatcher) {
+            val collections = withContext(Dispatchers.Default) {
                 ScryerApplication.getScreenshotRepository().getCollectionList()
             }
 

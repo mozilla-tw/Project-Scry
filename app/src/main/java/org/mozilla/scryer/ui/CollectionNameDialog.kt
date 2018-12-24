@@ -2,17 +2,17 @@ package org.mozilla.scryer.ui
 
 import android.content.Context
 import android.graphics.drawable.Drawable
-import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.DrawableCompat
-import androidx.appcompat.app.AlertDialog
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.view.WindowManager
 import android.widget.EditText
 import android.widget.TextView
-import kotlinx.coroutines.experimental.DefaultDispatcher
-import kotlinx.coroutines.experimental.android.UI
+import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
+import kotlinx.coroutines.experimental.Dispatchers
+import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.withContext
 import org.mozilla.scryer.R
@@ -32,14 +32,14 @@ class CollectionNameDialog(private val context: Context,
         fun createNewCollection(context: Context, viewModel: ScreenshotViewModel,
                                 excludeSuggestion: Boolean,
                                 callback: ((collection: CollectionModel) -> Unit)? = null) {
-            launch(UI) {
+            GlobalScope.launch(Dispatchers.Main) {
                 showNewCollectionDialog(context, viewModel, excludeSuggestion,
                         queryCollectionList(viewModel), callback)
             }
         }
 
         fun renameCollection(context: Context, viewModel: ScreenshotViewModel, collectionId: String?) {
-            launch(UI) {
+            GlobalScope.launch(Dispatchers.Main) {
                 val collections = queryCollectionList(viewModel)
                 collections.find { it.id == collectionId }?.let {
                     showRenameDialog(context, viewModel, it, collections)
@@ -54,7 +54,7 @@ class CollectionNameDialog(private val context: Context,
             val dialog = CollectionNameDialog(context, object : CollectionNameDialog.Delegate {
 
                 override fun onPositiveAction(collectionName: String) {
-                    launch(UI) {
+                    GlobalScope.launch(Dispatchers.Main) {
                         val result = updateOrInsertCollection(context, collectionName, viewModel, collections)
                         callback?.invoke(result)
                     }
@@ -85,7 +85,7 @@ class CollectionNameDialog(private val context: Context,
             val dialog = CollectionNameDialog(context, object : CollectionNameDialog.Delegate {
                 override fun onPositiveAction(collectionName: String) {
                     collection.name = collectionName
-                    launch {
+                    GlobalScope.launch {
                         viewModel.updateCollection(collection)
                     }
                 }
@@ -115,7 +115,7 @@ class CollectionNameDialog(private val context: Context,
                 name: String,
                 viewModel: ScreenshotViewModel,
                 collections: List<CollectionModel>
-        ): CollectionModel = withContext(UI) {
+        ): CollectionModel = withContext(Dispatchers.Main) {
             collections.find {
                 it.name.equals(name, true)
 
@@ -129,7 +129,7 @@ class CollectionNameDialog(private val context: Context,
             }?: run {
                 val color = CollectionListHelper.nextCollectionColor(context, collections, true)
                 val model = CollectionModel(name, System.currentTimeMillis(), color)
-                withContext(DefaultDispatcher) {
+                withContext(Dispatchers.Default) {
                     viewModel.addCollection(model)
                 }
                 model
@@ -137,7 +137,7 @@ class CollectionNameDialog(private val context: Context,
         }
 
         private suspend fun queryCollectionList(viewModel: ScreenshotViewModel): List<CollectionModel> {
-            return withContext(DefaultDispatcher) {
+            return withContext(Dispatchers.Default) {
                 viewModel.getCollectionList()
             }
         }
@@ -239,7 +239,7 @@ class CollectionNameDialog(private val context: Context,
     private fun showImmediately() {
         dialog.show()
         editText.requestFocus()
-        dialog.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
+        dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
     }
 
     private fun initDialogContent() {

@@ -20,7 +20,7 @@ object Versions {
 
     // Kotlin
     val kotlin = "1.2.71"
-    val kotlin_coroutine = "0.30.0"
+    val kotlin_coroutine = "0.30.2"
 
     // Test
     val junit = "4.12"

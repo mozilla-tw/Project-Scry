@@ -6,7 +6,6 @@
 package org.mozilla.scryer.ui
 
 import android.graphics.Rect
-import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 
 class InnerSpaceDecoration(private val space: Int,

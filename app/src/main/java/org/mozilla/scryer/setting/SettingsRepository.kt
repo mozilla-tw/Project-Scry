@@ -6,7 +6,6 @@
 package org.mozilla.scryer.setting
 
 import androidx.lifecycle.LiveData
-import android.content.Context
 
 interface SettingsRepository {
     var serviceEnabled: Boolean

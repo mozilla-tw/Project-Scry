@@ -5,24 +5,23 @@
 
 package org.mozilla.scryer.sortingpanel
 
-import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Observer
 import android.content.Context
 import android.graphics.Matrix
 import android.os.Parcel
 import android.os.Parcelable
-import com.google.android.material.bottomsheet.BottomSheetBehavior
-import androidx.appcompat.widget.AppCompatImageView
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import android.util.AttributeSet
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.widget.AppCompatImageView
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import org.mozilla.scryer.R
 import org.mozilla.scryer.persistence.CollectionModel
 import org.mozilla.scryer.persistence.ScreenshotModel
@@ -118,7 +117,7 @@ open class SortingPanel : FrameLayout, DefaultLifecycleObserver {
 
     private fun initRecyclerView() {
         this.recyclerView.layoutManager = androidx.recyclerview.widget.GridLayoutManager(context, columnCount,
-                androidx.recyclerview.widget.GridLayoutManager.VERTICAL,
+                RecyclerView.VERTICAL,
                 false)
 
         val space = resources.getDimensionPixelSize(R.dimen.sorting_panel_item_spacing)
@@ -128,11 +127,12 @@ open class SortingPanel : FrameLayout, DefaultLifecycleObserver {
         this.recyclerView.adapter = this.adapter
     }
 
-    override fun onSaveInstanceState(): Parcelable {
-        val parcelable = super.onSaveInstanceState()
-        val savedState = SavedState(parcelable)
-        savedState.overlayAlpha = this.overlay.alpha
-        return savedState
+    override fun onSaveInstanceState(): Parcelable? {
+        return super.onSaveInstanceState()?.let {
+            val savedState = SavedState(it)
+            savedState.overlayAlpha = this.overlay.alpha
+            savedState
+        }
     }
 
     override fun onRestoreInstanceState(state: Parcelable?) {

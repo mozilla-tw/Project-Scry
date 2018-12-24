@@ -9,6 +9,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import android.content.Context
+import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.launch
 import org.mozilla.scryer.R
 import org.mozilla.scryer.persistence.CollectionModel
@@ -73,7 +74,7 @@ class ScreenshotDatabaseRepository(private val database: ScreenshotDatabase) : S
     }
 
     override fun setupDefaultContent(context: Context) {
-        launch {
+        GlobalScope.launch {
             val none = CollectionModel(CollectionModel.CATEGORY_NONE,
                     context.getString(R.string.home_action_unsorted), 0, 0)
             addCollection(none)

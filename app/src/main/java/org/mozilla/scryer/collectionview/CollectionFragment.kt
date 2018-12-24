@@ -12,25 +12,23 @@ import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import androidx.core.content.ContextCompat
-import androidx.core.content.FileProvider
-import androidx.core.graphics.drawable.DrawableCompat
-import androidx.core.view.ViewCompat
+import android.view.*
+import android.widget.TextView
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ActionMode
 import androidx.appcompat.widget.AppCompatCheckBox
-import androidx.recyclerview.widget.GridLayoutManager
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
+import androidx.core.graphics.drawable.DrawableCompat
+import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.RecyclerView
-import android.view.*
-import android.widget.TextView
 import kotlinx.android.synthetic.main.dialog_collection_info.view.*
 import kotlinx.android.synthetic.main.dialog_screenshot_info.view.*
 import kotlinx.android.synthetic.main.fragment_collection.*
-import kotlinx.coroutines.experimental.DefaultDispatcher
-import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.Dispatchers
+import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.withContext
 import org.mozilla.scryer.*
@@ -357,7 +355,8 @@ class CollectionFragment : androidx.fragment.app.Fragment() {
     }
 
     private fun initScreenshotList(context: Context) {
-        val manager = androidx.recyclerview.widget.GridLayoutManager(context, SPAN_COUNT, androidx.recyclerview.widget.GridLayoutManager.VERTICAL, false)
+        val manager = androidx.recyclerview.widget.GridLayoutManager(context, SPAN_COUNT,
+                RecyclerView.VERTICAL, false)
         screenshotListView.itemAnimator = null
         screenshotListView.layoutManager = manager
         screenshotListView.adapter = screenshotAdapter
@@ -490,7 +489,7 @@ fun showDeleteScreenshotDialog(
             context.getString(R.string.dialogue_deleteshot_title_delete),
             context.getString(R.string.action_delete),
             DialogInterface.OnClickListener { dialog, _ ->
-                launch {
+                GlobalScope.launch {
                     screenshotModels.forEach {
                         ScryerApplication.getScreenshotRepository().deleteScreenshot(it)
                         File(it.absolutePath).delete()
@@ -506,8 +505,8 @@ fun showDeleteScreenshotDialog(
     dialog.viewHolder.message?.text = context.getString(R.string.dialogue_deleteshot_content_delete)
     dialog.viewHolder.subMessage?.visibility = View.VISIBLE
 
-    launch(UI) {
-        val size = withContext(DefaultDispatcher) {
+    GlobalScope.launch(Dispatchers.Main) {
+        val size = withContext(Dispatchers.Default) {
             var totalSize = 0L
             screenshotModels.forEach {
                 totalSize += File(it.absolutePath).length()
@@ -529,7 +528,7 @@ fun showShareScreenshotDialog(context: Context, screenshotModels: List<Screensho
         return
     }
 
-    launch {
+    GlobalScope.launch {
         val authorities = BuildConfig.APPLICATION_ID + ".provider.fileprovider"
         val share = Intent()
         if (screenshotModels.size == 1) {
@@ -556,7 +555,7 @@ fun showShareScreenshotDialog(context: Context, screenshotModels: List<Screensho
 }
 
 fun showCollectionInfo(context: Context, viewModel: ScreenshotViewModel, collectionId: String?) {
-    launch(DefaultDispatcher) {
+    GlobalScope.launch(Dispatchers.Default) {
         collectionId ?: return@launch
 
         val idList = if (collectionId == CollectionModel.CATEGORY_NONE) {
@@ -574,7 +573,7 @@ fun showCollectionInfo(context: Context, viewModel: ScreenshotViewModel, collect
 
         val collection = viewModel.getCollection(collectionId)
 
-        withContext(UI) {
+        withContext(Dispatchers.Main) {
             collection ?: return@withContext
             showCollectionInfoDialog(context, collection, screenshots, totalFileSize)
         }
@@ -607,18 +606,18 @@ fun showDeleteCollectionDialog(
         collectionId: String?,
         listener: OnDeleteCollectionListener?
 ) {
-    launch(UI) {
+    GlobalScope.launch(Dispatchers.Main) {
         collectionId ?: return@launch
 
-        withContext(DefaultDispatcher) {
+        withContext(Dispatchers.Default) {
             viewModel.getCollection(collectionId)
 
         }?.let { collection ->
-            val screenshots = withContext(DefaultDispatcher) {
+            val screenshots = withContext(Dispatchers.Default) {
                 viewModel.getScreenshotList(listOf(collection.id))
             }
 
-            val totalFileSize = withContext(DefaultDispatcher) {
+            val totalFileSize = withContext(Dispatchers.Default) {
                 var totalFileSize = 0L
                 for (screenshot in screenshots) {
                     val file = File(screenshot.absolutePath)

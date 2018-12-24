@@ -8,9 +8,8 @@ package org.mozilla.scryer.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
-import kotlinx.coroutines.experimental.*
+import kotlinx.coroutines.experimental.Dispatchers
+import kotlinx.coroutines.experimental.withContext
 import org.mozilla.scryer.ScryerApplication
 import org.mozilla.scryer.persistence.ScreenshotModel
 import org.mozilla.scryer.repository.ScreenshotRepository
@@ -31,7 +30,10 @@ class ScreenshotViewModel(private val delegate: ScreenshotRepository) : ViewMode
         }
     }
 
-    suspend fun batchMove(screenshots: List<ScreenshotModel>, collectionId: String) = withContext(CommonPool) {
+    suspend fun batchMove(
+            screenshots: List<ScreenshotModel>,
+            collectionId: String
+    ) = withContext(Dispatchers.Default) {
         screenshots.forEach {
             it.collectionId = collectionId
             updateScreenshot(it)

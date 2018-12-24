@@ -7,7 +7,6 @@ package org.mozilla.scryer.landingpage
 
 import android.content.Context
 import android.graphics.Color
-import androidx.recyclerview.widget.RecyclerView
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.BackgroundColorSpan

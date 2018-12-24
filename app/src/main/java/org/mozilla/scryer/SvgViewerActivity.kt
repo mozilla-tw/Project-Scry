@@ -4,13 +4,12 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.os.Bundle
-import androidx.core.content.ContextCompat
-import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.RecyclerView
 
 class SvgViewerActivity : AppCompatActivity() {
 
@@ -19,7 +18,8 @@ class SvgViewerActivity : AppCompatActivity() {
         setContentView(R.layout.activity_svg_viewer)
 
         val recyclerView = findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.recycler_view)
-        recyclerView.layoutManager = androidx.recyclerview.widget.GridLayoutManager(this, 3, androidx.recyclerview.widget.GridLayoutManager.VERTICAL, false)
+        recyclerView.layoutManager = androidx.recyclerview.widget.GridLayoutManager(this,
+                3, RecyclerView.VERTICAL, false)
         recyclerView.adapter = IconAdapter()
 
         recyclerView.addItemDecoration(object : androidx.recyclerview.widget.RecyclerView.ItemDecoration() {

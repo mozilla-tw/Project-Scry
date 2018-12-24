@@ -6,7 +6,6 @@
 package org.mozilla.scryer.ui
 
 import android.graphics.Rect
-import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 
 open class GridItemDecoration(private val columnCount: Int,

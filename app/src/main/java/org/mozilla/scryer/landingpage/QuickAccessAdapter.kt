@@ -6,16 +6,15 @@
 package org.mozilla.scryer.landingpage
 
 import android.content.Context
-import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.ViewGroup
 import com.bumptech.glide.Glide
 import org.mozilla.scryer.R
 import org.mozilla.scryer.collectionview.*
-import org.mozilla.scryer.sortingpanel.SortingPanelActivity
 import org.mozilla.scryer.extension.getValidPosition
 import org.mozilla.scryer.persistence.ScreenshotModel
+import org.mozilla.scryer.sortingpanel.SortingPanelActivity
 import java.io.File
 
 class QuickAccessAdapter(val context: Context?) : androidx.recyclerview.widget.RecyclerView.Adapter<androidx.recyclerview.widget.RecyclerView.ViewHolder>(), OnContextMenuActionListener {

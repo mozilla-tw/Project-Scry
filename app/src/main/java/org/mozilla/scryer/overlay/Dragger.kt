@@ -6,7 +6,6 @@
 package org.mozilla.scryer.overlay
 
 import android.content.Context
-import android.graphics.Color
 import android.view.View
 import org.mozilla.scryer.extension.dpToPx
 

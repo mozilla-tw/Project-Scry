@@ -7,7 +7,6 @@ package org.mozilla.scryer.permission
 
 import android.content.Context
 import android.preference.PreferenceManager
-import androidx.fragment.app.FragmentActivity
 import org.mozilla.scryer.MainActivity
 
 class PermissionFlow(private var permissionState: PermissionStateProvider,

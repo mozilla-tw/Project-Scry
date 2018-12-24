@@ -8,7 +8,7 @@ package org.mozilla.scryer.extension
 import androidx.recyclerview.widget.RecyclerView
 
 fun androidx.recyclerview.widget.RecyclerView.ViewHolder.getValidPosition(callback: (position: Int) -> Unit): Boolean {
-    if (adapterPosition != androidx.recyclerview.widget.RecyclerView.NO_POSITION) {
+    if (adapterPosition != RecyclerView.NO_POSITION) {
         callback(adapterPosition)
         return true
     }

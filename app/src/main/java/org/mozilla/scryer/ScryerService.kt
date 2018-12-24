@@ -16,13 +16,13 @@ import android.os.Build
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
-import androidx.core.app.NotificationCompat
-import androidx.core.content.ContextCompat
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import android.text.TextUtils
 import android.widget.Toast
+import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
+import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.launch
 import org.mozilla.scryer.capture.RequestCaptureActivity
 import org.mozilla.scryer.capture.ScreenCaptureListener
@@ -218,7 +218,7 @@ class ScryerService : Service(), CaptureButtonController.ClickListener, ScreenCa
                 val model = ScreenshotModel(path,
                         System.currentTimeMillis(),
                         CollectionModel.UNCATEGORIZED)
-                launch {
+                GlobalScope.launch {
                     ScryerApplication.getScreenshotRepository().addScreenshot(listOf(model))
                 }
 

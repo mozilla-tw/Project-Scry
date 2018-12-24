@@ -5,20 +5,20 @@
 
 package org.mozilla.scryer.sortingpanel
 
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
-import androidx.core.content.ContextCompat
-import androidx.appcompat.app.AppCompatActivity
 import android.view.View
 import android.widget.Toast
-import kotlinx.coroutines.experimental.DefaultDispatcher
-import kotlinx.coroutines.experimental.android.UI
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProviders
+import kotlinx.coroutines.experimental.Dispatchers
+import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.withContext
 import org.mozilla.scryer.Observer
@@ -147,7 +147,7 @@ class SortingPanelActivity : AppCompatActivity() {
 
         for ((suggestCollection, createTime) in suggestCollectionCreateTime) {
             suggestCollection.createdDate = createTime
-            launch {
+            GlobalScope.launch {
                 screenshotViewModel.updateCollection(suggestCollection)
             }
         }
@@ -191,7 +191,7 @@ class SortingPanelActivity : AppCompatActivity() {
 
     private fun flushToUnsortedCollection() {
         showAddedToast(unsortedCollection, false)
-        launch {
+        GlobalScope.launch {
             screenshotViewModel.batchMove(unsortedScreenshots, CollectionModel.CATEGORY_NONE)
         }
     }
@@ -255,7 +255,7 @@ class SortingPanelActivity : AppCompatActivity() {
 
         if (screenshot.collectionId == CollectionModel.UNCATEGORIZED) {
             screenshot.collectionId = CollectionModel.CATEGORY_NONE
-            launch {
+            GlobalScope.launch {
                 screenshotViewModel.updateScreenshot(screenshot)
             }
         }
@@ -273,7 +273,7 @@ class SortingPanelActivity : AppCompatActivity() {
         }
         collectionId = null
 
-        launch(UI) {
+        GlobalScope.launch(Dispatchers.Main) {
             when {
                 intent.hasExtra(EXTRA_PATH) -> {
                     TelemetryWrapper.promptSortingPage(SINGLE)
@@ -314,7 +314,7 @@ class SortingPanelActivity : AppCompatActivity() {
 
     private suspend fun loadScreenshots(
             ids: List<String>
-    ): List<ScreenshotModel> = withContext(DefaultDispatcher) {
+    ): List<ScreenshotModel> = withContext(Dispatchers.Default) {
         ids.mapNotNull {
             screenshotViewModel.getScreenshot(it)
         }
@@ -322,7 +322,7 @@ class SortingPanelActivity : AppCompatActivity() {
 
     private suspend fun loadNewScreenshot(
             path: String
-    ): List<ScreenshotModel>? = withContext(DefaultDispatcher) {
+    ): List<ScreenshotModel>? = withContext(Dispatchers.Default) {
         createNewScreenshot(path)?.let {
             val result = listOf(it)
             screenshotViewModel.addScreenshot(result)
@@ -332,7 +332,7 @@ class SortingPanelActivity : AppCompatActivity() {
 
     private suspend fun loadOldScreenshot(
             screenshotId: String
-    ): List<ScreenshotModel>? = withContext(DefaultDispatcher) {
+    ): List<ScreenshotModel>? = withContext(Dispatchers.Default) {
         screenshotViewModel.getScreenshot(screenshotId)?.let {
             listOf(it)
         }
@@ -340,7 +340,7 @@ class SortingPanelActivity : AppCompatActivity() {
 
     private suspend fun loadCollection(
             collectionId: String
-    ): List<ScreenshotModel>? = withContext(DefaultDispatcher) {
+    ): List<ScreenshotModel>? = withContext(Dispatchers.Default) {
         val idList = if (collectionId == CollectionModel.CATEGORY_NONE) {
             listOf(CollectionModel.UNCATEGORIZED, CollectionModel.CATEGORY_NONE)
         } else {
@@ -414,7 +414,7 @@ class SortingPanelActivity : AppCompatActivity() {
     }
 
     private fun onCollectionClickStart(collection: CollectionModel) {
-        launch(UI.immediate) {
+        GlobalScope.launch(Dispatchers.Main.immediate) {
             val screenshot = currentScreenshot ?: return@launch
 
             if (SuggestCollectionHelper.isSuggestCollection(collection)) {
@@ -423,14 +423,14 @@ class SortingPanelActivity : AppCompatActivity() {
 
                 collection.color = CollectionListHelper.nextCollectionColor(
                         this@SortingPanelActivity, true)
-                withContext(DefaultDispatcher) {
+                withContext(Dispatchers.Default) {
                     screenshotViewModel.updateCollectionId(collection, UUID.randomUUID().toString())
                 }
                 suggestCollectionCreateTime.add(Pair(collection, System.currentTimeMillis()))
             }
 
             screenshot.collectionId = collection.id
-            withContext(DefaultDispatcher) {
+            withContext(Dispatchers.Default) {
                 screenshotViewModel.addScreenshot(listOf(screenshot))
             }
 

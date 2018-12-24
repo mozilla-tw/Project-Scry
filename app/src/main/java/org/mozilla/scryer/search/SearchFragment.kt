@@ -6,8 +6,6 @@
 package org.mozilla.scryer.search
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import androidx.preference.PreferenceManager
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -15,6 +13,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import androidx.preference.PreferenceManager
 import org.mozilla.scryer.R
 import org.mozilla.scryer.extension.getNavController
 import org.mozilla.scryer.getSupportActionBar

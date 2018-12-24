@@ -1,13 +1,12 @@
 package org.mozilla.scryer.ui
 
 import android.graphics.Color
-import com.google.android.material.snackbar.Snackbar
-import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.DrawableCompat
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
+import com.google.android.material.snackbar.Snackbar
 import org.mozilla.scryer.R
-import org.mozilla.scryer.extension.dpToPx
 
 class ScryerSnackbar {
     companion object {

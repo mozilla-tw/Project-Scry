@@ -6,7 +6,6 @@
 package org.mozilla.scryer.detailpage
 
 import android.graphics.drawable.Drawable
-import androidx.viewpager.widget.PagerAdapter
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView

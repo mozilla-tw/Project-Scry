@@ -6,13 +6,12 @@
 package org.mozilla.scryer.sortingpanel
 
 import android.graphics.drawable.Drawable
-import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.DrawableCompat
-import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
 import org.mozilla.scryer.R
 import org.mozilla.scryer.extension.dpToPx
 import org.mozilla.scryer.extension.getValidPosition

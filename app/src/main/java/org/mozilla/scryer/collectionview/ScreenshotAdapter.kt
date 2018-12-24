@@ -6,14 +6,11 @@
 package org.mozilla.scryer.collectionview
 
 import android.content.Context
-import androidx.core.content.ContextCompat
-import androidx.appcompat.widget.AppCompatCheckBox
-import androidx.cardview.widget.CardView
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import android.view.*
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.widget.AppCompatCheckBox
+import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import org.mozilla.scryer.BuildConfig
 import org.mozilla.scryer.R

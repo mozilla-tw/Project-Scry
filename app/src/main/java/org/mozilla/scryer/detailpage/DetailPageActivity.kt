@@ -4,6 +4,7 @@
 
 package org.mozilla.scryer.detailpage
 
+
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -226,7 +227,7 @@ class DetailPageActivity : AppCompatActivity() {
     }
 
     private fun initViewPager() {
-        launch(UI) {
+        GlobalScope.launch(Dispatchers.Main) {
             screenshots = getScreenshots().sortedByDescending { it.lastModified }
             view_pager.adapter = DetailPageAdapter().apply {
                 this.screenshots = this@DetailPageActivity.screenshots
@@ -281,10 +282,10 @@ class DetailPageActivity : AppCompatActivity() {
 
     private fun startRecognition() {
         val appContext = applicationContext
-        launch(UI) {
+        GlobalScope.launch(Dispatchers.Main) {
             updateUI()
 
-            val result = withContext(CommonPool) {
+            val result = withContext(Dispatchers.Default) {
                 runTextRecognition(screenshots[view_pager.currentItem])
             }
 
@@ -439,7 +440,7 @@ class DetailPageActivity : AppCompatActivity() {
     }
 
     @Suppress("ConstantConditionIf")
-    private suspend fun getScreenshots(): List<ScreenshotModel> = withContext(DefaultDispatcher) {
+    private suspend fun getScreenshots(): List<ScreenshotModel> = withContext(Dispatchers.Default) {
         if (SUPPORT_SLIDE) {
             srcCollectionId?.let {
                 val list = if (it == CollectionModel.CATEGORY_NONE) {

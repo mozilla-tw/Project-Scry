@@ -7,15 +7,14 @@
 package org.mozilla.scryer.collectionview
 
 import android.graphics.PixelFormat
-import androidx.fragment.app.FragmentActivity
-import androidx.core.content.ContextCompat
 import android.view.KeyEvent
 import android.view.View
 import android.view.WindowManager
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import kotlinx.android.synthetic.main.view_sorting_panel.view.*
-import kotlinx.coroutines.experimental.DefaultDispatcher
-import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.Dispatchers
+import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.withContext
 import org.mozilla.scryer.R
@@ -43,20 +42,20 @@ class SortingPanelDialog(
 
     private val panelCallback = object : SortingPanelAdapter.Callback {
         override fun onClickStart(collection: CollectionModel) {
-            launch(UI.immediate) {
+            GlobalScope.launch(Dispatchers.Main.immediate) {
                 val model = ScreenshotViewModel.get(activity)
 
                 if (SuggestCollectionHelper.isSuggestCollection(collection)) {
                     collection.color = CollectionListHelper.nextCollectionColor(
                             activity, true)
-                    withContext(DefaultDispatcher) {
+                    withContext(Dispatchers.Default) {
                         model.updateCollectionId(collection, UUID.randomUUID().toString())
                     }
                     suggestCollectionCreateTime.add(Pair(collection, System.currentTimeMillis()))
                 }
 
                 screenshots.forEach { it.collectionId = collection.id }
-                withContext(DefaultDispatcher) {
+                withContext(Dispatchers.Default) {
                     model.addScreenshot(screenshots)
                 }
 
@@ -106,10 +105,10 @@ class SortingPanelDialog(
     }
 
     fun show() {
-        launch(UI.immediate) {
+        GlobalScope.launch(Dispatchers.Main.immediate) {
             panelView.apply {
                 initPanelUI(this)
-                collectionSource = withContext(DefaultDispatcher) {
+                collectionSource = withContext(Dispatchers.Default) {
                     ScreenshotViewModel.get(activity).getCollections()
                 }
                 callback = panelCallback
@@ -146,7 +145,7 @@ class SortingPanelDialog(
     private fun updateCollectionOrderToRepository() {
         for ((suggestCollection, createTime) in suggestCollectionCreateTime) {
             suggestCollection.createdDate = createTime
-            launch {
+            GlobalScope.launch {
                 ScreenshotViewModel.get(activity).updateCollection(suggestCollection)
             }
         }

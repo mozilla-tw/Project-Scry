@@ -10,14 +10,11 @@ import android.graphics.Canvas
 import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import androidx.annotation.LayoutRes
-import androidx.fragment.app.Fragment
-import androidx.core.content.ContextCompat
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import android.view.*
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.annotation.LayoutRes
+import androidx.core.content.ContextCompat
 import androidx.navigation.Navigation
 import com.bumptech.glide.Glide
 import org.mozilla.scryer.R

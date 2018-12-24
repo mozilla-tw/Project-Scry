@@ -60,6 +60,7 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
         val settingsRepository = ScryerApplication.getSettingsRepository()
 
         enableCaptureService.onPreferenceChangeListener = this
+        enableCaptureService.isIconSpaceReserved = false
 
         enableCaptureService.isChecked = settingsRepository.serviceEnabled
         enableCaptureServiceChildItems(settingsRepository.serviceEnabled)
@@ -85,8 +86,13 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
         enableSendUsageDataButton.summary = getString(R.string.settings_detail_mozilla, getString(R.string.app_full_name))
 
         giveFeedbackPreference.onPreferenceClickListener = this
+        giveFeedbackPreference.isIconSpaceReserved = false
+
         shareWithFriendsPreference.onPreferenceClickListener = this
+        shareWithFriendsPreference.isIconSpaceReserved = false
+
         aboutPreference.onPreferenceClickListener = this
+        aboutPreference.isIconSpaceReserved = false
     }
 
     override fun onResume() {

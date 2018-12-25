@@ -136,7 +136,7 @@
                         android:layout_gravity="center_horizontal"
                         android:background="@drawable/sorting_panel_hint_bar" />
                     <TextView
-                        android:id="@+id/text_mode_text"
+                        android:id="@+id/textModeResultTextView"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:textColor="@color/grey60"
@@ -147,8 +147,16 @@
                         android:textIsSelectable="true"
                         style="body1" />
                 </LinearLayout>
+
             </android.support.v4.widget.NestedScrollView>
         </android.support.design.widget.CoordinatorLayout>
+
+        <org.mozilla.scryer.detailpage.ui.TextSelectionMenuView
+            android:id="@+id/selectionContextMenu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent" />
     </android.support.constraint.ConstraintLayout>
 
 </android.support.constraint.ConstraintLayout>

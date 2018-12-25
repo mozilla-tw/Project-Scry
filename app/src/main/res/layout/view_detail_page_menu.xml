@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:elevation="@dimen/collection_chrome_elevation"
+    android:background="@drawable/detailpage_text_selection_menu_bkg"
+    tools:ignore="ContentDescription">
+
+    <LinearLayout
+        android:id="@+id/action_search_root"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:clickable="true"
+        android:focusable="true"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:background="@drawable/detailpage_text_selection_menu_item_ripple">
+        <ImageView
+            android:id="@+id/action_search_icon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:visibility="gone"
+            android:layout_gravity="center_vertical"/>
+
+        <TextView
+            android:id="@+id/action_search"
+            android:layout_width="wrap_content"
+            style="@style/PrimaryTextButton"
+            android:longClickable="false"
+            android:background="@android:color/transparent"
+            android:paddingStart="8dp"
+            android:paddingEnd="0dp"
+            android:textColor="@color/grey90"
+            android:text="@string/home_action_search" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/action_copy"
+        android:layout_width="wrap_content"
+        style="@style/PrimaryTextButton"
+        android:longClickable="false"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:background="@drawable/detailpage_text_selection_menu_item_ripple"
+        android:textColor="@color/grey90"
+        android:text="@string/menu_ocr_action_copy" />
+
+    <TextView
+        android:id="@+id/action_share"
+        android:layout_width="wrap_content"
+        style="@style/PrimaryTextButton"
+        android:longClickable="false"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:background="@drawable/detailpage_text_selection_menu_item_ripple"
+        android:textColor="@color/grey90"
+        android:text="@string/action_share" />
+    
+</LinearLayout>

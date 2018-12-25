@@ -1,5 +1,4 @@
-/* -*- Mode: Java; c-basic-offset: 4; tab-width: 4; indent-tabs-mode: nil; -*-
- * This Source Code Form is subject to the terms of the Mozilla Public
+/* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
@@ -276,6 +275,7 @@ class DetailPageActivity : AppCompatActivity() {
                         }
                     }
                 })
+        setupTextSelectionActionMode()
     }
 
     private fun startRecognition() {
@@ -493,29 +493,61 @@ class DetailPageActivity : AppCompatActivity() {
             return
         }
 
+        textModeResultTextView.text = buildFullTextString(blocks)
+        drawHighlights(blocks)
+    }
+
+    private fun buildFullTextString(blocks: List<FirebaseVisionText.Block>): String {
         val builder = StringBuilder()
-
-        mGraphicOverlay.clear()
-
-        for (block in blocks) {
-            val lines = block.lines.toMutableList()
-            lines.sortBy { it.boundingBox?.centerY() }
-
-            for (line in lines) {
+        blocks.forEach { block ->
+            val lines = block.lines.toMutableList().apply {
+                sortBy {
+                    it.boundingBox?.centerY()
+                }
+            }
+            lines.forEach { line ->
                 builder.append(line.text).append("\n")
             }
-
             builder.append("\n")
+        }
+        return builder.toString()
+    }
 
+    private fun drawHighlights(blocks: List<FirebaseVisionText.Block>) {
+        mGraphicOverlay.clear()
+
+        blocks.forEach { block ->
             if (BuildConfig.DEBUG) {
                 val textGraphic = TextGraphic(mGraphicOverlay, block)
                 mGraphicOverlay.add(textGraphic)
             }
         }
-
-        text_mode_text.text = builder.toString()
     }
-//
+
+    private fun setupTextSelectionActionMode() {
+        textModeResultTextView.customSelectionActionModeCallback = object : android.view.ActionMode.Callback {
+            override fun onCreateActionMode(mode: android.view.ActionMode, menu: Menu): Boolean {
+                val selectedText = textModeResultTextView.text.substring(
+                        textModeResultTextView.selectionStart,
+                        textModeResultTextView.selectionEnd)
+                selectionContextMenu.show(selectedText)
+                return true
+            }
+
+            override fun onPrepareActionMode(mode: android.view.ActionMode, menu: Menu): Boolean {
+                return true
+            }
+
+            override fun onActionItemClicked(mode: android.view.ActionMode, item: MenuItem): Boolean {
+                return false
+            }
+
+            override fun onDestroyActionMode(mode: android.view.ActionMode) {
+                selectionContextMenu.hide()
+            }
+        }
+    }
+
 //    private fun showSystemUI() {
 //        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
 //                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or

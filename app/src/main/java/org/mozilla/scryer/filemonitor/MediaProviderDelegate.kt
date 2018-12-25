@@ -7,10 +7,16 @@ package org.mozilla.scryer.filemonitor
 
 import android.content.Context
 import android.database.ContentObserver
+import android.database.Cursor
 import android.net.Uri
 import android.os.Handler
 import android.provider.MediaStore
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.experimental.withContext
+import org.mozilla.scryer.capture.ScreenCaptureManager
 import org.mozilla.scryer.permission.PermissionHelper
+import java.io.File
 
 class MediaProviderDelegate(private val context: Context, private val handler: Handler?) : FileMonitorDelegate {
 
@@ -19,6 +25,8 @@ class MediaProviderDelegate(private val context: Context, private val handler: H
     override fun startMonitor(listener: FileMonitor.ChangeListener) {
         observer = object : ContentObserver(handler) {
             override fun onChange(selfChange: Boolean, uri: Uri?) {
+                uri ?: return
+
                 if (!PermissionHelper.hasStoragePermission(context)) {
                     return
                 }
@@ -37,25 +45,37 @@ class MediaProviderDelegate(private val context: Context, private val handler: H
                 ).use {
                     val cursor = it ?: return@use
                     if (cursor.moveToFirst()) {
-                        val path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA))
-                        val dateAdded = cursor!!.getLong(cursor.getColumnIndex(MediaStore.Images.Media.DATE_ADDED))
-                        val currentTime = System.currentTimeMillis() / 1000
-                        if (path.contains("screenshot", true) &&
-                                Math.abs(currentTime - dateAdded) <= 10) {
-                            listener.onChangeStart(path)
-                            listener.onChangeFinish(path)
-                        }
+                        notifyChangeAsync(cursor, listener)
                     }
                 }
+            }
 
-                super.onChange(selfChange, uri)
+        }.apply {
+            context.contentResolver.registerContentObserver(
+                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                    true,
+                    this)
+        }
+    }
+
+    private fun notifyChangeAsync(cursor: Cursor, listener: FileMonitor.ChangeListener) {
+        val path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA))
+        val dateAdded = cursor.getLong(cursor.getColumnIndex(MediaStore.Images.Media.DATE_ADDED))
+        val currentTime = System.currentTimeMillis() / 1000
+
+        launch {
+            val isExtSupported = ScreenshotFetcher.isExtSupported(path)
+            val isPotentialScreenshot = path.contains("screenshot", true)
+            val isCapturedByFab = File(path).parentFile.name == ScreenCaptureManager.SCREENSHOT_DIR
+            val isNewlyCaptured = Math.abs(currentTime - dateAdded) <= 10
+
+            if (isExtSupported && isPotentialScreenshot && isNewlyCaptured && !isCapturedByFab) {
+                withContext(UI) {
+                    listener.onChangeStart(path)
+                    listener.onChangeFinish(path)
+                }
             }
         }
-
-        context.contentResolver.registerContentObserver(
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                true,
-                observer)
     }
 
     override fun stopMonitor() {

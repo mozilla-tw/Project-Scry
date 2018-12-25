@@ -9,7 +9,15 @@ import org.mozilla.scryer.persistence.ScreenshotModel
 import java.io.File
 
 class ScreenshotFetcher {
-    private val supportExt = listOf("jpg", "png")
+
+    companion object {
+        private val supportExt = listOf("jpg", "png")
+
+        fun isExtSupported(fileName: String): Boolean {
+            return supportExt.any { fileName.endsWith(it, true) }
+        }
+
+    }
 
     fun fetchScreenshots(context: Context): List<ScreenshotModel> {
         val folders = getFolders(context)
@@ -73,8 +81,7 @@ class ScreenshotFetcher {
         val results = mutableListOf<ScreenshotModel>()
 
         File(dirPath).listFiles()?.filter { file ->
-            val fileName = file.name.toLowerCase()
-            supportExt.any { fileName.endsWith(it) }
+            isExtSupported(file.name.toLowerCase())
 
         }?.forEach {
             val model = ScreenshotModel(it.absolutePath, it.lastModified(),

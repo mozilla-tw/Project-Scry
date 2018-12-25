@@ -231,7 +231,7 @@ class ScreenshotItemHolder(
         v?.context?.let {
             menu?.add(0, CONTEXT_MENU_ID_MOVE_TO, 0, it.getString(R.string.menu_shot_action_move))?.setOnMenuItemClickListener(this)
             menu?.add(0, CONTEXT_MENU_ID_INFO, 0, it.getString(R.string.info_info))?.setOnMenuItemClickListener(this)
-            menu?.add(0, CONTEXT_MENU_ID_SHARE, 0, it.getString(R.string.menu_action_share))?.setOnMenuItemClickListener(this)
+            menu?.add(0, CONTEXT_MENU_ID_SHARE, 0, it.getString(R.string.action_share))?.setOnMenuItemClickListener(this)
             menu?.add(0, CONTEXT_MENU_ID_DELETE, 0, it.getString(R.string.action_delete))?.setOnMenuItemClickListener(this)
         }
     }

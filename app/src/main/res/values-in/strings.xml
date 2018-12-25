@@ -2,6 +2,7 @@
 <resources>
   <string name="action_create">Buat koleksi baru</string>
   <string name="action_delete">Hapus</string>
+  <string name="action_share">Bagikan</string>
   <string name="info_info">Info cuplikan layar</string>
   <string name="title_noshots">Belum ada cuplikan layar!</string>
   <string name="action_later">Nanti</string>
@@ -58,7 +59,6 @@
   <string name="menu_ocr_action_web">Pencarian web</string>
   <string name="menu_ocr_action_copy">Salin</string>
   <string name="menu_action_selectall">Pilih semua</string>
-  <string name="menu_action_share">Bagikan</string>
   <string name="sheet_enable_title_enable">Aktifkan %1$s untuk mencuplik layar?</string>
   <string name="sheet_enable_content_enable">Anda tidak dapat mencuplik layar dengan sekali ketuk kecuali ini diaktifkan.</string>
   <string name="sheet_enable_action_enable">Aktif</string>
@@ -112,7 +112,6 @@
 
   <!-- In-app promote dialog -->
   <string name="dialogue_feedback_title">Suka Firefox ScreenshotGo?</string>
-  <string name="dialogue_feedback_description">Beri tahu kami bagaimana perasaan Anda.</string>
   <string name="dialogue_feedback_action_5stars">Beri kami 5 Bintang</string>
   <string name="dialogue_feedback_action_send">Kirim masukan anda</string>
 

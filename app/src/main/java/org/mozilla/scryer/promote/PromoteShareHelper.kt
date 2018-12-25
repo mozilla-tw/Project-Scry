@@ -70,7 +70,7 @@ class PromoteShareHelper {
                     context.getString(R.string.dialogue_share_title),
                     context.getString(subtitleId),
                     ContextCompat.getDrawable(context, R.drawable.image_share),
-                    context.getString(R.string.menu_action_share),
+                    context.getString(R.string.action_share),
                     {
                         PromoteShareHelper.showShareAppDialog(context)
                         onPositive?.invoke()

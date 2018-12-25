@@ -58,7 +58,7 @@ class PromoteRatingHelper {
         ): AlertDialog {
             return PromoteDialogHelper.createPromoteDialog(context,
                     context.getString(R.string.dialogue_feedback_title),
-                    context.getString(R.string.dialogue_feedback_description),
+                    context.getString(R.string.feedback_detail_letusknow),
                     ContextCompat.getDrawable(context, R.drawable.image_feedback),
                     context.getString(R.string.dialogue_feedback_action_5stars),
                     {

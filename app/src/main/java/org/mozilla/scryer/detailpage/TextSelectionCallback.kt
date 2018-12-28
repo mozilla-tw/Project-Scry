@@ -13,6 +13,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.widget.TextView
+import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.launch
 import mozilla.components.browser.search.SearchEngine
 import mozilla.components.browser.search.SearchEngineManager
@@ -25,6 +26,7 @@ class TextSelectionCallback(private val view: TextView) : android.view.ActionMod
             AssetsSearchEngineProvider(LocaleSearchLocalizationProvider())
     ))
     private lateinit var searchEngine: SearchEngine
+    private var loadJob: Job? = null
 
     override fun onCreateActionMode(mode: android.view.ActionMode, menu: Menu): Boolean {
         return true
@@ -48,11 +50,16 @@ class TextSelectionCallback(private val view: TextView) : android.view.ActionMod
         return false
     }
 
-    override fun onDestroyActionMode(mode: android.view.ActionMode) {}
+    override fun onDestroyActionMode(mode: android.view.ActionMode) {
+        loadJob?.cancel()
+    }
 
     private fun searchText(text: String) {
-        launch {
-            // TODO: Refine coroutine usage
+        if (loadJob?.isActive == true) {
+            return
+        }
+
+        loadJob = launch {
             if (!::searchEngine.isInitialized) {
                 searchEngine = searchEngineManager.getDefaultSearchEngine(view.context)
             }

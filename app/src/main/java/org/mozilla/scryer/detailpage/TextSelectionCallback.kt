@@ -19,6 +19,7 @@ import mozilla.components.browser.search.SearchEngineManager
 import mozilla.components.browser.search.provider.AssetsSearchEngineProvider
 import mozilla.components.browser.search.provider.localization.LocaleSearchLocalizationProvider
 import org.mozilla.scryer.R
+import org.mozilla.scryer.telemetry.TelemetryWrapper
 
 class TextSelectionCallback(private val view: TextView) : android.view.ActionMode.Callback {
     private val searchEngineManager = SearchEngineManager(listOf(
@@ -27,6 +28,7 @@ class TextSelectionCallback(private val view: TextView) : android.view.ActionMod
     private lateinit var searchEngine: SearchEngine
 
     override fun onCreateActionMode(mode: android.view.ActionMode, menu: Menu): Boolean {
+        TelemetryWrapper.promptExtractedTextMenu()
         return true
     }
 
@@ -61,12 +63,16 @@ class TextSelectionCallback(private val view: TextView) : android.view.ActionMod
             Intent(Intent.ACTION_VIEW, Uri.parse(uri)).apply {
                 view.context.startActivity(this)
             }
+
+            TelemetryWrapper.searchFromExtractedText()
         }
     }
 
     private fun copyText(text: String) {
         val manager = view.context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         manager.primaryClip = ClipData.newPlainText("selected text", text)
+
+        TelemetryWrapper.copyExtractedText()
     }
 
     private fun shareText(text: String) {
@@ -76,5 +82,7 @@ class TextSelectionCallback(private val view: TextView) : android.view.ActionMod
             type = "text/plain"
             view.context.startActivity(this)
         }
+
+        TelemetryWrapper.shareExtractedText()
     }
 }

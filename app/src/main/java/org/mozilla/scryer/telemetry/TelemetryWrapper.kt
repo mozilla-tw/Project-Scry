@@ -52,6 +52,10 @@ class TelemetryWrapper {
         const val SHARE_SCREENSHOT = "Share screenshot"
         const val EXTRACT_TEXT_FROM_SCREENSHOT = "Extract text from screenshot"
         const val VIEW_TEXT_IN_SCREENSHOT = "View text in screenshot"
+        const val PROMPT_EXTRACTED_TEXT_MENU = "Prompt extracted text menu"
+        const val SEARCH_FROM_EXTRACTED_TEXT = "Search from extracted text"
+        const val COPY_EXTRACTED_TEXT = "Copy extracted text"
+        const val SHARE_EXTRACTED_TEXT = "Share extracted text"
         const val VISIT_SEARCH_PAGE = "Visit search page"
         const val INTERESTED_IN_SEARCH = "Interested in search"
         const val NOT_INTERESTED_IN_SEARCH = "Not interested in search"
@@ -480,6 +484,50 @@ class TelemetryWrapper {
         fun viewTextInScreenshot(value: String, message: String = "") {
             EventBuilder(Category.VIEW_TEXT_IN_SCREENSHOT, Method.V1, Object.GO, value).extra(Extra.MESSAGE, message).queue()
             AdjustHelper.trackEvent(ADJUST_EVENT_VIEW_TEXT_IN_SCREENSHOT)
+        }
+
+        @TelemetryDoc(
+                name = Category.PROMPT_EXTRACTED_TEXT_MENU,
+                category = Category.PROMPT_EXTRACTED_TEXT_MENU,
+                method = Method.V1,
+                `object` = Object.GO,
+                value = "",
+                extras = [])
+        fun promptExtractedTextMenu() {
+            EventBuilder(Category.PROMPT_EXTRACTED_TEXT_MENU, Method.V1, Object.GO).queue()
+        }
+
+        @TelemetryDoc(
+                name = Category.SEARCH_FROM_EXTRACTED_TEXT,
+                category = Category.SEARCH_FROM_EXTRACTED_TEXT,
+                method = Method.V1,
+                `object` = Object.GO,
+                value = "",
+                extras = [])
+        fun searchFromExtractedText() {
+            EventBuilder(Category.SEARCH_FROM_EXTRACTED_TEXT, Method.V1, Object.GO).queue()
+        }
+
+        @TelemetryDoc(
+                name = Category.COPY_EXTRACTED_TEXT,
+                category = Category.COPY_EXTRACTED_TEXT,
+                method = Method.V1,
+                `object` = Object.GO,
+                value = "",
+                extras = [])
+        fun copyExtractedText() {
+            EventBuilder(Category.COPY_EXTRACTED_TEXT, Method.V1, Object.GO).queue()
+        }
+
+        @TelemetryDoc(
+                name = Category.SHARE_EXTRACTED_TEXT,
+                category = Category.SHARE_EXTRACTED_TEXT,
+                method = Method.V1,
+                `object` = Object.GO,
+                value = "",
+                extras = [])
+        fun shareExtractedText() {
+            EventBuilder(Category.SHARE_EXTRACTED_TEXT, Method.V1, Object.GO).queue()
         }
 
         @TelemetryDoc(

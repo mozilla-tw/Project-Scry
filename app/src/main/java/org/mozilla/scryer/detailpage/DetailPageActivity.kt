@@ -525,27 +525,7 @@ class DetailPageActivity : AppCompatActivity() {
     }
 
     private fun setupTextSelectionActionMode() {
-        textModeResultTextView.customSelectionActionModeCallback = object : android.view.ActionMode.Callback {
-            override fun onCreateActionMode(mode: android.view.ActionMode, menu: Menu): Boolean {
-                val selectedText = textModeResultTextView.text.substring(
-                        textModeResultTextView.selectionStart,
-                        textModeResultTextView.selectionEnd)
-                selectionContextMenu.show(selectedText)
-                return true
-            }
-
-            override fun onPrepareActionMode(mode: android.view.ActionMode, menu: Menu): Boolean {
-                return true
-            }
-
-            override fun onActionItemClicked(mode: android.view.ActionMode, item: MenuItem): Boolean {
-                return false
-            }
-
-            override fun onDestroyActionMode(mode: android.view.ActionMode) {
-                selectionContextMenu.hide()
-            }
-        }
+        textModeResultTextView.customSelectionActionModeCallback = TextSelectionCallback(textModeResultTextView)
     }
 
 //    private fun showSystemUI() {

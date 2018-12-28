@@ -13,6 +13,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.widget.TextView
+import android.widget.Toast
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.launch
 import mozilla.components.browser.search.SearchEngine
@@ -21,6 +22,7 @@ import mozilla.components.browser.search.provider.AssetsSearchEngineProvider
 import mozilla.components.browser.search.provider.localization.LocaleSearchLocalizationProvider
 import org.mozilla.scryer.R
 import org.mozilla.scryer.telemetry.TelemetryWrapper
+import org.mozilla.scryer.ui.ScryerToast
 
 class TextSelectionCallback(private val view: TextView) : android.view.ActionMode.Callback {
     private val searchEngineManager = SearchEngineManager(listOf(
@@ -78,6 +80,8 @@ class TextSelectionCallback(private val view: TextView) : android.view.ActionMod
     private fun copyText(text: String) {
         val manager = view.context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         manager.primaryClip = ClipData.newPlainText("selected text", text)
+        ScryerToast.makeText(view.context, view.context.getString(R.string.snackbar_copied),
+                Toast.LENGTH_SHORT).show()
 
         TelemetryWrapper.copyExtractedText()
     }

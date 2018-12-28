@@ -32,7 +32,6 @@ import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.text.FirebaseVisionText
 import kotlinx.android.synthetic.main.activity_detail_page.*
 import kotlinx.coroutines.experimental.*
-import kotlinx.coroutines.experimental.android.UI
 import mozilla.components.browser.search.SearchEngineManager
 import mozilla.components.browser.search.provider.AssetsSearchEngineProvider
 import mozilla.components.browser.search.provider.localization.LocaleSearchLocalizationProvider
@@ -49,9 +48,12 @@ import org.mozilla.scryer.sortingpanel.SortingPanelActivity
 import org.mozilla.scryer.telemetry.TelemetryWrapper
 import org.mozilla.scryer.ui.ScryerToast
 import org.mozilla.scryer.viewmodel.ScreenshotViewModel
+import kotlin.coroutines.experimental.CoroutineContext
 import kotlin.coroutines.experimental.suspendCoroutine
 
-class DetailPageActivity : AppCompatActivity() {
+class DetailPageActivity : AppCompatActivity(), CoroutineScope {
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.Main
 
     companion object Launcher {
         private const val EXTRA_SCREENSHOT_ID = "screenshot_id"
@@ -227,7 +229,7 @@ class DetailPageActivity : AppCompatActivity() {
     }
 
     private fun initViewPager() {
-        GlobalScope.launch(Dispatchers.Main) {
+        launch(Dispatchers.Main) {
             screenshots = getScreenshots().sortedByDescending { it.lastModified }
             view_pager.adapter = DetailPageAdapter().apply {
                 this.screenshots = this@DetailPageActivity.screenshots
@@ -282,7 +284,7 @@ class DetailPageActivity : AppCompatActivity() {
 
     private fun startRecognition() {
         val appContext = applicationContext
-        GlobalScope.launch(Dispatchers.Main) {
+        launch(Dispatchers.Main) {
             updateUI()
 
             val result = withContext(Dispatchers.Default) {
@@ -371,7 +373,7 @@ class DetailPageActivity : AppCompatActivity() {
             updateFabUI(true, false)
             enableActionMenu(false)
 
-            launch (UI) {
+            launch (Dispatchers.Main) {
                 setupTextSelectionCallback(textModeResultTextView)
                 updateLoadingViewVisibility(false)
                 updateTextModePanelVisibility(true)
@@ -530,7 +532,7 @@ class DetailPageActivity : AppCompatActivity() {
         }
     }
 
-    private suspend fun setupTextSelectionCallback(textView: TextView) = withContext(DefaultDispatcher) {
+    private suspend fun setupTextSelectionCallback(textView: TextView) = withContext(Dispatchers.Default) {
         val searchEngineManager = SearchEngineManager(listOf(
                 AssetsSearchEngineProvider(LocaleSearchLocalizationProvider())))
         val engine = searchEngineManager.getDefaultSearchEngine(this@DetailPageActivity)

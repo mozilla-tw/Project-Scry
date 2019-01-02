@@ -633,7 +633,7 @@ fun showDeleteCollectionDialog(
                     context.getString(R.string.dialogue_deletecollection_title_delete),
                     context.getString(R.string.action_delete),
                     DialogInterface.OnClickListener { dialog, _ ->
-                        launch {
+                        GlobalScope.launch(Dispatchers.Default) {
                             viewModel.deleteCollection(collection)
                             screenshots.forEach { screenshot ->
                                 File(screenshot.absolutePath).delete()

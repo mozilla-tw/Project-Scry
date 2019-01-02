@@ -25,16 +25,17 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.WindowManager
+import android.widget.TextView
 import android.widget.Toast
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.text.FirebaseVisionText
 import kotlinx.android.synthetic.main.activity_detail_page.*
-import kotlinx.coroutines.experimental.CommonPool
-import kotlinx.coroutines.experimental.DefaultDispatcher
+import kotlinx.coroutines.experimental.*
 import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.launch
-import kotlinx.coroutines.experimental.withContext
+import mozilla.components.browser.search.SearchEngineManager
+import mozilla.components.browser.search.provider.AssetsSearchEngineProvider
+import mozilla.components.browser.search.provider.localization.LocaleSearchLocalizationProvider
 import org.mozilla.scryer.BuildConfig
 import org.mozilla.scryer.R
 import org.mozilla.scryer.collectionview.OnDeleteScreenshotListener
@@ -275,7 +276,6 @@ class DetailPageActivity : AppCompatActivity() {
                         }
                     }
                 })
-        setupTextSelectionActionMode()
     }
 
     private fun startRecognition() {
@@ -366,10 +366,14 @@ class DetailPageActivity : AppCompatActivity() {
 
     private fun updateUI() {
         if (isTextMode) {
-            updateLoadingViewVisibility(false)
             updateFabUI(true, false)
-            updateTextModePanelVisibility(true)
             enableActionMenu(false)
+
+            launch (UI) {
+                setupTextSelectionCallback(textModeResultTextView)
+                updateLoadingViewVisibility(false)
+                updateTextModePanelVisibility(true)
+            }
 
         } else {
             updateLoadingViewVisibility(isRecognizing)
@@ -524,8 +528,20 @@ class DetailPageActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupTextSelectionActionMode() {
-        textModeResultTextView.customSelectionActionModeCallback = TextSelectionCallback(textModeResultTextView)
+    private suspend fun setupTextSelectionCallback(textView: TextView) = withContext(DefaultDispatcher) {
+        val searchEngineManager = SearchEngineManager(listOf(
+                AssetsSearchEngineProvider(LocaleSearchLocalizationProvider())))
+        val engine = searchEngineManager.getDefaultSearchEngine(this@DetailPageActivity)
+        textView.customSelectionActionModeCallback = TextSelectionCallback(
+                textView,
+                object : TextSelectionCallback.SearchEngineDelegate {
+                    override val name: String
+                        get() = engine.name
+
+                    override fun buildSearchUrl(text: String): String {
+                        return engine.buildSearchUrl(text)
+                    }
+                })
     }
 
 //    private fun showSystemUI() {

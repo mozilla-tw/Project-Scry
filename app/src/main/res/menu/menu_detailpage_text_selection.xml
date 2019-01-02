@@ -2,8 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/action_search"
-        android:title="@string/home_action_search"
-        android:icon="@drawable/move" />
+        android:title="@string/menu_ocr_action_web" />
 
     <item
         android:id="@+id/action_copy"

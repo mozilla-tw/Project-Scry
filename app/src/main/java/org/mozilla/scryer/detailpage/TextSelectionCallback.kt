@@ -14,22 +14,14 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.widget.TextView
 import android.widget.Toast
-import kotlinx.coroutines.experimental.Job
-import kotlinx.coroutines.experimental.launch
-import mozilla.components.browser.search.SearchEngine
-import mozilla.components.browser.search.SearchEngineManager
-import mozilla.components.browser.search.provider.AssetsSearchEngineProvider
-import mozilla.components.browser.search.provider.localization.LocaleSearchLocalizationProvider
 import org.mozilla.scryer.R
 import org.mozilla.scryer.telemetry.TelemetryWrapper
 import org.mozilla.scryer.ui.ScryerToast
 
-class TextSelectionCallback(private val view: TextView) : android.view.ActionMode.Callback {
-    private val searchEngineManager = SearchEngineManager(listOf(
-            AssetsSearchEngineProvider(LocaleSearchLocalizationProvider())
-    ))
-    private lateinit var searchEngine: SearchEngine
-    private var loadJob: Job? = null
+class TextSelectionCallback(
+        private val view: TextView,
+        private val searchEngineDelegate: SearchEngineDelegate
+) : android.view.ActionMode.Callback {
 
     override fun onCreateActionMode(mode: android.view.ActionMode, menu: Menu): Boolean {
         TelemetryWrapper.promptExtractedTextMenu()
@@ -55,26 +47,15 @@ class TextSelectionCallback(private val view: TextView) : android.view.ActionMod
     }
 
     override fun onDestroyActionMode(mode: android.view.ActionMode) {
-        loadJob?.cancel()
     }
 
     private fun searchText(text: String) {
-        if (loadJob?.isActive == true) {
-            return
+        val uri = searchEngineDelegate.buildSearchUrl(text)
+        Intent(Intent.ACTION_VIEW, Uri.parse(uri)).apply {
+            view.context.startActivity(this)
         }
 
-        loadJob = launch {
-            if (!::searchEngine.isInitialized) {
-                searchEngine = searchEngineManager.getDefaultSearchEngine(view.context)
-            }
-
-            val uri = searchEngine.buildSearchUrl(text)
-            Intent(Intent.ACTION_VIEW, Uri.parse(uri)).apply {
-                view.context.startActivity(this)
-            }
-
-            TelemetryWrapper.searchFromExtractedText()
-        }
+        TelemetryWrapper.searchFromExtractedText()
     }
 
     private fun copyText(text: String) {
@@ -95,5 +76,10 @@ class TextSelectionCallback(private val view: TextView) : android.view.ActionMod
         }
 
         TelemetryWrapper.shareExtractedText()
+    }
+
+    interface SearchEngineDelegate {
+        val name: String
+        fun buildSearchUrl(text: String): String
     }
 }

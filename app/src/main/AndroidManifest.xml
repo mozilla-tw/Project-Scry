@@ -79,6 +79,10 @@
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/foreground_notification" />
 
+        <meta-data
+            android:name="com.google.firebase.ml.vision.DEPENDENCIES"
+            android:value="ocr" />
+
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="${applicationId}.provider.fileprovider"

@@ -26,6 +26,7 @@ class AdjustHelper {
             val token = BuildConfig.ADJUST_TOKEN.takeIf { it.isNotEmpty() } ?: return
 
             val config = AdjustConfig(application, token, BuildConfig.ADJUST_ENVIRONMENT, true)
+            config.setSendInBackground(true)
             config.setLogLevel(LogLevel.DEBUG)
             Adjust.onCreate(config)
 

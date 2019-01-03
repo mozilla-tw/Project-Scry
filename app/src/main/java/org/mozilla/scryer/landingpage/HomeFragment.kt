@@ -55,6 +55,7 @@ import org.mozilla.scryer.sortingpanel.SortingPanelActivity
 import org.mozilla.scryer.telemetry.TelemetryWrapper
 import org.mozilla.scryer.ui.BottomDialogFactory
 import org.mozilla.scryer.ui.GridItemDecoration
+import org.mozilla.scryer.util.launchIO
 import org.mozilla.scryer.viewmodel.ScreenshotViewModel
 import java.io.File
 import java.util.*
@@ -575,7 +576,7 @@ class HomeFragment : androidx.fragment.app.Fragment(), PermissionFlow.ViewDelega
         }
 
         dialog.setOnCancelListener {
-            GlobalScope.launch {
+            launchIO {
                 viewModel.batchMove(newScreenshots, CollectionModel.CATEGORY_NONE)
             }
         }

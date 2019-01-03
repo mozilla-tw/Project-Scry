@@ -12,11 +12,10 @@ import android.net.Uri
 import android.os.Handler
 import android.provider.MediaStore
 import kotlinx.coroutines.experimental.Dispatchers
-import kotlinx.coroutines.experimental.GlobalScope
-import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.withContext
 import org.mozilla.scryer.capture.ScreenCaptureManager
 import org.mozilla.scryer.permission.PermissionHelper
+import org.mozilla.scryer.util.launchIO
 import java.io.File
 
 class MediaProviderDelegate(private val context: Context, private val handler: Handler?) : FileMonitorDelegate {
@@ -64,7 +63,7 @@ class MediaProviderDelegate(private val context: Context, private val handler: H
         val dateAdded = cursor.getLong(cursor.getColumnIndex(MediaStore.Images.Media.DATE_ADDED))
         val currentTime = System.currentTimeMillis() / 1000
 
-        GlobalScope.launch {
+        launchIO {
             val isExtSupported = ScreenshotFetcher.isExtSupported(path)
             val isPotentialScreenshot = path.contains("screenshot", true)
             val isCapturedByFab = File(path).parentFile.name == ScreenCaptureManager.SCREENSHOT_DIR

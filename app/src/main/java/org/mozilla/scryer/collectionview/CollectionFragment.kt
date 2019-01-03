@@ -43,6 +43,7 @@ import org.mozilla.scryer.telemetry.TelemetryWrapper
 import org.mozilla.scryer.ui.CollectionNameDialog
 import org.mozilla.scryer.ui.ConfirmationDialog
 import org.mozilla.scryer.ui.InnerSpaceDecoration
+import org.mozilla.scryer.util.launchIO
 import org.mozilla.scryer.viewmodel.ScreenshotViewModel
 import java.io.File
 import java.text.DecimalFormat
@@ -489,7 +490,7 @@ fun showDeleteScreenshotDialog(
             context.getString(R.string.dialogue_deleteshot_title_delete),
             context.getString(R.string.action_delete),
             DialogInterface.OnClickListener { dialog, _ ->
-                GlobalScope.launch {
+                launchIO {
                     screenshotModels.forEach {
                         ScryerApplication.getScreenshotRepository().deleteScreenshot(it)
                         File(it.absolutePath).delete()
@@ -528,7 +529,7 @@ fun showShareScreenshotDialog(context: Context, screenshotModels: List<Screensho
         return
     }
 
-    GlobalScope.launch {
+    GlobalScope.launch(Dispatchers.IO) {
         val authorities = BuildConfig.APPLICATION_ID + ".provider.fileprovider"
         val share = Intent()
         if (screenshotModels.size == 1) {
@@ -555,7 +556,7 @@ fun showShareScreenshotDialog(context: Context, screenshotModels: List<Screensho
 }
 
 fun showCollectionInfo(context: Context, viewModel: ScreenshotViewModel, collectionId: String?) {
-    GlobalScope.launch(Dispatchers.Default) {
+    GlobalScope.launch(Dispatchers.IO) {
         collectionId ?: return@launch
 
         val idList = if (collectionId == CollectionModel.CATEGORY_NONE) {
@@ -633,7 +634,7 @@ fun showDeleteCollectionDialog(
                     context.getString(R.string.dialogue_deletecollection_title_delete),
                     context.getString(R.string.action_delete),
                     DialogInterface.OnClickListener { dialog, _ ->
-                        GlobalScope.launch(Dispatchers.Default) {
+                        GlobalScope.launch(Dispatchers.IO) {
                             viewModel.deleteCollection(collection)
                             screenshots.forEach { screenshot ->
                                 File(screenshot.absolutePath).delete()

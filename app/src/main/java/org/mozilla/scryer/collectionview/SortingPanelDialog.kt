@@ -145,7 +145,7 @@ class SortingPanelDialog(
     private fun updateCollectionOrderToRepository() {
         for ((suggestCollection, createTime) in suggestCollectionCreateTime) {
             suggestCollection.createdDate = createTime
-            GlobalScope.launch {
+            GlobalScope.launch(Dispatchers.IO) {
                 ScreenshotViewModel.get(activity).updateCollection(suggestCollection)
             }
         }

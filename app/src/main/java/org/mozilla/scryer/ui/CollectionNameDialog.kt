@@ -18,6 +18,7 @@ import kotlinx.coroutines.experimental.withContext
 import org.mozilla.scryer.R
 import org.mozilla.scryer.persistence.CollectionModel
 import org.mozilla.scryer.util.CollectionListHelper
+import org.mozilla.scryer.util.launchIO
 import org.mozilla.scryer.viewmodel.ScreenshotViewModel
 import java.util.*
 
@@ -85,7 +86,7 @@ class CollectionNameDialog(private val context: Context,
             val dialog = CollectionNameDialog(context, object : CollectionNameDialog.Delegate {
                 override fun onPositiveAction(collectionName: String) {
                     collection.name = collectionName
-                    GlobalScope.launch {
+                    launchIO {
                         viewModel.updateCollection(collection)
                     }
                 }
@@ -120,7 +121,7 @@ class CollectionNameDialog(private val context: Context,
                 it.name.equals(name, true)
 
             }?.let {
-                launch(Dispatchers.Default) {
+                withContext(Dispatchers.IO) {
                     it.createdDate = System.currentTimeMillis()
                     viewModel.updateCollectionId(it, UUID.randomUUID().toString())
                 }
@@ -129,7 +130,7 @@ class CollectionNameDialog(private val context: Context,
             }?: run {
                 val color = CollectionListHelper.nextCollectionColor(context, collections, true)
                 val model = CollectionModel(name, System.currentTimeMillis(), color)
-                withContext(Dispatchers.Default) {
+                withContext(Dispatchers.IO) {
                     viewModel.addCollection(model)
                 }
                 model
@@ -137,7 +138,7 @@ class CollectionNameDialog(private val context: Context,
         }
 
         private suspend fun queryCollectionList(viewModel: ScreenshotViewModel): List<CollectionModel> {
-            return withContext(Dispatchers.Default) {
+            return withContext(Dispatchers.IO) {
                 viewModel.getCollectionList()
             }
         }

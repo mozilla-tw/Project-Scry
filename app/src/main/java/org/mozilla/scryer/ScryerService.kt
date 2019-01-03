@@ -22,8 +22,6 @@ import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
-import kotlinx.coroutines.experimental.GlobalScope
-import kotlinx.coroutines.experimental.launch
 import org.mozilla.scryer.capture.RequestCaptureActivity
 import org.mozilla.scryer.capture.ScreenCaptureListener
 import org.mozilla.scryer.capture.ScreenCaptureManager
@@ -39,6 +37,7 @@ import org.mozilla.scryer.sortingpanel.SortingPanelActivity
 import org.mozilla.scryer.telemetry.CaptureServiceHeartbeatWorker
 import org.mozilla.scryer.telemetry.TelemetryWrapper
 import org.mozilla.scryer.ui.ScryerToast
+import org.mozilla.scryer.util.launchIO
 import java.util.concurrent.TimeUnit
 
 
@@ -218,7 +217,7 @@ class ScryerService : Service(), CaptureButtonController.ClickListener, ScreenCa
                 val model = ScreenshotModel(path,
                         System.currentTimeMillis(),
                         CollectionModel.UNCATEGORIZED)
-                GlobalScope.launch {
+                launchIO {
                     ScryerApplication.getScreenshotRepository().addScreenshot(listOf(model))
                 }
 

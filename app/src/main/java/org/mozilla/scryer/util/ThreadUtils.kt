@@ -6,7 +6,7 @@
 package org.mozilla.scryer.util
 
 import android.os.Looper
-import kotlinx.coroutines.experimental.asCoroutineDispatcher
+import kotlinx.coroutines.experimental.*
 import java.util.concurrent.Executors
 import java.util.concurrent.ThreadFactory
 import java.util.concurrent.atomic.AtomicInteger
@@ -40,5 +40,11 @@ object ThreadUtils {
             thread.priority = threadPriority
             return thread
         }
+    }
+}
+
+fun launchIO(block: suspend CoroutineScope.() -> Unit) {
+    GlobalScope.launch(Dispatchers.IO) {
+        block(this)
     }
 }

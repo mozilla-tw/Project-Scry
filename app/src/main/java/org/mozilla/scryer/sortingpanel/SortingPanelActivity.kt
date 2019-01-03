@@ -34,6 +34,7 @@ import org.mozilla.scryer.ui.CollectionNameDialog
 import org.mozilla.scryer.ui.ConfirmationDialog
 import org.mozilla.scryer.ui.ScryerToast
 import org.mozilla.scryer.util.CollectionListHelper
+import org.mozilla.scryer.util.launchIO
 import org.mozilla.scryer.viewmodel.ScreenshotViewModel
 import java.io.File
 import java.util.*
@@ -147,7 +148,7 @@ class SortingPanelActivity : AppCompatActivity() {
 
         for ((suggestCollection, createTime) in suggestCollectionCreateTime) {
             suggestCollection.createdDate = createTime
-            GlobalScope.launch {
+            launchIO {
                 screenshotViewModel.updateCollection(suggestCollection)
             }
         }
@@ -191,7 +192,7 @@ class SortingPanelActivity : AppCompatActivity() {
 
     private fun flushToUnsortedCollection() {
         showAddedToast(unsortedCollection, false)
-        GlobalScope.launch {
+        launchIO {
             screenshotViewModel.batchMove(unsortedScreenshots, CollectionModel.CATEGORY_NONE)
         }
     }
@@ -255,7 +256,7 @@ class SortingPanelActivity : AppCompatActivity() {
 
         if (screenshot.collectionId == CollectionModel.UNCATEGORIZED) {
             screenshot.collectionId = CollectionModel.CATEGORY_NONE
-            GlobalScope.launch {
+            launchIO {
                 screenshotViewModel.updateScreenshot(screenshot)
             }
         }

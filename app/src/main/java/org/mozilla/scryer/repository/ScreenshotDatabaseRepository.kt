@@ -5,17 +5,16 @@
 
 package org.mozilla.scryer.repository
 
+import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
-import android.content.Context
-import kotlinx.coroutines.experimental.GlobalScope
-import kotlinx.coroutines.experimental.launch
 import org.mozilla.scryer.R
 import org.mozilla.scryer.persistence.CollectionModel
-import org.mozilla.scryer.persistence.SuggestCollectionHelper
 import org.mozilla.scryer.persistence.ScreenshotDatabase
 import org.mozilla.scryer.persistence.ScreenshotModel
+import org.mozilla.scryer.persistence.SuggestCollectionHelper
+import org.mozilla.scryer.util.launchIO
 
 class ScreenshotDatabaseRepository(private val database: ScreenshotDatabase) : ScreenshotRepository {
     private var collectionListData = database.collectionDao().getCollections()
@@ -74,7 +73,7 @@ class ScreenshotDatabaseRepository(private val database: ScreenshotDatabase) : S
     }
 
     override fun setupDefaultContent(context: Context) {
-        GlobalScope.launch {
+        launchIO {
             val none = CollectionModel(CollectionModel.CATEGORY_NONE,
                     context.getString(R.string.home_action_unsorted), 0, 0)
             addCollection(none)

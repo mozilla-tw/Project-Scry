@@ -1,4 +1,5 @@
 import com.android.build.gradle.api.ApplicationVariant
+import dependencies.Versions
 
 apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
@@ -80,57 +81,74 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "androidx.appcompat:appcompat:1.1.0-alpha01"
-    implementation "com.google.android.material:material:1.1.0-alpha02"
-    implementation "androidx.cardview:cardview:1.0.0"
-    implementation "androidx.recyclerview:recyclerview:1.1.0-alpha01"
-    implementation "androidx.transition:transition:1.1.0-alpha01"
-    implementation "androidx.legacy:legacy-preference-v14:1.0.0"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:${Versions.kotlin_coroutine}"
-    implementation "androidx.media:media:1.1.0-alpha01"
-    implementation "androidx.legacy:legacy-support-v4:1.0.0"
-    implementation "androidx.core:core-ktx:1.0.1"
 
-    implementation "androidx.constraintlayout:constraintlayout:2.0.0-alpha3"
+    // Support
+    implementation "androidx.appcompat:appcompat:${Versions.app_compat}"
+    implementation "com.google.android.material:material:${Versions.material}"
+    implementation "androidx.cardview:cardview:${Versions.support}"
+    implementation "androidx.recyclerview:recyclerview:${Versions.recycler_view}"
+    implementation "androidx.transition:transition:${Versions.transision}"
+    implementation "androidx.legacy:legacy-preference-v14:${Versions.support}"
+    implementation "androidx.media:media:${Versions.media}"
+    implementation "androidx.legacy:legacy-support-v4:${Versions.support}"
+    implementation "androidx.constraintlayout:constraintlayout:${Versions.constraint_layout}"
 
+    // Ktx
+    implementation "androidx.core:core-ktx:${Versions.ktx}"
+
+    // Lifecycle
+    implementation "androidx.lifecycle:lifecycle-common-java8:${Versions.lifecycle}"
+    implementation "androidx.lifecycle:lifecycle-extensions:${Versions.lifecycle}"
+
+    // Navigation
+    implementation "android.arch.navigation:navigation-ui:${Versions.navigation}"
+    implementation "android.arch.navigation:navigation-fragment:${Versions.navigation}"
+
+    // Room
+    implementation "androidx.room:room-runtime:${Versions.room}"
+    kapt "androidx.room:room-compiler:${Versions.room}"
+
+    // Work
+    implementation "android.arch.work:work-runtime:${Versions.work}"
+
+    // Kotlin
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${Versions.kotlin}"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:${Versions.kotlin_coroutine}"
 
-    testImplementation "junit:junit:${Versions.junit}"
-    androidTestImplementation 'androidx.test:runner:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
-
-    implementation "androidx.lifecycle:lifecycle-extensions:2.1.0-alpha01"
-    implementation "androidx.lifecycle:lifecycle-common-java8:2.1.0-alpha01"
-
-    implementation "android.arch.navigation:navigation-fragment:${Versions.arch_navigation}"
-    implementation "android.arch.navigation:navigation-ui:${Versions.arch_navigation}"
-
-    implementation "android.arch.work:work-runtime:${Versions.arch_work}"
-
-    implementation "androidx.room:room-runtime:2.1.0-alpha03"
-    kapt "androidx.room:room-compiler:2.1.0-alpha03"
-
+    // Glide
     implementation "com.github.bumptech.glide:glide:${Versions.glide}"
 
+    // Firebase
     implementation "com.google.firebase:firebase-core:${Versions.firebase}"
     implementation "com.google.firebase:firebase-messaging:${Versions.firebase_messageing}"
     implementation "com.google.firebase:firebase-ml-vision:${Versions.firebase_ml}"
 
+    // Fabric
     implementation "com.crashlytics.sdk.android:crashlytics:${Versions.crashlytics}"
 
-    implementation "org.mozilla.components:service-telemetry:${Versions.android_components}"
-
-    implementation project(':telemetry-annotation')
-    kapt project(':telemetry-compiler')
-
-
-    testImplementation "org.mockito:mockito-core:${Versions.mockito}"
-
+    // Adjust
     implementation "com.adjust.sdk:adjust-android:${Versions.adjust}"
+
     implementation "com.android.installreferrer:installreferrer:${Versions.android_install_referrer}"
     implementation "com.google.android.gms:play-services-analytics:${Versions.firebase}" // Required by Adjust
 
+    // Mozilla
     implementation "org.mozilla.components:browser-search:${Versions.android_components}"
+    implementation "org.mozilla.components:service-telemetry:${Versions.android_components}"
+    implementation project(':telemetry-annotation')
+    kapt project(':telemetry-compiler')
+
+    // junit
+    testImplementation "junit:junit:${Versions.junit}"
+
+    // ATSL
+    androidTestImplementation "androidx.test:runner:${Versions.test_runner}"
+
+    // Espresso
+    androidTestImplementation "androidx.test.espresso:espresso-core:${Versions.espresso}"
+
+    // Mockito
+    testImplementation "org.mockito:mockito-core:${Versions.mockito}"
 }
 repositories {
     mavenCentral()

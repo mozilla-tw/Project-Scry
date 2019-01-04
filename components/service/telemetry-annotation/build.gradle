@@ -1,3 +1,5 @@
+import dependencies.Versions
+
 apply plugin: 'java-library'
 apply plugin: 'kotlin'
 

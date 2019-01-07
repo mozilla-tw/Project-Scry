@@ -12,7 +12,7 @@
     android:background="@android:color/black"
     tools:context=".detailpage.DetailPageActivity">
 
-    <androidx.viewpager.widget.ViewPager
+    <org.mozilla.scryer.ui.LockableViewPager
         android:id="@+id/view_pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

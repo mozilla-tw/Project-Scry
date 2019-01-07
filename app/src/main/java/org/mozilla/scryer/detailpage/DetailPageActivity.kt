@@ -25,13 +25,17 @@ import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.view.ViewCompat
+import androidx.viewpager.widget.ViewPager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.text.FirebaseVisionText
 import kotlinx.android.synthetic.main.activity_detail_page.*
-import kotlinx.coroutines.experimental.*
+import kotlinx.coroutines.experimental.CoroutineScope
+import kotlinx.coroutines.experimental.Dispatchers
+import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.experimental.withContext
 import mozilla.components.browser.search.SearchEngineManager
 import mozilla.components.browser.search.provider.AssetsSearchEngineProvider
 import mozilla.components.browser.search.provider.localization.LocaleSearchLocalizationProvider
@@ -129,6 +133,12 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
                 isEnterTransitionPostponed = false
                 supportStartPostponedEnterTransition()
             }
+        }
+    }
+
+    private val imageStateCallback = object : DetailPageAdapter.ImageStateCllabck {
+        override fun onScaleChanged(scale: Boolean) {
+            view_pager.pageLocked = !scale
         }
     }
 
@@ -234,8 +244,9 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
             view_pager.adapter = DetailPageAdapter().apply {
                 this.screenshots = this@DetailPageActivity.screenshots
                 this.itemCallback = this@DetailPageActivity.itemCallback
+                this.imageStateCallback = this@DetailPageActivity.imageStateCallback
             }
-            view_pager.addOnPageChangeListener(object : androidx.viewpager.widget.ViewPager.SimpleOnPageChangeListener() {
+            view_pager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
                 override fun onPageSelected(position: Int) {
                     hasRunOcr = false
                 }

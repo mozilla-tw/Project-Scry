@@ -5,47 +5,61 @@
 
 package org.mozilla.scryer.detailpage
 
+import android.graphics.Bitmap
+import android.graphics.PointF
 import android.graphics.drawable.Drawable
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
+import androidx.viewpager.widget.PagerAdapter
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.target.Target
+import com.bumptech.glide.request.target.SimpleTarget
+import com.bumptech.glide.request.transition.Transition
+import com.davemorrissey.labs.subscaleview.ImageSource
+import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
 import org.mozilla.scryer.persistence.ScreenshotModel
 
-class DetailPageAdapter : androidx.viewpager.widget.PagerAdapter() {
+class DetailPageAdapter : PagerAdapter() {
 
     var screenshots = listOf<ScreenshotModel>()
     var itemCallback: ItemCallback? = null
+    var imageStateCallback: ImageStateCllabck? = null
 
     override fun getCount(): Int {
         return screenshots.size
     }
 
     override fun instantiateItem(container: ViewGroup, position: Int): Any {
-        val imageView = ImageView(container.context)
+        val imageView = object : SubsamplingScaleImageView(container.context) {
+            override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+                super.onSizeChanged(w, h, oldw, oldh)
+                resetScaleAndCenter()
+            }
+        }
+
+        imageView.setOnStateChangedListener(object : SubsamplingScaleImageView.OnStateChangedListener {
+            override fun onCenterChanged(newCenter: PointF, origin: Int) {}
+
+            override fun onScaleChanged(newScale: Float, origin: Int) {
+                imageStateCallback?.onScaleChanged(newScale == imageView.minScale)
+            }
+        })
+
         val item = screenshots[position]
         val path = item.absolutePath
         Glide.with(container.context)
+                .asBitmap()
                 .load(path)
-                .listener(object : RequestListener<Drawable> {
-                    override fun onLoadFailed(e: GlideException?, model: Any, target: Target<Drawable>,
-                                              isFirstResource: Boolean): Boolean {
+                .into(object : SimpleTarget<Bitmap>() {
+                    override fun onLoadFailed(errorDrawable: Drawable?) {
                         itemCallback?.onItemLoaded(item)
-                        return false
                     }
 
-                    override fun onResourceReady(resource: Drawable, model: Any, target: Target<Drawable>,
-                                                 dataSource: DataSource,
-                                                 isFirstResource: Boolean): Boolean {
+                    override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+                        imageView.setImage(ImageSource.bitmap(resource))
                         itemCallback?.onItemLoaded(item)
-                        return false
                     }
                 })
-                .into(imageView)
+
         container.addView(imageView)
         imageView.setOnClickListener {
             itemCallback?.onItemClicked(screenshots[position])
@@ -64,5 +78,9 @@ class DetailPageAdapter : androidx.viewpager.widget.PagerAdapter() {
     interface ItemCallback {
         fun onItemClicked(item: ScreenshotModel)
         fun onItemLoaded(item: ScreenshotModel)
+    }
+
+    interface ImageStateCllabck {
+        fun onScaleChanged(scale: Boolean)
     }
 }

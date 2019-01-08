@@ -65,6 +65,9 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
 
         private const val SUPPORT_SLIDE = true
 
+        private const val IMAGE_SCALE_NORMAL_MODE = 1f
+        private const val IMAGE_SCALE_TEXT_MODE = 0.9f
+
         fun showDetailPage(context: Context, screenshot: ScreenshotModel, srcView: View?,
                            collectionId: String? = null) {
             val intent = Intent(context, DetailPageActivity::class.java)
@@ -380,9 +383,14 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
     }
 
     private fun updateUI() {
+        val pagerScale: Float
+        val pagerTranslation: Float
         if (isTextMode) {
+            // TODO: Reset SubsamplingScaleImageView's scale before entering text mode
             updateFabUI(true, false)
             enableActionMenu(false)
+            pagerScale = IMAGE_SCALE_TEXT_MODE
+            pagerTranslation = -view_pager.height * (1 - IMAGE_SCALE_TEXT_MODE)
 
             launch (Dispatchers.Main) {
                 setupTextSelectionCallback(textModeResultTextView)
@@ -395,8 +403,15 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
             updateFabUI(false, isRecognizing)
             updateTextModePanelVisibility(false)
             enableActionMenu(true)
+            pagerScale = IMAGE_SCALE_NORMAL_MODE
+            pagerTranslation = 1f
         }
         updateNavigationIcon()
+
+        view_pager.animate()
+                .scaleX(pagerScale)
+                .scaleY(pagerScale)
+                .translationY(pagerTranslation).duration = 150
     }
 
     private fun updateLoadingViewVisibility(visible: Boolean) {

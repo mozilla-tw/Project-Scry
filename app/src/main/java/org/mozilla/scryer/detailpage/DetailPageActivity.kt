@@ -25,7 +25,9 @@ import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.view.ViewCompat
+import androidx.core.view.forEach
 import androidx.viewpager.widget.ViewPager
+import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.ml.vision.FirebaseVision
@@ -39,7 +41,6 @@ import kotlinx.coroutines.experimental.withContext
 import mozilla.components.browser.search.SearchEngineManager
 import mozilla.components.browser.search.provider.AssetsSearchEngineProvider
 import mozilla.components.browser.search.provider.localization.LocaleSearchLocalizationProvider
-import org.mozilla.scryer.BuildConfig
 import org.mozilla.scryer.R
 import org.mozilla.scryer.collectionview.OnDeleteScreenshotListener
 import org.mozilla.scryer.collectionview.showDeleteScreenshotDialog
@@ -85,8 +86,6 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
             (context as AppCompatActivity).startActivity(intent, bundle)
         }
     }
-
-    private val mGraphicOverlay: GraphicOverlay by lazy { findViewById<GraphicOverlay>(R.id.graphic_overlay) }
 
     private var shareMenu: MenuItem? = null
     private var moveToMenu: MenuItem? = null
@@ -385,14 +384,19 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
     private fun updateUI() {
         val pagerScale: Float
         val pagerTranslation: Float
+
         if (isTextMode) {
-            // TODO: Reset SubsamplingScaleImageView's scale before entering text mode
+            view_pager.forEach {
+                (it as SubsamplingScaleImageView).resetScaleAndCenter()
+            }
+            view_pager.pageLocked = false
+
             updateFabUI(true, false)
             enableActionMenu(false)
             pagerScale = IMAGE_SCALE_TEXT_MODE
             pagerTranslation = -view_pager.height * (1 - IMAGE_SCALE_TEXT_MODE)
 
-            launch (Dispatchers.Main) {
+            launch(Dispatchers.Main) {
                 setupTextSelectionCallback(textModeResultTextView)
                 updateLoadingViewVisibility(false)
                 updateTextModePanelVisibility(true)
@@ -405,13 +409,16 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
             enableActionMenu(true)
             pagerScale = IMAGE_SCALE_NORMAL_MODE
             pagerTranslation = 1f
+            graphic_overlay.visibility = View.GONE
         }
         updateNavigationIcon()
 
-        view_pager.animate()
-                .scaleX(pagerScale)
-                .scaleY(pagerScale)
-                .translationY(pagerTranslation).duration = 150
+        listOf(view_pager, graphic_overlay).forEach {
+            it.animate()
+                    .scaleX(pagerScale)
+                    .scaleY(pagerScale)
+                    .translationY(pagerTranslation).duration = 150
+        }
     }
 
     private fun updateLoadingViewVisibility(visible: Boolean) {
@@ -449,7 +456,6 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
             View.GONE
         }
         text_mode_panel.visibility = visibility
-        text_mode_background.visibility = visibility
     }
 
     private fun enableActionMenu(enable: Boolean) {
@@ -548,13 +554,11 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
     }
 
     private fun drawHighlights(blocks: List<FirebaseVisionText.Block>) {
-        mGraphicOverlay.clear()
+        graphic_overlay.visibility = View.VISIBLE
+        graphic_overlay.clear()
 
         blocks.forEach { block ->
-            if (BuildConfig.DEBUG) {
-                val textGraphic = TextGraphic(mGraphicOverlay, block)
-                mGraphicOverlay.add(textGraphic)
-            }
+            graphic_overlay.add(TextBlockGraphic(graphic_overlay, block))
         }
     }
 

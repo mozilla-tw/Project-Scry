@@ -2,12 +2,18 @@ package org.mozilla.scryer.detailpage
 
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.Color
 import android.hardware.camera2.CameraCharacteristics
 import android.util.AttributeSet
 import android.view.View
 import java.util.HashSet
 
 class GraphicOverlay(context: Context, attrs: AttributeSet) : View(context, attrs) {
+
+    companion object {
+        private val COLOR_BACKGROUND = Color.parseColor("#b3000000")
+    }
+
     private val lock = Any()
     private var previewWidth: Int = 0
     private var widthScaleFactor = 1.0f
@@ -15,6 +21,11 @@ class GraphicOverlay(context: Context, attrs: AttributeSet) : View(context, attr
     private var heightScaleFactor = 1.0f
     private var facing = CameraCharacteristics.LENS_FACING_BACK
     private val graphics = HashSet<Graphic>()
+
+    init {
+        setLayerType(View.LAYER_TYPE_SOFTWARE, null)
+        isClickable = true
+    }
 
     /**
      * Base class for a custom graphics object to be rendered within the graphic overlay. Subclass
@@ -136,6 +147,8 @@ class GraphicOverlay(context: Context, attrs: AttributeSet) : View(context, attr
                 widthScaleFactor = canvas.width.toFloat() / previewWidth.toFloat()
                 heightScaleFactor = canvas.height.toFloat() / previewHeight.toFloat()
             }
+
+            canvas.drawColor(COLOR_BACKGROUND)
 
             for (graphic in graphics) {
                 graphic.draw(canvas)

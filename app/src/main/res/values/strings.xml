@@ -61,6 +61,12 @@
     <string name="detail_ocr_error_edgecase">Something went wrong? Crop the screenshot and retry.</string>
     <!-- String displayed when recognizing no text on the screenshot -->
     <string name="detail_ocr_error_notext">No text found</string>
+    <!-- String displayed to ask users to connect to internet to install necessary module -->
+    <string name="detail_ocr_error_module">Connect to the internet to install offline Text Recognition module</string>
+    <string name="detail_ocr_error_action_connect">Connect</string>
+    <!-- String displayed to give users the instruction -->
+    <string name="detail_ocr_instruction">Tap text for more options</string>
+    <string name="detail_ocr_action_selectall">Select all text</string>
     <!-- Detail view: string displayed on the detail view when recognizing the text on the screenshot -->
     <string name="detail_transition_recognizing">Recognizing text&#8230;</string>
 
@@ -185,7 +191,11 @@
     <!-- The string should represent an informal variant of no -->
     <string name="onboarding_search_action_disagree">Nope</string>
     <string name="onboarding_search_content_feedback">Thanks for your feedback!</string>
-
+    <!-- String displayed with an illustration to introduce a new feature -->
+    <string name="onboarding_ocr_title_more">Do more with screenshots</string>
+    <!-- String displayed to give examples of what the new feature can do -->
+    <string name="onboarding_ocr_content_examples">Look up products, copy coupon codes, and share quotes in your screenshots</string>
+    
     <!-- In-app promote dialog -->
     <string name="dialogue_feedback_title">Love Firefox ScreenshotGo?</string>
     <string name="dialogue_feedback_action_5stars">Rate 5 Stars</string>

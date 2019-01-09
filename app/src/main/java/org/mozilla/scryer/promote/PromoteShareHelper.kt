@@ -67,7 +67,7 @@ class PromoteShareHelper {
             }
 
             val dialog = PromoteDialogHelper.createPromoteDialog(context,
-                    context.getString(R.string.dialogue_share_title),
+                    context.getString(R.string.dialogue_share_title, context.getString(R.string.app_full_name)),
                     context.getString(subtitleId),
                     ContextCompat.getDrawable(context, R.drawable.image_share),
                     context.getString(R.string.action_share),

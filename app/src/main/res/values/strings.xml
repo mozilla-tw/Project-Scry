@@ -197,10 +197,11 @@
     <string name="onboarding_ocr_title_more">Do more with screenshots</string>
     <!-- String displayed to give examples of what the new feature can do -->
     <string name="onboarding_ocr_content_examples">Look up products, copy coupon codes, and share quotes in your screenshots</string>
-    
-    <!-- In-app promote dialog -->
-    <string name="dialogue_feedback_title">Love Firefox ScreenshotGo?</string>
-    <string name="dialogue_share_title">Share Firefox ScreenshotGo with Friends!</string>
+
+    <!-- Parameter %1$s is the app name, i.e. Firefox ScreenshotGo -->
+    <string name="dialogue_feedback_title">Love %1$s?</string>
+    <!-- Parameter %1$s is the app name, i.e. Firefox ScreenshotGo -->
+    <string name="dialogue_share_title">Share %1$s with Friends!</string>
     <string name="dialogue_take_share_description">Enjoy taking screenshots? Share it now!</string>
     <string name="dialogue_sort_share_description">Enjoy organizing screenshots? Share it now!</string>
     <string name="dialogue_ocr_share_description">Find screenshot-to-text useful? Share it now!</string>

@@ -9,7 +9,7 @@ import com.google.firebase.ml.vision.text.FirebaseVisionText
 
 class TextBlockGraphic internal constructor(
         overlay: GraphicOverlay,
-        private val block: FirebaseVisionText.TextBlock?
+        val block: FirebaseVisionText.TextBlock?
 ) : GraphicOverlay.Graphic(overlay) {
 
     companion object {
@@ -17,12 +17,16 @@ class TextBlockGraphic internal constructor(
     }
 
     private val rectPaint: Paint = Paint()
+    var isSelected: Boolean = false
+        set(value) {
+            field = value
+            postInvalidate()
+        }
 
     init {
         rectPaint.apply {
             color = COLOR_NORMAL
             style = Paint.Style.FILL
-            xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_IN)
         }
         postInvalidate()
     }
@@ -34,6 +38,12 @@ class TextBlockGraphic internal constructor(
 
         // Draws the bounding box around the TextBlock.
         val rect = RectF(block.boundingBox)
+        rectPaint.xfermode = if (isSelected) {
+            PorterDuffXfermode(PorterDuff.Mode.CLEAR)
+        } else {
+            PorterDuffXfermode(PorterDuff.Mode.DST_IN)
+        }
+
         canvas.drawRect(rect, rectPaint)
     }
 }

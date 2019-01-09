@@ -536,7 +536,18 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
         }
 
         textModeResultTextView.text = buildFullTextString(blocks)
-        drawHighlights(blocks)
+        val graphicBlocks = blocks.map { TextBlockGraphic(graphic_overlay, it) }
+        drawHighlights(graphicBlocks)
+
+        val touchHelper = GraphicOverlayTouchHelper(this, graphicBlocks)
+        touchHelper.callback = object : GraphicOverlayTouchHelper.Callback {
+            override fun onBlockSelectStateChanged(block: TextBlockGraphic?) {
+                updatePanel(block)
+            }
+        }
+        graphic_overlay.setOnTouchListener { _, event ->
+            touchHelper.onTouchEvent(event)
+        }
     }
 
     private fun buildFullTextString(blocks: List<FirebaseVisionText.TextBlock>): String {
@@ -555,12 +566,12 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
         return builder.toString()
     }
 
-    private fun drawHighlights(blocks: List<FirebaseVisionText.TextBlock>) {
+    private fun drawHighlights(blocks: List<TextBlockGraphic>) {
         graphic_overlay.visibility = View.VISIBLE
         graphic_overlay.clear()
 
         blocks.forEach { block ->
-            graphic_overlay.add(TextBlockGraphic(graphic_overlay, block))
+            graphic_overlay.add(block)
         }
     }
 
@@ -580,6 +591,13 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
                         }
                     })
         }
+    }
+
+    /**
+     * @param block the block being selected, or null if nothing is selected
+     */
+    private fun updatePanel(block: TextBlockGraphic?) {
+        // TODO: Implementation needed
     }
 
 //    private fun showSystemUI() {

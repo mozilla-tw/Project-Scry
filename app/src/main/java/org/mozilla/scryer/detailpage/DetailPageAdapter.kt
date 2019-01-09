@@ -25,7 +25,7 @@ class DetailPageAdapter : PagerAdapter() {
     var itemCallback: ItemCallback? = null
     var imageStateCallback: ImageStateCallback? = null
 
-    var pageViews = SparseArrayCompat<PageView>()
+    private var pageViews = SparseArrayCompat<PageView>()
 
     override fun getCount(): Int {
         return screenshots.size

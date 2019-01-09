@@ -6,7 +6,7 @@ import android.graphics.Color
 import android.hardware.camera2.CameraCharacteristics
 import android.util.AttributeSet
 import android.view.View
-import java.util.HashSet
+import java.util.*
 
 class GraphicOverlay(context: Context, attrs: AttributeSet) : View(context, attrs) {
 

@@ -138,7 +138,7 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
         }
     }
 
-    private val imageStateCallback = object : DetailPageAdapter.ImageStateCllabck {
+    private val imageStateCallback = object : DetailPageAdapter.ImageStateCallback {
         override fun onScaleChanged(scale: Boolean) {
             view_pager.pageLocked = !scale
         }

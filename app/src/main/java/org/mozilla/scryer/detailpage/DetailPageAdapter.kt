@@ -22,7 +22,7 @@ class DetailPageAdapter : PagerAdapter() {
 
     var screenshots = listOf<ScreenshotModel>()
     var itemCallback: ItemCallback? = null
-    var imageStateCallback: ImageStateCllabck? = null
+    var imageStateCallback: ImageStateCallback? = null
 
     override fun getCount(): Int {
         return screenshots.size
@@ -80,7 +80,7 @@ class DetailPageAdapter : PagerAdapter() {
         fun onItemLoaded(item: ScreenshotModel)
     }
 
-    interface ImageStateCllabck {
+    interface ImageStateCallback {
         fun onScaleChanged(scale: Boolean)
     }
 }

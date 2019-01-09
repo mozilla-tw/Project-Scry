@@ -3,6 +3,7 @@
     <string name="action_create">Create new collection</string>
     <!-- Label used for buttons to delete items, e.g. in dialogs-->
     <string name="action_delete">Delete</string>
+    <!-- Label used for buttons to share selected items, e.g. selected text, selected screenshot, or share the app-->
     <string name="action_share">Share</string>
     <!-- Label used for title in screenshot info dialogue, but for action in menu -->
     <string name="info_info">Screenshot info</string>
@@ -63,6 +64,7 @@
     <string name="detail_ocr_error_notext">No text found</string>
     <!-- String displayed to ask users to connect to internet to install necessary module -->
     <string name="detail_ocr_error_module">Connect to the internet to install offline Text Recognition module</string>
+    <!-- String displayed to direct users to Network & internet in system Settings -->
     <string name="detail_ocr_error_action_connect">Connect</string>
     <!-- String displayed to give users the instruction -->
     <string name="detail_ocr_instruction">Tap text for more options</string>
@@ -198,11 +200,7 @@
     
     <!-- In-app promote dialog -->
     <string name="dialogue_feedback_title">Love Firefox ScreenshotGo?</string>
-    <string name="dialogue_feedback_action_5stars">Rate 5 Stars</string>
-    <string name="dialogue_feedback_action_send">Send Feedback</string>
-
     <string name="dialogue_share_title">Share Firefox ScreenshotGo with Friends!</string>
-
     <string name="dialogue_take_share_description">Enjoy taking screenshots? Share it now!</string>
     <string name="dialogue_sort_share_description">Enjoy organizing screenshots? Share it now!</string>
     <string name="dialogue_ocr_share_description">Find screenshot-to-text useful? Share it now!</string>

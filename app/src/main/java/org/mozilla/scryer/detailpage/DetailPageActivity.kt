@@ -512,8 +512,8 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
     private suspend fun runTextRecognition(selectedImage: Bitmap): FirebaseVisionText? =
             suspendCoroutine { cont ->
                 val image = FirebaseVisionImage.fromBitmap(selectedImage)
-                val detector = FirebaseVision.getInstance().visionTextDetector
-                detector.detectInImage(image)
+                val detector = FirebaseVision.getInstance().onDeviceTextRecognizer
+                detector.processImage(image)
                         .addOnSuccessListener { texts ->
                             cont.resume(texts)
                         }
@@ -523,7 +523,7 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
             }
 
     private fun processTextRecognitionResult(texts: FirebaseVisionText) {
-        val blocks = texts.blocks.toMutableList().apply { }
+        val blocks = texts.textBlocks.toMutableList().apply { }
         blocks.sortBy { it.boundingBox?.centerY() }
 
         if (blocks.size == 0) {
@@ -537,7 +537,7 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
         drawHighlights(blocks)
     }
 
-    private fun buildFullTextString(blocks: List<FirebaseVisionText.Block>): String {
+    private fun buildFullTextString(blocks: List<FirebaseVisionText.TextBlock>): String {
         val builder = StringBuilder()
         blocks.forEach { block ->
             val lines = block.lines.toMutableList().apply {
@@ -553,7 +553,7 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
         return builder.toString()
     }
 
-    private fun drawHighlights(blocks: List<FirebaseVisionText.Block>) {
+    private fun drawHighlights(blocks: List<FirebaseVisionText.TextBlock>) {
         graphic_overlay.visibility = View.VISIBLE
         graphic_overlay.clear()
 

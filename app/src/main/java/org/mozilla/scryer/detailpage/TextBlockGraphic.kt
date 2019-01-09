@@ -9,7 +9,7 @@ import com.google.firebase.ml.vision.text.FirebaseVisionText
 
 class TextBlockGraphic internal constructor(
         overlay: GraphicOverlay,
-        private val block: FirebaseVisionText.Block?
+        private val block: FirebaseVisionText.TextBlock?
 ) : GraphicOverlay.Graphic(overlay) {
 
     companion object {

@@ -18,12 +18,12 @@ object Versions {
 
     // Crashlytics
     val fabric_gradle_plugin = "1.26.1"
-    val crashlytics = "2.9.7"
+    val crashlytics = "2.9.8"
 
     // Google
-    val firebase = "16.0.1"
-    val firebase_messageing = "17.0.0"
-    val firebase_ml = "16.0.0"
+    val firebase = "16.0.6"
+    val firebase_messageing = "17.3.4"
+    val firebase_ml = "18.0.2"
     val google_service_plugin = "4.2.0"
 
     // Kotlin
@@ -38,6 +38,7 @@ object Versions {
 
     // 3rd party
     val glide = "4.7.1"
+    val subsampling_image_view = "3.10.0"
 
     // Mozilla
     val android_components = "0.27.0"
@@ -45,6 +46,10 @@ object Versions {
     // Adjust
     val adjust = "4.15.1"
     val android_install_referrer = "1.0"
+
+    // License
+    val license_plugin = "0.9.4"
+    val license = "16.0.1"
 }
 
 object Deps {

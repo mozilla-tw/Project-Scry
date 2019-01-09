@@ -5,7 +5,10 @@ import android.util.Log
 
 import com.google.firebase.ml.vision.text.FirebaseVisionText
 
-class TextGraphic internal constructor(overlay: GraphicOverlay, private val block: FirebaseVisionText.Block?) : GraphicOverlay.Graphic(overlay) {
+class TextGraphic internal constructor(
+        overlay: GraphicOverlay,
+        private val block: FirebaseVisionText.TextBlock?
+) : GraphicOverlay.Graphic(overlay) {
 
     private val rectPaint: Paint = Paint()
     private val textPaint: Paint = Paint()

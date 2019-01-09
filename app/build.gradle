@@ -5,6 +5,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'com.google.android.gms.oss-licenses-plugin'
 
 android {
     compileSdkVersion 28
@@ -138,7 +139,10 @@ dependencies {
     implementation project(':telemetry-annotation')
     kapt project(':telemetry-compiler')
 
-    implementation 'com.davemorrissey.labs:subsampling-scale-image-view:3.10.0'
+    implementation "com.davemorrissey.labs:subsampling-scale-image-view:${Versions.subsampling_image_view}"
+
+    // License
+    implementation "com.google.android.gms:play-services-oss-licenses:${Versions.license}"
 
     // junit
     testImplementation "junit:junit:${Versions.junit}"

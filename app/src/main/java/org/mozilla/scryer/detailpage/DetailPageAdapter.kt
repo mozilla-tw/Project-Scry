@@ -10,6 +10,7 @@ import android.graphics.PointF
 import android.graphics.drawable.Drawable
 import android.view.View
 import android.view.ViewGroup
+import androidx.collection.SparseArrayCompat
 import androidx.viewpager.widget.PagerAdapter
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.SimpleTarget
@@ -24,6 +25,8 @@ class DetailPageAdapter : PagerAdapter() {
     var itemCallback: ItemCallback? = null
     var imageStateCallback: ImageStateCallback? = null
 
+    var pageViews = SparseArrayCompat<PageView>()
+
     override fun getCount(): Int {
         return screenshots.size
     }
@@ -36,11 +39,21 @@ class DetailPageAdapter : PagerAdapter() {
             }
         }
 
+        val pageView = object : PageView {
+            override fun resetScale() {
+                imageView.resetScaleAndCenter()
+            }
+
+            override fun isScaled(): Boolean {
+                return imageView.scale > imageView.minScale
+            }
+        }
+
         imageView.setOnStateChangedListener(object : SubsamplingScaleImageView.OnStateChangedListener {
             override fun onCenterChanged(newCenter: PointF, origin: Int) {}
 
             override fun onScaleChanged(newScale: Float, origin: Int) {
-                imageStateCallback?.onScaleChanged(newScale == imageView.minScale)
+                imageStateCallback?.onScaleChanged(pageView)
             }
         })
 
@@ -64,15 +77,25 @@ class DetailPageAdapter : PagerAdapter() {
         imageView.setOnClickListener {
             itemCallback?.onItemClicked(screenshots[position])
         }
+
+        pageViews.put(position, pageView)
         return imageView
     }
 
     override fun destroyItem(container: ViewGroup, position: Int, obj: Any) {
         container.removeView(obj as View)
+        val view = pageViews[position]
+        if (view == obj) {
+            pageViews.remove(position)
+        }
     }
 
     override fun isViewFromObject(view: View, obj: Any): Boolean {
         return view == obj
+    }
+
+    fun findViewForPosition(position: Int): PageView? {
+        return pageViews[position]
     }
 
     interface ItemCallback {
@@ -81,6 +104,11 @@ class DetailPageAdapter : PagerAdapter() {
     }
 
     interface ImageStateCallback {
-        fun onScaleChanged(scale: Boolean)
+        fun onScaleChanged(pageView: PageView)
+    }
+
+    interface PageView {
+        fun resetScale()
+        fun isScaled(): Boolean
     }
 }

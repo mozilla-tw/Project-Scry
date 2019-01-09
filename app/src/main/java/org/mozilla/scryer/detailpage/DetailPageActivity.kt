@@ -25,9 +25,7 @@ import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.view.ViewCompat
-import androidx.core.view.forEach
 import androidx.viewpager.widget.ViewPager
-import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.ml.vision.FirebaseVision
@@ -115,6 +113,8 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
     private var isTextMode = false
     private var isEnterTransitionPostponed = true
 
+    private val adapter = DetailPageAdapter()
+
     /* whether the user has run ocr on the current image before swiping to the next one */
     private var hasRunOcr = false
 
@@ -139,8 +139,8 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
     }
 
     private val imageStateCallback = object : DetailPageAdapter.ImageStateCallback {
-        override fun onScaleChanged(scale: Boolean) {
-            view_pager.pageLocked = !scale
+        override fun onScaleChanged(pageView: DetailPageAdapter.PageView) {
+            view_pager.pageLocked = pageView.isScaled()
         }
     }
 
@@ -208,7 +208,8 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
                 TelemetryWrapper.shareScreenshot()
             }
             R.id.action_move_to -> {
-                startActivity(SortingPanelActivity.sortOldScreenshot(this, screenshots[view_pager.currentItem]))
+                startActivity(SortingPanelActivity.sortOldScreenshot(this,
+                        screenshots[view_pager.currentItem]))
             }
             R.id.action_screenshot_info -> {
                 showScreenshotInfoDialog(this, screenshots[view_pager.currentItem])
@@ -243,10 +244,10 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
     private fun initViewPager() {
         launch(Dispatchers.Main) {
             screenshots = getScreenshots().sortedByDescending { it.lastModified }
-            view_pager.adapter = DetailPageAdapter().apply {
-                this.screenshots = this@DetailPageActivity.screenshots
-                this.itemCallback = this@DetailPageActivity.itemCallback
-                this.imageStateCallback = this@DetailPageActivity.imageStateCallback
+            view_pager.adapter = adapter.apply {
+                screenshots = this@DetailPageActivity.screenshots
+                itemCallback = this@DetailPageActivity.itemCallback
+                imageStateCallback = this@DetailPageActivity.imageStateCallback
             }
             view_pager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
                 override fun onPageSelected(position: Int) {
@@ -384,12 +385,10 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
     private fun updateUI() {
         val pagerScale: Float
         val pagerTranslation: Float
+        val pageView = adapter.findViewForPosition(view_pager.currentItem)
 
         if (isTextMode) {
-            view_pager.forEach {
-                (it as SubsamplingScaleImageView).resetScaleAndCenter()
-            }
-            view_pager.pageLocked = false
+            pageView?.resetScale()
 
             updateFabUI(true, false)
             enableActionMenu(false)
@@ -413,6 +412,7 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
         }
         updateNavigationIcon()
 
+        view_pager.pageLocked = (pageView?.isScaled() == true)
         listOf(view_pager, graphic_overlay).forEach {
             it.animate()
                     .scaleX(pagerScale)
@@ -474,18 +474,20 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
     }
 
     @Suppress("ConstantConditionIf")
-    private suspend fun getScreenshots(): List<ScreenshotModel> = withContext(Dispatchers.Default) {
-        if (SUPPORT_SLIDE) {
-            srcCollectionId?.let {
-                val list = if (it == CollectionModel.CATEGORY_NONE) {
-                    listOf(it, CollectionModel.UNCATEGORIZED)
-                } else {
-                    listOf(it)
-                }
-                viewModel.getScreenshotList(list)
-            } ?: viewModel.getScreenshotList()
-        } else {
-            viewModel.getScreenshot(screenshotId)?.let { listOf(it) } ?: emptyList()
+    private suspend fun getScreenshots(): List<ScreenshotModel> {
+        return withContext(Dispatchers.Default) {
+            if (SUPPORT_SLIDE) {
+                srcCollectionId?.let {
+                    val list = if (it == CollectionModel.CATEGORY_NONE) {
+                        listOf(it, CollectionModel.UNCATEGORIZED)
+                    } else {
+                        listOf(it)
+                    }
+                    viewModel.getScreenshotList(list)
+                } ?: viewModel.getScreenshotList()
+            } else {
+                viewModel.getScreenshot(screenshotId)?.let { listOf(it) } ?: emptyList()
+            }
         }
     }
 
@@ -562,20 +564,22 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
         }
     }
 
-    private suspend fun setupTextSelectionCallback(textView: TextView) = withContext(Dispatchers.Default) {
-        val searchEngineManager = SearchEngineManager(listOf(
-                AssetsSearchEngineProvider(LocaleSearchLocalizationProvider())))
-        val engine = searchEngineManager.getDefaultSearchEngine(this@DetailPageActivity)
-        textView.customSelectionActionModeCallback = TextSelectionCallback(
-                textView,
-                object : TextSelectionCallback.SearchEngineDelegate {
-                    override val name: String
-                        get() = engine.name
+    private suspend fun setupTextSelectionCallback(textView: TextView) {
+        return withContext(Dispatchers.Default) {
+            val searchEngineManager = SearchEngineManager(listOf(
+                    AssetsSearchEngineProvider(LocaleSearchLocalizationProvider())))
+            val engine = searchEngineManager.getDefaultSearchEngine(this@DetailPageActivity)
+            textView.customSelectionActionModeCallback = TextSelectionCallback(
+                    textView,
+                    object : TextSelectionCallback.SearchEngineDelegate {
+                        override val name: String
+                            get() = engine.name
 
-                    override fun buildSearchUrl(text: String): String {
-                        return engine.buildSearchUrl(text)
-                    }
-                })
+                        override fun buildSearchUrl(text: String): String {
+                            return engine.buildSearchUrl(text)
+                        }
+                    })
+        }
     }
 
 //    private fun showSystemUI() {

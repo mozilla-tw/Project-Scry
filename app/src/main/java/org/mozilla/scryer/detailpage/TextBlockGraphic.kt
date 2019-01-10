@@ -6,15 +6,20 @@ package org.mozilla.scryer.detailpage
 
 import android.graphics.*
 import com.google.firebase.ml.vision.text.FirebaseVisionText
+import org.mozilla.scryer.extension.dpToPx
 
 class TextBlockGraphic internal constructor(
         overlay: GraphicOverlay,
-        val block: FirebaseVisionText.TextBlock?
+        val block: FirebaseVisionText.TextBlock
 ) : GraphicOverlay.Graphic(overlay) {
 
     companion object {
         private val COLOR_NORMAL = Color.parseColor("#52000000")
+        private const val CORNER_RADIUS_DP = 2f
     }
+
+    private val cornerRadius = CORNER_RADIUS_DP.dpToPx(overlay.context.resources.displayMetrics).toFloat()
+    private val boundingBox = RectF()
 
     private val rectPaint: Paint = Paint()
     var isSelected: Boolean = false
@@ -32,18 +37,13 @@ class TextBlockGraphic internal constructor(
     }
 
     override fun draw(canvas: Canvas) {
-        if (block == null) {
-            throw IllegalStateException("Attempting to draw a null text.")
-        }
-
-        // Draws the bounding box around the TextBlock.
-        val rect = RectF(block.boundingBox)
+        boundingBox.set(block.boundingBox)
         rectPaint.xfermode = if (isSelected) {
             PorterDuffXfermode(PorterDuff.Mode.CLEAR)
         } else {
             PorterDuffXfermode(PorterDuff.Mode.DST_IN)
         }
 
-        canvas.drawRect(rect, rectPaint)
+        canvas.drawRoundRect(boundingBox, cornerRadius, cornerRadius, rectPaint)
     }
 }

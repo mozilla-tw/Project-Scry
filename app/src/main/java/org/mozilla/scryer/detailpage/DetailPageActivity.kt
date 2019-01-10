@@ -114,6 +114,7 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
     private var isEnterTransitionPostponed = true
 
     private val adapter = DetailPageAdapter()
+    private val graphicOverlayHelper = GraphicOverlayHelper()
 
     /* whether the user has run ocr on the current image before swiping to the next one */
     private var hasRunOcr = false
@@ -525,24 +526,35 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
             }
 
     private fun processTextRecognitionResult(texts: FirebaseVisionText) {
-        val blocks = texts.textBlocks.toMutableList().apply { }
-        blocks.sortBy { it.boundingBox?.centerY() }
+        val textBlocks = texts.textBlocks.toMutableList().apply {
+            sortBy { it.boundingBox?.centerY() }
+        }
 
-        if (blocks.size == 0) {
+        if (textBlocks.size == 0) {
             Toast.makeText(applicationContext, "No text found", Toast.LENGTH_SHORT).show()
             ScryerToast.makeText(this, getString(R.string.detail_ocr_error_notext),
                     Toast.LENGTH_SHORT).show()
             return
         }
 
-        textModeResultTextView.text = buildFullTextString(blocks)
-        val graphicBlocks = blocks.map { TextBlockGraphic(graphic_overlay, it) }
-        drawHighlights(graphicBlocks)
+        updateGraphicOverlay(textBlocks.map { TextBlockGraphic(graphic_overlay, it) })
+        selectAllBlocks()
+    }
 
-        val touchHelper = GraphicOverlayTouchHelper(this, graphicBlocks)
+    private fun updateGraphicOverlay(blocks: List<TextBlockGraphic>) {
+        graphic_overlay.apply {
+            visibility = View.VISIBLE
+            clear()
+
+            blocks.forEach { graphic_overlay.add(it) }
+        }
+
+        graphicOverlayHelper.blocks = blocks
+
+        val touchHelper = GraphicOverlayTouchHelper(this, blocks)
         touchHelper.callback = object : GraphicOverlayTouchHelper.Callback {
             override fun onBlockSelectStateChanged(block: TextBlockGraphic?) {
-                updatePanel(block)
+                updatePanel(graphicOverlayHelper.getSelectedText())
             }
         }
         graphic_overlay.setOnTouchListener { _, event ->
@@ -550,29 +562,9 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
         }
     }
 
-    private fun buildFullTextString(blocks: List<FirebaseVisionText.TextBlock>): String {
-        val builder = StringBuilder()
-        blocks.forEach { block ->
-            val lines = block.lines.toMutableList().apply {
-                sortBy {
-                    it.boundingBox?.centerY()
-                }
-            }
-            lines.forEach { line ->
-                builder.append(line.text).append("\n")
-            }
-            builder.append("\n")
-        }
-        return builder.toString()
-    }
-
-    private fun drawHighlights(blocks: List<TextBlockGraphic>) {
-        graphic_overlay.visibility = View.VISIBLE
-        graphic_overlay.clear()
-
-        blocks.forEach { block ->
-            graphic_overlay.add(block)
-        }
+    private fun selectAllBlocks() {
+        graphicOverlayHelper.selectAllBlocks()
+        updatePanel(graphicOverlayHelper.getSelectedText())
     }
 
     private suspend fun setupTextSelectionCallback(textView: TextView) {
@@ -596,8 +588,9 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
     /**
      * @param block the block being selected, or null if nothing is selected
      */
-    private fun updatePanel(block: TextBlockGraphic?) {
+    private fun updatePanel(panelText: String) {
         // TODO: Implementation needed
+        textModeResultTextView.text = panelText
     }
 
 //    private fun showSystemUI() {

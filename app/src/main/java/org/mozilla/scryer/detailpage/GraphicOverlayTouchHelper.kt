@@ -8,7 +8,7 @@ import android.content.Context
 import android.view.GestureDetector
 import android.view.MotionEvent
 
-class GraphicOverlayTouchHelper(context: Context, blocks: List<TextBlockGraphic>) {
+class GraphicOverlayTouchHelper(context: Context, val blocks: List<TextBlockGraphic>) {
 
     private val gestureDetector = GestureDetector(context, object : GestureDetector.OnGestureListener {
         override fun onShowPress(e: MotionEvent?) {}
@@ -16,7 +16,7 @@ class GraphicOverlayTouchHelper(context: Context, blocks: List<TextBlockGraphic>
         override fun onSingleTapUp(e: MotionEvent): Boolean {
             var selected: TextBlockGraphic? = null
             blocks.forEach {
-                val block = it.block ?: return@forEach
+                val block = it.block
                 val box = block.boundingBox ?: return@forEach
                 it.isSelected = box.contains(e.x.toInt(), e.y.toInt())
                 if (it.isSelected) {

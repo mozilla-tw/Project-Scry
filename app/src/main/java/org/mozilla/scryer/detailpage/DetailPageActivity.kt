@@ -5,6 +5,7 @@
 package org.mozilla.scryer.detailpage
 
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -13,10 +14,7 @@ import android.graphics.BitmapFactory
 import android.graphics.Point
 import android.graphics.RectF
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
-import android.view.View
-import android.view.WindowManager
+import android.view.*
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -228,6 +226,7 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
         return super.onOptionsItemSelected(item)
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private fun initActionBar() {
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
@@ -236,10 +235,25 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
             onBackPressed()
         }
 
+        toolbar.setOnTouchListener { v, event ->
+            routeUnhandledEventToOverlay(event)
+        }
+
         supportActionBar?.apply {
             setDisplayHomeAsUpEnabled(true)
             setDisplayShowTitleEnabled(false)
         }
+    }
+
+    /* Toolbar always eat all touch events regardless they are handled or not, workaround here to
+     * dispatch touch event to underlying graphic overlay */
+    private fun routeUnhandledEventToOverlay(event: MotionEvent): Boolean {
+        val offsetX = view_pager.measuredWidth * ((1 - IMAGE_SCALE_TEXT_MODE) / 2f)
+        val offsetY = view_pager.measuredHeight * ((1 - IMAGE_SCALE_TEXT_MODE) / 2f) +
+                (toolbar.layoutParams as ViewGroup.MarginLayoutParams).topMargin
+        event.setLocation((event.x / IMAGE_SCALE_TEXT_MODE) - offsetX,
+                (event.y / IMAGE_SCALE_TEXT_MODE) + offsetY)
+        return graphic_overlay.dispatchTouchEvent(event)
     }
 
     private fun initViewPager() {

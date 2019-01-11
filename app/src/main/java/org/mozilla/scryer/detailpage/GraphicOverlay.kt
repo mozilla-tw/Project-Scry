@@ -1,11 +1,15 @@
 package org.mozilla.scryer.detailpage
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Paint
 import android.hardware.camera2.CameraCharacteristics
 import android.util.AttributeSet
+import android.view.MotionEvent
 import android.view.View
+import org.mozilla.scryer.BuildConfig
 import java.util.*
 
 class GraphicOverlay(context: Context, attrs: AttributeSet) : View(context, attrs) {
@@ -21,6 +25,17 @@ class GraphicOverlay(context: Context, attrs: AttributeSet) : View(context, attr
     private var heightScaleFactor = 1.0f
     private var facing = CameraCharacteristics.LENS_FACING_BACK
     private val graphics = HashSet<Graphic>()
+
+    private val debugPaint = if (BuildConfig.DEBUG) {
+        Paint().apply {
+            color = Color.RED
+            style = Paint.Style.FILL_AND_STROKE
+        }
+    } else {
+        null
+    }
+    private var touchX: Int = 0
+    private var touchY: Int = 0
 
     init {
         setLayerType(View.LAYER_TYPE_SOFTWARE, null)
@@ -153,7 +168,21 @@ class GraphicOverlay(context: Context, attrs: AttributeSet) : View(context, attr
             for (graphic in graphics) {
                 graphic.draw(canvas)
             }
+
+            debugPaint?.let {
+                canvas.drawCircle(touchX.toFloat(), touchY.toFloat(), 10f, debugPaint)
+            }
         }
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        if (BuildConfig.DEBUG) {
+            touchX = event.x.toInt()
+            touchY = event.y.toInt()
+            postInvalidate()
+        }
+        return super.onTouchEvent(event)
     }
 }
 

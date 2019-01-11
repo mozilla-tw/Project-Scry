@@ -6,6 +6,7 @@ package org.mozilla.scryer.detailpage
 
 import android.graphics.*
 import com.google.firebase.ml.vision.text.FirebaseVisionText
+import org.mozilla.scryer.BuildConfig
 import org.mozilla.scryer.extension.dpToPx
 
 class TextBlockGraphic internal constructor(
@@ -20,6 +21,16 @@ class TextBlockGraphic internal constructor(
 
     private val cornerRadius = CORNER_RADIUS_DP.dpToPx(overlay.context.resources.displayMetrics).toFloat()
     private val boundingBox = RectF()
+
+    private val debugPaint: Paint? = if (BuildConfig.DEBUG) {
+        Paint().apply {
+            color = Color.RED
+            textSize = 12f.dpToPx(overlay.context.resources.displayMetrics).toFloat()
+            isFakeBoldText = true
+        }
+    } else {
+        null
+    }
 
     private val rectPaint: Paint = Paint()
     var isSelected: Boolean = false
@@ -45,5 +56,8 @@ class TextBlockGraphic internal constructor(
         }
 
         canvas.drawRoundRect(boundingBox, cornerRadius, cornerRadius, rectPaint)
+        debugPaint?.takeIf { isSelected }?.let {
+            canvas.drawText("$boundingBox", boundingBox.left, boundingBox.top, it)
+        }
     }
 }

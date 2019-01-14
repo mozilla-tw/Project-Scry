@@ -22,7 +22,6 @@ import org.mozilla.scryer.collectionview.CollectionFragment
 import org.mozilla.scryer.collectionview.OnContextMenuActionListener
 import org.mozilla.scryer.collectionview.showCollectionInfo
 import org.mozilla.scryer.collectionview.showDeleteCollectionDialog
-import org.mozilla.scryer.extension.dpToPx
 import org.mozilla.scryer.extension.getValidPosition
 import org.mozilla.scryer.extension.navigateSafely
 import org.mozilla.scryer.persistence.CollectionModel
@@ -136,7 +135,7 @@ class MainAdapter(private val fragment: androidx.fragment.app.Fragment?): androi
         itemHolder.image = itemView.findViewById(R.id.image)
         itemHolder.overlay = itemView.findViewById(R.id.overlay)
 
-        itemView.setOnClickListener {_ ->
+        itemView.setOnClickListener {
             itemHolder.getValidPosition { position: Int ->
                 val itemIndex = position - PREFIX_ITEM_COUNT
                 val bundle = Bundle().apply {
@@ -159,8 +158,8 @@ class MainAdapter(private val fragment: androidx.fragment.app.Fragment?): androi
         itemView.elevation = 0f
 
         val holder = StaticHolder(itemView)
-        itemView.setOnClickListener { _ ->
-            holder.getValidPosition { _ ->
+        itemView.setOnClickListener {
+            holder.getValidPosition {
                 val fragment = fragment ?: return@getValidPosition
                 // since suggest collection is not visible on home view, it is confusing to show
                 // name-conflict error msg when user input a name identical to suggest collections,
@@ -295,20 +294,21 @@ class MainAdapter(private val fragment: androidx.fragment.app.Fragment?): androi
         }
     }
 
+    // TODO: Make event decoration configurable
     class ItemDecoration(context: Context, columnCount: Int, space: Int, top: Int)
         : GridItemDecoration(columnCount, space, top, space, space, space) {
 
-        private val shoppingDude = ContextCompat.getDrawable(context, R.drawable.ornaments)
-        private val shoppingDudePattern = ContextCompat.getDrawable(context,
-                R.drawable.santadeer)
-        private val shoppingBag = ContextCompat.getDrawable(context, R.drawable.gifts)
-
-        private val blackFridayLogo = ContextCompat.getDrawable(context, R.drawable.christmastree)
+//        private val shoppingDude = ContextCompat.getDrawable(context, R.drawable.ornaments)
+//        private val shoppingDudePattern = ContextCompat.getDrawable(context,
+//                R.drawable.santadeer)
+//        private val shoppingBag = ContextCompat.getDrawable(context, R.drawable.gifts)
+//
+//        private val blackFridayLogo = ContextCompat.getDrawable(context, R.drawable.christmastree)
 
         private val quickAccessBkg = ColorDrawable(ContextCompat.getColor(context,
                 R.color.quick_access_background))
-        private val collectionBkg = ColorDrawable(ContextCompat.getColor(context,
-                R.color.home_background))
+//        private val collectionBkg = ColorDrawable(ContextCompat.getColor(context,
+//                R.color.home_background))
 
         override fun getItemOffsets(
                 outRect: Rect,
@@ -332,108 +332,108 @@ class MainAdapter(private val fragment: androidx.fragment.app.Fragment?): androi
                         drawQuickAccessTitle(c, child)
                     }
 
-                    POS_COLLECTION_LIST_TITLE -> {
-                        drawCollectionTitle(c, child)
-                        decorateCollectionTitle(c, child)
-                    }
+//                    POS_COLLECTION_LIST_TITLE -> {
+//                        drawCollectionTitle(c, child)
+//                        decorateCollectionTitle(c, child)
+//                    }
                 }
             }
             super.onDraw(c, parent, state)
         }
 
-        override fun onDrawOver(c: Canvas, parent: androidx.recyclerview.widget.RecyclerView, state: androidx.recyclerview.widget.RecyclerView.State) {
-            super.onDrawOver(c, parent, state)
-            val childCount = parent.childCount
-            for (child in (0 until childCount).map { parent.getChildAt(it) }) {
-                val pos = parent.getChildAdapterPosition(child)
-                val lastIndex = (parent.adapter?.itemCount ?: 0) - 1
-                if (lastIndex > POS_COLLECTION_LIST_TITLE && pos == lastIndex) {
-                    decorateLastItem(c, child)
-                } else if (pos == POS_QUICK_ACCESS_TITLE) {
-                    decorateQuickAccessTitle(c, child)
-                }
-            }
-        }
+//        override fun onDrawOver(c: Canvas, parent: androidx.recyclerview.widget.RecyclerView, state: androidx.recyclerview.widget.RecyclerView.State) {
+//            super.onDrawOver(c, parent, state)
+//            val childCount = parent.childCount
+//            for (child in (0 until childCount).map { parent.getChildAt(it) }) {
+//                val pos = parent.getChildAdapterPosition(child)
+//                val lastIndex = (parent.adapter?.itemCount ?: 0) - 1
+//                if (lastIndex > POS_COLLECTION_LIST_TITLE && pos == lastIndex) {
+//                    decorateLastItem(c, child)
+//                } else if (pos == POS_QUICK_ACCESS_TITLE) {
+//                    decorateQuickAccessTitle(c, child)
+//                }
+//            }
+//        }
 
         private fun drawQuickAccessTitle(canvas: Canvas, view: View) {
             quickAccessBkg.setBounds(view.left, view.top, view.right, view.bottom)
             quickAccessBkg.draw(canvas)
         }
 
-        private fun decorateQuickAccessTitle(canvas: Canvas, view: View) {
-            val logo = blackFridayLogo ?: return
-
-            val verticalSpace = view.height
-
-            val logoWidth = logo.intrinsicWidth
-            val logoHeight = logo.intrinsicHeight
-
-            val targetHeight = (verticalSpace * 1f).toInt()
-            val targetWidth = (logoWidth * (targetHeight / logoHeight.toFloat())).toInt()
-
-            val vPadding = view.resources.getDimensionPixelSize(R.dimen.quick_access_item_margin_top)
-            val hPadding = view.paddingEnd + 48f.dpToPx(view.resources.displayMetrics)
-
-            val bottom = view.bottom + vPadding
-            val top = bottom - targetHeight
-            val right = view.right - hPadding
-            val left = right - targetWidth
-
-            logo.setBounds(left, top, right, bottom)
-            logo.draw(canvas)
-        }
-
-        private fun drawCollectionTitle(canvas: Canvas, view: View) {
-            collectionBkg.setBounds(view.left, view.top, view.right, view.bottom)
-            collectionBkg.draw(canvas)
-        }
-
-        private fun decorateCollectionTitle(canvas: Canvas, view: View) {
-            val dude = shoppingDude ?: return
-            val pattern = shoppingDudePattern ?: return
-
-            val verticalSpace = view.height
-
-            val logoWidth = dude.intrinsicWidth
-            val logoHeight = dude.intrinsicHeight
-
-            val targetHeight = (verticalSpace * 0.9f).toInt()
-
-            val ornamentHeight = (verticalSpace * 0.55f).toInt()
-            val ornamentWidth = (logoWidth * (ornamentHeight / logoHeight.toFloat())).toInt()
-
-            val hPadding = view.resources.getDimensionPixelSize(R.dimen.home_horizontal_padding)
-
-            var top = view.top
-            var bottom = top + ornamentHeight
-            var right = view.right - hPadding
-            var left = right - ornamentWidth
-
-            dude.setBounds(left, top, right, bottom)
-
-            bottom = view.bottom
-            top = bottom - targetHeight
-            right = dude.bounds.left - 4f.dpToPx(view.resources.displayMetrics)
-            left = right - (pattern.intrinsicWidth * ((bottom - top) / pattern.intrinsicHeight.toFloat())).toInt()
-            pattern.setBounds(left, top, right, bottom)
-
-            view.invalidate()
-            pattern.draw(canvas)
-            dude.draw(canvas)
-        }
-
-        private fun decorateLastItem(canvas: Canvas, view: View) {
-            val bag = shoppingBag ?: return
-
-            val bagWidth = (bag.intrinsicWidth * 0.5f).toInt()
-            val bagHeight = (bag.intrinsicHeight * 0.5f).toInt()
-
-            val bottom = view.bottom
-            val right = view.right
-            val left = right - bagWidth
-            val top = bottom - bagHeight
-            bag.setBounds(left, top, right, bottom)
-            bag.draw(canvas)
-        }
+//        private fun decorateQuickAccessTitle(canvas: Canvas, view: View) {
+//            val logo = blackFridayLogo ?: return
+//
+//            val verticalSpace = view.height
+//
+//            val logoWidth = logo.intrinsicWidth
+//            val logoHeight = logo.intrinsicHeight
+//
+//            val targetHeight = (verticalSpace * 1f).toInt()
+//            val targetWidth = (logoWidth * (targetHeight / logoHeight.toFloat())).toInt()
+//
+//            val vPadding = view.resources.getDimensionPixelSize(R.dimen.quick_access_item_margin_top)
+//            val hPadding = view.paddingEnd + 48f.dpToPx(view.resources.displayMetrics)
+//
+//            val bottom = view.bottom + vPadding
+//            val top = bottom - targetHeight
+//            val right = view.right - hPadding
+//            val left = right - targetWidth
+//
+//            logo.setBounds(left, top, right, bottom)
+//            logo.draw(canvas)
+//        }
+//
+//        private fun drawCollectionTitle(canvas: Canvas, view: View) {
+//            collectionBkg.setBounds(view.left, view.top, view.right, view.bottom)
+//            collectionBkg.draw(canvas)
+//        }
+//
+//        private fun decorateCollectionTitle(canvas: Canvas, view: View) {
+//            val dude = shoppingDude ?: return
+//            val pattern = shoppingDudePattern ?: return
+//
+//            val verticalSpace = view.height
+//
+//            val logoWidth = dude.intrinsicWidth
+//            val logoHeight = dude.intrinsicHeight
+//
+//            val targetHeight = (verticalSpace * 0.9f).toInt()
+//
+//            val ornamentHeight = (verticalSpace * 0.55f).toInt()
+//            val ornamentWidth = (logoWidth * (ornamentHeight / logoHeight.toFloat())).toInt()
+//
+//            val hPadding = view.resources.getDimensionPixelSize(R.dimen.home_horizontal_padding)
+//
+//            var top = view.top
+//            var bottom = top + ornamentHeight
+//            var right = view.right - hPadding
+//            var left = right - ornamentWidth
+//
+//            dude.setBounds(left, top, right, bottom)
+//
+//            bottom = view.bottom
+//            top = bottom - targetHeight
+//            right = dude.bounds.left - 4f.dpToPx(view.resources.displayMetrics)
+//            left = right - (pattern.intrinsicWidth * ((bottom - top) / pattern.intrinsicHeight.toFloat())).toInt()
+//            pattern.setBounds(left, top, right, bottom)
+//
+//            view.invalidate()
+//            pattern.draw(canvas)
+//            dude.draw(canvas)
+//        }
+//
+//        private fun decorateLastItem(canvas: Canvas, view: View) {
+//            val bag = shoppingBag ?: return
+//
+//            val bagWidth = (bag.intrinsicWidth * 0.5f).toInt()
+//            val bagHeight = (bag.intrinsicHeight * 0.5f).toInt()
+//
+//            val bottom = view.bottom
+//            val right = view.right
+//            val left = right - bagWidth
+//            val top = bottom - bagHeight
+//            bag.setBounds(left, top, right, bottom)
+//            bag.draw(canvas)
+//        }
     }
 }

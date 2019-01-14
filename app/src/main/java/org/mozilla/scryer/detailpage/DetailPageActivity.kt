@@ -293,19 +293,20 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
     }
 
     private fun initPanel() {
-        BottomSheetBehavior.from(text_mode_panel_content)
-                .setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
-                    override fun onSlide(bottomSheet: View, slideOffset: Float) {
+        val behavior = BottomSheetBehavior.from(text_mode_panel_content)
+        behavior.peekHeight = resources.getDimensionPixelSize(
+                R.dimen.sorting_panel_title_height)
+        behavior.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
 
-                    }
+            }
 
-                    override fun onStateChanged(bottomSheet: View, newState: Int) {
-                        if (newState == BottomSheetBehavior.STATE_HIDDEN) {
-                            isTextMode = false
-                            updateUI()
-                        }
-                    }
-                })
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
+                    updatePanel("")
+                }
+            }
+        })
     }
 
     private fun startRecognition() {
@@ -542,7 +543,6 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
         }
 
         if (textBlocks.size == 0) {
-            Toast.makeText(applicationContext, "No text found", Toast.LENGTH_SHORT).show()
             ScryerToast.makeText(this, getString(R.string.detail_ocr_error_notext),
                     Toast.LENGTH_SHORT).show()
             return
@@ -550,6 +550,7 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
 
         updateGraphicOverlay(textBlocks.map { TextBlockGraphic(graphic_overlay, it) })
         selectAllBlocks()
+        updatePanel("")
     }
 
     private fun updateGraphicOverlay(blocks: List<TextBlockGraphic>) {
@@ -575,7 +576,6 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
 
     private fun selectAllBlocks() {
         graphicOverlayHelper.selectAllBlocks()
-        updatePanel(graphicOverlayHelper.getSelectedText())
     }
 
     private suspend fun setupTextSelectionCallback(textView: TextView) {
@@ -600,8 +600,20 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
      * @param block the block being selected, or null if nothing is selected
      */
     private fun updatePanel(panelText: String) {
-        // TODO: Implementation needed
         textModeResultTextView.text = panelText
+
+        val behavior = BottomSheetBehavior.from(text_mode_panel_content)
+        if (panelText.isEmpty()) {
+            text_mode_panel_content.layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
+            textModeResultTextView.visibility = View.GONE
+            textModeResultMoreOptions.visibility = View.VISIBLE
+            behavior.state = BottomSheetBehavior.STATE_COLLAPSED
+        } else {
+            text_mode_panel_content.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
+            textModeResultTextView.visibility = View.VISIBLE
+            textModeResultMoreOptions.visibility = View.GONE
+            behavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED
+        }
     }
 
 //    private fun showSystemUI() {

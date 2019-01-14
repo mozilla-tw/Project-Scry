@@ -110,10 +110,9 @@
             <androidx.core.widget.NestedScrollView
                 android:id="@+id/text_mode_panel_content"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:background="@drawable/bottom_dialog_bkg"
-                app:layout_behavior="@string/bottom_sheet_behavior"
-                app:behavior_hideable="true">
+                app:layout_behavior="@string/bottom_sheet_behavior">
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -126,9 +125,22 @@
                         android:layout_gravity="center_horizontal"
                         android:background="@drawable/sorting_panel_hint_bar" />
                     <TextView
+                        android:id="@+id/textModeResultMoreOptions"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/grey90"
+                        android:paddingStart="24dp"
+                        android:paddingEnd="40dp"
+                        android:paddingTop="16dp"
+                        android:paddingBottom="16dp"
+                        android:text="@string/detail_ocr_instruction"
+                        android:drawableStart="@drawable/fab_ocr"
+                        android:drawablePadding="@dimen/common_padding_12dp"
+                        style="@style/H2" />
+                    <TextView
                         android:id="@+id/textModeResultTextView"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:textColor="@color/grey60"
                         android:paddingStart="24dp"
                         android:paddingEnd="40dp"

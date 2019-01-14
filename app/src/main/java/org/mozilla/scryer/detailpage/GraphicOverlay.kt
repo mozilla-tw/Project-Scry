@@ -170,7 +170,7 @@ class GraphicOverlay(context: Context, attrs: AttributeSet) : View(context, attr
             }
 
             debugPaint?.let {
-                canvas.drawCircle(touchX.toFloat(), touchY.toFloat(), 10f, debugPaint)
+                canvas.drawCircle(touchX.toFloat(), touchY.toFloat(), 20f, debugPaint)
             }
         }
     }

@@ -9,10 +9,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Point
-import android.graphics.RectF
+import android.graphics.*
 import android.os.Bundle
 import android.view.*
 import android.widget.TextView
@@ -248,11 +245,11 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
     /* Toolbar always eat all touch events regardless they are handled or not, workaround here to
      * dispatch touch event to underlying graphic overlay */
     private fun routeUnhandledEventToOverlay(event: MotionEvent): Boolean {
-        val offsetX = view_pager.measuredWidth * ((1 - IMAGE_SCALE_TEXT_MODE) / 2f)
-        val offsetY = view_pager.measuredHeight * ((1 - IMAGE_SCALE_TEXT_MODE) / 2f) +
-                (toolbar.layoutParams as ViewGroup.MarginLayoutParams).topMargin
-        event.setLocation((event.x / IMAGE_SCALE_TEXT_MODE) - offsetX,
-                (event.y / IMAGE_SCALE_TEXT_MODE) + offsetY)
+        val scale = IMAGE_SCALE_TEXT_MODE
+        val leftDiff = view_pager.measuredWidth * (1 - scale) / 2f
+        val x = (event.rawX - leftDiff) / scale
+        val y = event.rawY / scale
+        event.setLocation(x, y)
         return graphic_overlay.dispatchTouchEvent(event)
     }
 
@@ -408,7 +405,7 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
             updateFabUI(true, false)
             enableActionMenu(false)
             pagerScale = IMAGE_SCALE_TEXT_MODE
-            pagerTranslation = -view_pager.height * (1 - IMAGE_SCALE_TEXT_MODE)
+            pagerTranslation = -view_pager.height * ((1 - IMAGE_SCALE_TEXT_MODE) / 2f)
 
             launch(Dispatchers.Main) {
                 setupTextSelectionCallback(textModeResultTextView)

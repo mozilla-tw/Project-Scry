@@ -18,6 +18,10 @@ class GraphicOverlayHelper {
         blocks.forEach { it.isSelected = true }
     }
 
+    fun unselectAllBlocks() {
+        blocks.forEach { it.isSelected = false }
+    }
+
     private fun buildFullTextString(blocks: List<FirebaseVisionText.TextBlock>): String {
         val builder = StringBuilder()
         blocks.forEach { block ->

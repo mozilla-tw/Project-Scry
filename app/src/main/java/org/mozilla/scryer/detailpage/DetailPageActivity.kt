@@ -84,6 +84,7 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
     private var moveToMenu: MenuItem? = null
     private var screenshotInfoMenu: MenuItem? = null
     private var deleteMenu: MenuItem? = null
+    private var selectAllMenu: MenuItem? = null
 
     /** Where did the user came from to this page **/
     private val srcCollectionId: String? by lazy {
@@ -191,7 +192,11 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
                 }
             }
             screenshotInfoMenu = menu.findItem(R.id.action_screenshot_info)
+
             deleteMenu = menu.findItem(R.id.action_delete)
+
+            selectAllMenu = menu.findItem(R.id.action_select_all)
+            selectAllMenu?.isVisible = false
         }
 
         return true
@@ -217,6 +222,9 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
                                 finish()
                             }
                         })
+            }
+            R.id.action_select_all -> {
+                selectAllBlocks()
             }
             else -> return super.onOptionsItemSelected(item)
         }
@@ -303,7 +311,7 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
 
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
-                    updatePanel("")
+                    unselectAllBlocks()
                 }
             }
         })
@@ -404,7 +412,7 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
             pageView?.resetScale()
 
             updateFabUI(true, false)
-            enableActionMenu(false)
+            enableTextModeMenu(true)
             pagerScale = IMAGE_SCALE_TEXT_MODE
             pagerTranslation = -view_pager.height * ((1 - IMAGE_SCALE_TEXT_MODE) / 2f)
 
@@ -418,7 +426,7 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
             updateLoadingViewVisibility(isRecognizing)
             updateFabUI(false, isRecognizing)
             updateTextModePanelVisibility(false)
-            enableActionMenu(true)
+            enableTextModeMenu(false)
             pagerScale = IMAGE_SCALE_NORMAL_MODE
             pagerTranslation = 1f
             graphic_overlay.visibility = View.GONE
@@ -471,11 +479,13 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
         text_mode_panel.visibility = visibility
     }
 
-    private fun enableActionMenu(enable: Boolean) {
-        shareMenu?.isVisible = enable
-        moveToMenu?.isVisible = enable
-        screenshotInfoMenu?.isVisible = enable
-        deleteMenu?.isVisible = enable
+    private fun enableTextModeMenu(enable: Boolean) {
+        shareMenu?.isVisible = !enable
+        moveToMenu?.isVisible = !enable
+        screenshotInfoMenu?.isVisible = !enable
+        deleteMenu?.isVisible = !enable
+
+        selectAllMenu?.isVisible = enable
     }
 
     private fun updateNavigationIcon() {
@@ -549,7 +559,6 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
         }
 
         updateGraphicOverlay(textBlocks.map { TextBlockGraphic(graphic_overlay, it) })
-        selectAllBlocks()
         updatePanel("")
     }
 
@@ -576,6 +585,12 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
 
     private fun selectAllBlocks() {
         graphicOverlayHelper.selectAllBlocks()
+        updatePanel(graphicOverlayHelper.getSelectedText())
+    }
+
+    private fun unselectAllBlocks() {
+        graphicOverlayHelper.unselectAllBlocks()
+        updatePanel("")
     }
 
     private suspend fun setupTextSelectionCallback(textView: TextView) {

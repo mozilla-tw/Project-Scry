@@ -34,6 +34,8 @@
   <string name="detail_ocr_error_failed">Gagal mengenali teks</string>
   <string name="detail_ocr_error_edgecase">Ada yang salah? Potong cuplikan layar dan coba kembali.</string>
   <string name="detail_ocr_error_notext">Teks tidak ditemukan</string>
+  <string name="detail_ocr_instruction">Sentuk teks untuk membuka menu opsi</string>
+  <string name="detail_ocr_action_selectall">Pilih semua teks</string>
   <string name="detail_transition_recognizing">Mengenali teks…</string>
   <string name="dialogue_collecitioninfo_title_info">Info koleksi</string>
   <string name="dialogue_list_name">Nama</string>

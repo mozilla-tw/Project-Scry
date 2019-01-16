@@ -50,6 +50,7 @@
         <item name="android:windowTranslucentStatus">true</item>
         <item name="toolbarNavigationButtonStyle">@style/ToolbarNavigationButtonStyle</item>
         <item name="actionOverflowButtonStyle">@style/DetailPageOverflowButtonStyle</item>
+        <item name="android:windowBackground">@color/transparent</item>
     </style>
 
     <style name="DetailPageTheme" parent="DetailPageTheme.Base" />

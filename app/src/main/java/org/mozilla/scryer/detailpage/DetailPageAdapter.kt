@@ -5,16 +5,12 @@
 
 package org.mozilla.scryer.detailpage
 
-import android.graphics.Bitmap
+import android.graphics.Color
 import android.graphics.PointF
-import android.graphics.drawable.Drawable
 import android.view.View
 import android.view.ViewGroup
 import androidx.collection.SparseArrayCompat
 import androidx.viewpager.widget.PagerAdapter
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.target.SimpleTarget
-import com.bumptech.glide.request.transition.Transition
 import com.davemorrissey.labs.subscaleview.ImageSource
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
 import org.mozilla.scryer.persistence.ScreenshotModel
@@ -59,19 +55,27 @@ class DetailPageAdapter : PagerAdapter() {
 
         val item = screenshots[position]
         val path = item.absolutePath
-        Glide.with(container.context)
-                .asBitmap()
-                .load(path)
-                .into(object : SimpleTarget<Bitmap>() {
-                    override fun onLoadFailed(errorDrawable: Drawable?) {
-                        itemCallback?.onItemLoaded(item)
-                    }
+//        Glide.with(container.context)
+//                .asBitmap()
+//                .load(path)
+//                .into(object : SimpleTarget<Bitmap>() {
+//                    override fun onLoadFailed(errorDrawable: Drawable?) {
+//                        itemCallback?.onItemLoaded(item)
+//                    }
+//
+//                    override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+//                        imageView.setImage(ImageSource.bitmap(resource))
+//                        itemCallback?.onItemLoaded(item)
+//                    }
+//                })
 
-                    override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-                        imageView.setImage(ImageSource.bitmap(resource))
-                        itemCallback?.onItemLoaded(item)
-                    }
-                })
+        imageView.setImage(ImageSource.uri(path))
+        imageView.setOnImageEventListener(object : SubsamplingScaleImageView.DefaultOnImageEventListener() {
+            override fun onImageLoaded() {
+                imageView.setBackgroundColor(Color.BLACK)
+                imageView.resetScaleAndCenter()
+            }
+        })
 
         container.addView(imageView)
         imageView.setOnClickListener {

@@ -16,6 +16,7 @@
     <color name="grey10">#f5f5f5</color>
     <color name="white">#ffffff</color>
     <color name="dialogScrim">#52000000</color>
+    <color name="transparent">#00000000</color>
 
     <!-- Sorting Panel -->
     <color name="sorting_panel_background">#3f3a4f</color>

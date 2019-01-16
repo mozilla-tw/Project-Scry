@@ -65,18 +65,18 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
         fun showDetailPage(context: Context, screenshot: ScreenshotModel, srcView: View?,
                            collectionId: String? = null) {
             val intent = Intent(context, DetailPageActivity::class.java)
-            val bundle = srcView?.let {
-                ViewCompat.getTransitionName(it)?.let { transitionName ->
-                    val option = ActivityOptionsCompat.makeSceneTransitionAnimation(
-                            context as Activity, srcView, transitionName)
-                    option.toBundle()
-                }
-            }
+//            val bundle = srcView?.let {
+//                ViewCompat.getTransitionName(it)?.let { transitionName ->
+//                    val option = ActivityOptionsCompat.makeSceneTransitionAnimation(
+//                            context as Activity, srcView, transitionName)
+//                    option.toBundle()
+//                }
+//            }
             intent.putExtra(EXTRA_SCREENSHOT_ID, screenshot.id)
             collectionId?.let {
                 intent.putExtra(EXTRA_COLLECTION_ID, collectionId)
             }
-            (context as AppCompatActivity).startActivity(intent, bundle)
+            (context as AppCompatActivity).startActivity(intent)
         }
     }
 

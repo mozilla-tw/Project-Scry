@@ -10,10 +10,10 @@
 
     <style name="AppTheme" parent="AppTheme.Base.V23" />
 
-    <style name="DetailPageTheme.V27" parent="DetailPageTheme.V23">
+    <style name="DetailPageTheme.V28" parent="DetailPageTheme.V23">
         <item name="android:windowLayoutInDisplayCutoutMode">never</item>
     </style>
 
-    <style name="DetailPageTheme" parent="DetailPageTheme.V27" />
+    <style name="DetailPageTheme" parent="DetailPageTheme.V28" />
 
 </resources>

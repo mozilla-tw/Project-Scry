@@ -259,8 +259,8 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
     private fun routeUnhandledEventToOverlay(event: MotionEvent): Boolean {
         val scale = IMAGE_SCALE_TEXT_MODE
         val leftDiff = view_pager.measuredWidth * (1 - scale) / 2f
-        val x = (event.rawX - leftDiff) / scale
-        val y = event.rawY / scale
+        val x = (event.x - leftDiff) / scale
+        val y = event.y / scale + (toolbar.layoutParams as ViewGroup.MarginLayoutParams).topMargin
         event.setLocation(x, y)
         return graphic_overlay.dispatchTouchEvent(event)
     }
@@ -437,6 +437,12 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
         }
         updateNavigationIcon()
 
+        if (isRecognizing) {
+            supportActionBar?.hide()
+        } else {
+            supportActionBar?.show()
+        }
+
         view_pager.pageLocked = (pageView?.isScaled() == true)
         listOf(view_pager, graphic_overlay).forEach {
             it.animate()
@@ -594,7 +600,6 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
             block
         })
 
-        selectAllBlocks()
         updatePanel("")
     }
 

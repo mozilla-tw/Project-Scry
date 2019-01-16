@@ -16,9 +16,7 @@ class GraphicOverlayTouchHelper(context: Context, val blocks: List<TextBlockGrap
         override fun onSingleTapUp(e: MotionEvent): Boolean {
             var selected: TextBlockGraphic? = null
             blocks.forEach {
-                val block = it.block
-                val box = block.boundingBox ?: return@forEach
-                it.isSelected = box.contains(e.x.toInt(), e.y.toInt())
+                it.isSelected = it.boundingBox.contains(e.x, e.y)
                 if (it.isSelected) {
                     selected = it
                 }

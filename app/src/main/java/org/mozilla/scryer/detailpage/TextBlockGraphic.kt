@@ -20,7 +20,7 @@ class TextBlockGraphic internal constructor(
     }
 
     private val cornerRadius = CORNER_RADIUS_DP.dpToPx(overlay.context.resources.displayMetrics).toFloat()
-    private val boundingBox = RectF()
+    val boundingBox = RectF()
 
     private val debugPaint: Paint? = if (BuildConfig.DEBUG) {
         Paint().apply {

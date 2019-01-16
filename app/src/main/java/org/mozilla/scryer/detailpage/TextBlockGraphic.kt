@@ -39,6 +39,10 @@ class TextBlockGraphic internal constructor(
             postInvalidate()
         }
 
+    var scale = 1f
+    var translationX = 0f
+    var translationY = 0f
+
     init {
         rectPaint.apply {
             color = COLOR_NORMAL
@@ -55,9 +59,18 @@ class TextBlockGraphic internal constructor(
             PorterDuffXfermode(PorterDuff.Mode.DST_IN)
         }
 
+        val tX = +translationX
+        val tY = +translationY
+
+        val left = boundingBox.left * scale + tX
+        val top = boundingBox.top * scale + tY
+        val width = (boundingBox.right - boundingBox.left) * scale
+        val height = (boundingBox.bottom - boundingBox.top) * scale
+
+        boundingBox.set(left, top, left + width, top + height)
         canvas.drawRoundRect(boundingBox, cornerRadius, cornerRadius, rectPaint)
         debugPaint?.takeIf { isSelected }?.let {
-            canvas.drawText("$boundingBox", boundingBox.left, boundingBox.top, it)
+            canvas.drawText("($left, $top, ${left + width}, ${top + height})", left, top, it)
         }
     }
 }

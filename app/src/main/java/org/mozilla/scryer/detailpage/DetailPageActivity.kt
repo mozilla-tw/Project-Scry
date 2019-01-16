@@ -6,20 +6,20 @@ package org.mozilla.scryer.detailpage
 
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.graphics.*
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Point
+import android.graphics.RectF
 import android.os.Bundle
 import android.view.*
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
-import androidx.core.view.ViewCompat
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -143,7 +143,11 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_detail_page)
+        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+
         supportPostponeEnterTransition()
 
         initActionBar()
@@ -521,14 +525,15 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
         if (isShowing) {
             toolbar_background.visibility = View.VISIBLE
             supportActionBar?.show()
-            window?.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+            window?.decorView?.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE
             text_mode_fab.show()
             cancel_fab.hide()
 
         } else {
             toolbar_background.visibility = View.INVISIBLE
             supportActionBar?.hide()
-            window?.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+            window?.decorView?.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
+
             text_mode_fab.hide()
             cancel_fab.hide()
         }
@@ -558,7 +563,38 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
             return
         }
 
-        updateGraphicOverlay(textBlocks.map { TextBlockGraphic(graphic_overlay, it) })
+        var scale = 1f
+        var translationX = 0f
+        var translationY = 0f
+        adapter.findViewForPosition(view_pager.currentItem)?.let {
+            val width = it.getWidth()
+            val height = it.getHeight()
+            val w2H = width / height.toFloat()
+
+            val pagerWidth = view_pager.width
+            val pagerHeight = view_pager.height
+            val pagerW2H = pagerWidth / pagerHeight.toFloat()
+
+
+            if (w2H >= pagerW2H) {
+                scale = pagerWidth / width.toFloat()
+                translationY = (pagerHeight.toFloat() - height * scale) / 2f
+
+            } else {
+                scale = pagerHeight / height.toFloat()
+                translationX = (pagerWidth.toFloat() - width * scale) / 2f
+            }
+        }
+
+        updateGraphicOverlay(textBlocks.map {
+            val block = TextBlockGraphic(graphic_overlay, it)
+            block.scale = scale
+            block.translationX = translationX
+            block.translationY = translationY
+            block
+        })
+
+        selectAllBlocks()
         updatePanel("")
     }
 
@@ -611,9 +647,6 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
         }
     }
 
-    /**
-     * @param block the block being selected, or null if nothing is selected
-     */
     private fun updatePanel(panelText: String) {
         textModeResultTextView.text = panelText
 

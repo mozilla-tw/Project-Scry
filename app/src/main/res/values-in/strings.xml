@@ -34,8 +34,10 @@
   <string name="detail_ocr_error_failed">Gagal mengenali teks</string>
   <string name="detail_ocr_error_edgecase">Ada yang salah? Potong cuplikan layar dan coba kembali.</string>
   <string name="detail_ocr_error_notext">Teks tidak ditemukan</string>
-  <string name="detail_ocr_instruction">Sentuk teks untuk membuka menu opsi</string>
-  <string name="detail_ocr_action_selectall">Pilih semua teks</string>
+  <string name="detail_ocr_error_module">Sambungkan ke internet untuk memasang modul Pengenalan Teks offline</string>
+  <string name="detail_ocr_error_action_connect">Sambungkan</string>
+  <string name="detail_ocr_instruction">Ketuk teks untuk opsi lainnya</string>
+  <string name="detail_ocr_action_selectall">Pilih jenis</string>
   <string name="detail_transition_recognizing">Mengenali teks…</string>
   <string name="dialogue_collecitioninfo_title_info">Info koleksi</string>
   <string name="dialogue_list_name">Nama</string>
@@ -111,9 +113,11 @@
   <string name="onboarding_search_action_agree">Ya</string>
   <string name="onboarding_search_action_disagree">Tidak</string>
   <string name="onboarding_search_content_feedback">Terima kasih atas umpan balik Anda!</string>
+  <string name="onboarding_ocr_title_more">Lakukan lebih banyak dengan tangkapan layar</string>
+  <string name="onboarding_ocr_content_examples">Cari produk, salin kode kupon, dan bagikan penawaran di tangkapan layar Anda</string>
   <string name="dialogue_feedback_title">Suka %1$s?</string>
-  <string name="dialogue_share_title">Bagikan %1$s dengan Teman!</string>
-  <string name="dialogue_take_share_description">Menikmati pengambilan screenshot? Bagikan sekarang!</string>
-  <string name="dialogue_sort_share_description">Menikmati mengatur tangkapan layar? Bagikan sekarang!</string>
-  <string name="dialogue_ocr_share_description">Merasa tangkapan layar-ke-teks sangat berguna? Bagikan sekarang!</string>
+  <string name="dialogue_share_title">Bagikan %1$s dengan teman!</string>
+  <string name="dialogue_take_share_description">Nikmati mengambil tangkapan layar? Bagikan sekarang!</string>
+  <string name="dialogue_sort_share_description">Nikmati mengatur screenshot? Bagikan sekarang!</string>
+  <string name="dialogue_ocr_share_description">Apakah screenshot berguna? Bagikan sekarang!</string>
 </resources>

@@ -147,6 +147,7 @@
                         android:paddingTop="16dp"
                         android:paddingBottom="16dp"
                         android:textIsSelectable="true"
+                        android:autoLink="all"
                         style="body1" />
                 </LinearLayout>
             </androidx.core.widget.NestedScrollView>

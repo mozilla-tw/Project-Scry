@@ -658,11 +658,13 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
         val behavior = BottomSheetBehavior.from(text_mode_panel_content)
         if (panelText.isEmpty()) {
             text_mode_panel_content.layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
+            text_mode_panel_hint_bar.visibility = View.GONE
             textModeResultTextView.visibility = View.GONE
             textModeResultMoreOptions.visibility = View.VISIBLE
             behavior.state = BottomSheetBehavior.STATE_COLLAPSED
         } else {
             text_mode_panel_content.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
+            text_mode_panel_hint_bar.visibility = View.VISIBLE
             textModeResultTextView.visibility = View.VISIBLE
             textModeResultMoreOptions.visibility = View.GONE
             behavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED

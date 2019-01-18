@@ -419,7 +419,7 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
             pagerTranslation = -view_pager.height * ((1 - IMAGE_SCALE_TEXT_MODE) / 2f)
 
             launch(Dispatchers.Main) {
-                setupTextSelectionCallback(textModeResultTextView)
+                setupTextSelectionCallback(textModePanelTextView)
                 updateLoadingViewVisibility(false)
                 updateTextModePanelVisibility(true)
             }
@@ -651,20 +651,20 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
     }
 
     private fun updatePanel(panelText: String) {
-        textModeResultTextView.text = panelText
+        textModePanelTextView.text = panelText
 
         val behavior = BottomSheetBehavior.from(text_mode_panel_content)
         if (panelText.isEmpty()) {
             text_mode_panel_content.layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
-            text_mode_panel_hint_bar.visibility = View.GONE
-            textModeResultTextView.visibility = View.GONE
-            textModeResultMoreOptions.visibility = View.VISIBLE
+            textModePanelHandler.visibility = View.GONE
+            textModePanelTextView.visibility = View.GONE
+            textModePanelHint.visibility = View.VISIBLE
             behavior.state = BottomSheetBehavior.STATE_COLLAPSED
         } else {
             text_mode_panel_content.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
-            text_mode_panel_hint_bar.visibility = View.VISIBLE
-            textModeResultTextView.visibility = View.VISIBLE
-            textModeResultMoreOptions.visibility = View.GONE
+            textModePanelHandler.visibility = View.VISIBLE
+            textModePanelTextView.visibility = View.VISIBLE
+            textModePanelHint.visibility = View.GONE
             behavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED
         }
     }

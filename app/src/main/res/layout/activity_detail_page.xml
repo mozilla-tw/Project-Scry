@@ -119,14 +119,14 @@
                     android:layout_height="match_parent"
                     android:orientation="vertical">
                     <View
-                        android:id="@+id/text_mode_panel_hint_bar"
+                        android:id="@+id/textModePanelHandler"
                         android:layout_width="@dimen/sorting_panel_hint_bar_width"
                         android:layout_height="@dimen/sorting_panel_hint_bar_height"
                         android:layout_marginTop="@dimen/sorting_panel_hint_bar_margin_top"
                         android:layout_gravity="center_horizontal"
                         android:background="@drawable/sorting_panel_hint_bar" />
                     <TextView
-                        android:id="@+id/textModeResultMoreOptions"
+                        android:id="@+id/textModePanelHint"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textColor="@color/grey90"
@@ -139,7 +139,7 @@
                         android:drawablePadding="@dimen/common_padding_12dp"
                         style="@style/H3" />
                     <TextView
-                        android:id="@+id/textModeResultTextView"
+                        android:id="@+id/textModePanelTextView"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textColor="@color/grey60"

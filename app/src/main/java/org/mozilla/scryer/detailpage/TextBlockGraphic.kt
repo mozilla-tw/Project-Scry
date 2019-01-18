@@ -23,6 +23,9 @@ class TextBlockGraphic internal constructor(
         private const val colorSelectedRes = R.color.primaryTeal
         private const val alphaSelected = 0.3f
 
+        private const val colorHighlightRes = R.color.primaryTeal
+        private const val alphaHighlight = 0.3f
+
         private const val CORNER_RADIUS_DP = 2f
     }
 
@@ -35,6 +38,10 @@ class TextBlockGraphic internal constructor(
 
     private val selectedColor: Int = ContextCompat.getColor(overlay.context, colorSelectedRes).let {
         Color.argb((255 * alphaSelected).toInt(), Color.red(it), Color.green(it), Color.blue(it))
+    }
+
+    private val highlightColor: Int = ContextCompat.getColor(overlay.context, colorHighlightRes).let {
+        Color.argb((255 * alphaHighlight).toInt(), Color.red(it), Color.green(it), Color.blue(it))
     }
 
     private val debugPaint: Paint? = if (BuildConfig.DEBUG) {
@@ -54,14 +61,10 @@ class TextBlockGraphic internal constructor(
             postInvalidate()
         }
 
-    var scale = 1f
-    var translationX = 0f
-    var translationY = 0f
-
     init {
         rectPaint.apply {
             style = Paint.Style.FILL
-            xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_IN)
+            //xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_IN)
         }
         postInvalidate()
     }
@@ -69,10 +72,16 @@ class TextBlockGraphic internal constructor(
     override fun draw(canvas: Canvas) {
         boundingBox.set(block.boundingBox)
 
-        rectPaint.color = if (isSelected) {
-            selectedColor
+        if (overlay.overlayMode == GraphicOverlay.MODE_HIGHLIGHT) {
+            rectPaint.xfermode = PorterDuffXfermode(PorterDuff.Mode.ADD)
+            rectPaint.color = highlightColor
         } else {
-            normalColor
+            rectPaint.xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_IN)
+            rectPaint.color = if (isSelected) {
+                selectedColor
+            } else {
+                normalColor
+            }
         }
 
         val left = boundingBox.left * scale + translationX

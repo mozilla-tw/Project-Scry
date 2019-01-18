@@ -71,9 +71,7 @@ class TextGraphic internal constructor(
     }
 
     companion object {
-
         private const val TAG = "TextGraphic"
-        private const val TEXT_COLOR = Color.RED
         private const val TEXT_SIZE = 54.0f
         private const val STROKE_WIDTH = 4.0f
     }

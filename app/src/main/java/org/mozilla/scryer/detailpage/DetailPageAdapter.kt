@@ -37,10 +37,18 @@ class DetailPageAdapter : PagerAdapter() {
 
         val pageView = object : PageView {
             override fun getWidth(): Int {
-                return imageView.sWidth
+                return imageView.width
             }
 
             override fun getHeight(): Int {
+                return imageView.height
+            }
+
+            override fun getSourceImageWidth(): Int {
+                return imageView.sWidth
+            }
+
+            override fun getSourceImageHeight(): Int {
                 return imageView.sHeight
             }
 
@@ -122,6 +130,8 @@ class DetailPageAdapter : PagerAdapter() {
     interface PageView {
         fun resetScale()
         fun isScaled(): Boolean
+        fun getSourceImageWidth(): Int
+        fun getSourceImageHeight(): Int
         fun getWidth(): Int
         fun getHeight(): Int
     }

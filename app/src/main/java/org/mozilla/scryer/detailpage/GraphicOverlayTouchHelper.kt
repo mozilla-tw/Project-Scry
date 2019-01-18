@@ -10,6 +10,8 @@ import android.view.MotionEvent
 
 class GraphicOverlayTouchHelper(context: Context, val blocks: List<TextBlockGraphic>) {
 
+    var callback: Callback? = null
+
     private val gestureDetector = GestureDetector(context, object : GestureDetector.OnGestureListener {
         override fun onShowPress(e: MotionEvent?) {}
 
@@ -43,8 +45,6 @@ class GraphicOverlayTouchHelper(context: Context, val blocks: List<TextBlockGrap
 
         }
     })
-
-    var callback: Callback? = null
 
     fun onTouchEvent(event: MotionEvent): Boolean {
         return gestureDetector.onTouchEvent(event)

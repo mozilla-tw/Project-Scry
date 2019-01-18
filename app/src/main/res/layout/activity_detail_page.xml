@@ -52,7 +52,7 @@
         app:layout_constraintTop_toBottomOf="@id/loading_progress" />
 
     <org.mozilla.scryer.detailpage.GraphicOverlay
-        android:id="@+id/graphic_overlay"
+        android:id="@+id/graphicOverlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

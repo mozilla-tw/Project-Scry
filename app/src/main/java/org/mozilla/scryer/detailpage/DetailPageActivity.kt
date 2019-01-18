@@ -4,7 +4,6 @@
 
 package org.mozilla.scryer.detailpage
 
-
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
@@ -110,7 +109,9 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
     private var isEnterTransitionPostponed = true
 
     private val adapter = DetailPageAdapter()
-    private val graphicOverlayHelper = GraphicOverlayHelper()
+    private val graphicOverlayHelper: GraphicOverlayHelper by lazy {
+        GraphicOverlayHelper(graphicOverlay)
+    }
 
     /* whether the user has run ocr on the current image before swiping to the next one */
     private var hasRunOcr = false
@@ -244,7 +245,7 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
             onBackPressed()
         }
 
-        toolbar.setOnTouchListener { v, event ->
+        toolbar.setOnTouchListener { _, event ->
             routeUnhandledEventToOverlay(event)
         }
 
@@ -262,7 +263,7 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
         val x = (event.x - leftDiff) / scale
         val y = event.y / scale + (toolbar.layoutParams as ViewGroup.MarginLayoutParams).topMargin
         event.setLocation(x, y)
-        return graphic_overlay.dispatchTouchEvent(event)
+        return graphicOverlay.dispatchTouchEvent(event)
     }
 
     private fun initViewPager() {
@@ -339,8 +340,8 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
                 }
 
                 if (isRecognizing) {
-                    processTextRecognitionResult(result.value)
                     isTextMode = true
+                    processTextRecognitionResult(result.value)
                     updateUI()
                     if (!hasRunOcr) {
                         hasRunOcr = true
@@ -431,7 +432,7 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
             enableTextModeMenu(false)
             pagerScale = IMAGE_SCALE_NORMAL_MODE
             pagerTranslation = 1f
-            graphic_overlay.visibility = View.GONE
+            updateGraphicOverlay(emptyList())
         }
         updateNavigationIcon()
 
@@ -442,7 +443,7 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
         }
 
         view_pager.pageLocked = (pageView?.isScaled() == true)
-        listOf(view_pager, graphic_overlay).forEach {
+        listOf(view_pager, graphicOverlay).forEach {
             it.animate()
                     .scaleX(pagerScale)
                     .scaleY(pagerScale)
@@ -543,71 +544,36 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
         }
     }
 
-    private suspend fun runTextRecognition(selectedImage: Bitmap): FirebaseVisionText? =
-            suspendCoroutine { cont ->
-                val image = FirebaseVisionImage.fromBitmap(selectedImage)
-                val detector = FirebaseVision.getInstance().onDeviceTextRecognizer
-                detector.processImage(image)
-                        .addOnSuccessListener { texts ->
-                            cont.resume(texts)
-                        }
-                        .addOnFailureListener { exception ->
-                            cont.resumeWithException(exception)
-                        }
-            }
+    private suspend fun runTextRecognition(
+            selectedImage: Bitmap
+    ): FirebaseVisionText? = suspendCoroutine { cont ->
 
-    private fun processTextRecognitionResult(texts: FirebaseVisionText) {
-        val textBlocks = texts.textBlocks.toMutableList().apply {
-            sortBy { it.boundingBox?.centerY() }
-        }
+        val image = FirebaseVisionImage.fromBitmap(selectedImage)
+        val detector = FirebaseVision.getInstance().onDeviceTextRecognizer
+        detector.processImage(image)
+                .addOnSuccessListener { texts ->
+                    cont.resume(texts)
+                }
+                .addOnFailureListener { exception ->
+                    cont.resumeWithException(exception)
+                }
+    }
 
-        if (textBlocks.size == 0) {
-            ScryerToast.makeText(this, getString(R.string.detail_ocr_error_notext),
-                    Toast.LENGTH_SHORT).show()
-            return
-        }
+    private fun processTextRecognitionResult(result: FirebaseVisionText) {
+        val pageView = adapter.findViewForPosition(view_pager.currentItem) ?: return
 
-        var scale = 1f
-        var translationX = 0f
-        var translationY = 0f
-        adapter.findViewForPosition(view_pager.currentItem)?.let {
-            val width = it.getWidth()
-            val height = it.getHeight()
-            val w2H = width / height.toFloat()
-
-            val pagerWidth = view_pager.width
-            val pagerHeight = view_pager.height
-            val pagerW2H = pagerWidth / pagerHeight.toFloat()
-
-
-            if (w2H >= pagerW2H) {
-                scale = pagerWidth / width.toFloat()
-                translationY = (pagerHeight.toFloat() - height * scale) / 2f
-
-            } else {
-                scale = pagerHeight / height.toFloat()
-                translationX = (pagerWidth.toFloat() - width * scale) / 2f
-            }
-        }
-
-        updateGraphicOverlay(textBlocks.map {
-            val block = TextBlockGraphic(graphic_overlay, it)
-            block.scale = scale
-            block.translationX = translationX
-            block.translationY = translationY
-            block
-        })
+        val graphicBlocks = graphicOverlayHelper.convertToGraphicBlocks(result, pageView)
+        updateGraphicOverlay(graphicBlocks)
 
         updatePanel("")
     }
 
     private fun updateGraphicOverlay(blocks: List<TextBlockGraphic>) {
-        graphic_overlay.apply {
-            visibility = View.VISIBLE
-            clear()
-
-            blocks.forEach { graphic_overlay.add(it) }
-        }
+        graphicOverlay.setBlocks(blocks, if (isTextMode) {
+            GraphicOverlay.MODE_OVERLAY_HIGHLIGHT
+        } else {
+            GraphicOverlay.MODE_HIGHLIGHT
+        })
 
         graphicOverlayHelper.blocks = blocks
 
@@ -617,7 +583,7 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
                 updatePanel(graphicOverlayHelper.getSelectedText())
             }
         }
-        graphic_overlay.setOnTouchListener { _, event ->
+        graphicOverlay.setOnTouchListener { _, event ->
             touchHelper.onTouchEvent(event)
         }
     }

@@ -112,6 +112,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/bottom_dialog_bkg"
+                app:behavior_peekHeight="60dp"
                 app:layout_behavior="@string/bottom_sheet_behavior">
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -134,9 +135,9 @@
                         android:paddingTop="16dp"
                         android:paddingBottom="16dp"
                         android:text="@string/detail_ocr_instruction"
-                        android:drawableStart="@drawable/fab_ocr"
+                        android:drawableStart="@drawable/hint"
                         android:drawablePadding="@dimen/common_padding_12dp"
-                        style="@style/H2" />
+                        style="@style/H3" />
                     <TextView
                         android:id="@+id/textModeResultTextView"
                         android:layout_width="match_parent"

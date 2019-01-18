@@ -305,20 +305,18 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
     }
 
     private fun initPanel() {
-        val behavior = BottomSheetBehavior.from(text_mode_panel_content)
-        behavior.peekHeight = resources.getDimensionPixelSize(
-                R.dimen.sorting_panel_title_height)
-        behavior.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
-            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+        BottomSheetBehavior.from(text_mode_panel_content)
+                .setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+                    override fun onSlide(bottomSheet: View, slideOffset: Float) {
 
-            }
+                    }
 
-            override fun onStateChanged(bottomSheet: View, newState: Int) {
-                if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
-                    unselectAllBlocks()
-                }
-            }
-        })
+                    override fun onStateChanged(bottomSheet: View, newState: Int) {
+                        if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
+                            unselectAllBlocks()
+                        }
+                    }
+                })
     }
 
     private fun startRecognition() {

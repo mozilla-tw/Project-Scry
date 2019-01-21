@@ -184,20 +184,17 @@
     <!-- Parameter %1$s is the app name, i.e. Firefox ScreenshotGo -->
     <string name="onboarding_rareerror_content_permission">%1$s needs permission to access your phone’s storage. Please find Permission to turn on Storage.</string>
     <string name="onboarding_rareerror_action_goto">Go to permission</string>
-    <!-- Onboarding: strings to inform users that the search feature is WIP,
-    Refer to UX spec 7.3: https://mozilla.invisionapp.com/share/24N3MMQB986#/310133930_7-3_Other_Oborading -->
-    <string name="onboarding_search_title_soon">Search is coming soon!</string>
-    <!-- The string displayed to describe the survey -->
-    <string name="onboarding_search_content_survey">We’re working on a magic feature to help you search screenshots with text. Interested?</string>
-    <string name="onboarding_search_action_agree">Yes please</string>
-    <!-- The string should represent an informal variant of no -->
-    <string name="onboarding_search_action_disagree">Nope</string>
-    <string name="onboarding_search_content_feedback">Thanks for your feedback!</string>
     <!-- String displayed with an illustration to introduce a new feature -->
     <string name="onboarding_ocr_title_more">Do more with screenshots</string>
     <!-- String displayed to give examples of what the new feature can do -->
     <string name="onboarding_ocr_content_examples">Look up products, copy coupon codes, and share quotes in your screenshots</string>
-
+    <!-- Onboarding: strings displayed with an illustration to introduce users the new search feature, Refer to UX spec 5-1 https://mozilla.invisionapp.com/share/24N3MMQB986#/310133925_5-1_Search -->
+    <string name="onboarding_search_title_search">Finding screenshots is now easier</string>
+    <!-- String displayed to instruct users to type words to search -->
+    <string name="onboarding_search_content_typeword">Just type to search words within screenshots</string>
+    <!-- String displayed to inform users recognition costs more battery -->
+    <string name="onboarding_search_caption_battery">To make this happen, we’ll recognize your screenshot first. It may consume more battery, but it won’t take long!</string>
+    
     <!-- Parameter %1$s is the app name, i.e. Firefox ScreenshotGo -->
     <string name="dialogue_feedback_title">Love %1$s?</string>
     <!-- Parameter %1$s is the app name, i.e. Firefox ScreenshotGo -->
@@ -205,4 +202,13 @@
     <string name="dialogue_take_share_description">Enjoy taking screenshots? Share it now!</string>
     <string name="dialogue_sort_share_description">Enjoy organizing screenshots? Share it now!</string>
     <string name="dialogue_ocr_share_description">Find screenshot-to-text useful? Share it now!</string>
+    <!-- String displayed to inform users search is performing -->
+    <string name="search_transition_searching">Searching text&#8230;</string>
+    <string name="search_error_title_noresult">No results found</string>
+    <string name="search_error_content_try">Try another word</string>
+    <string name="search_separator_results">%1$d results</string>
+    <!-- String displayed to inform users the progress of text recognition -->
+    <string name="search_transition_progress">Recognizing %1$d screenshots text&#8230;</string>
+    <!-- String displayed to provide more details when text recognition is done -->
+    <string name="search_transition_content_searchable">We’re making all screenshots searchable. You can soon type to search words within screenshots!</string>
 </resources>

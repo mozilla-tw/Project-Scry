@@ -563,6 +563,9 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
         val pageView = adapter.findViewForPosition(view_pager.currentItem) ?: return
 
         val graphicBlocks = graphicOverlayHelper.convertToGraphicBlocks(result, pageView)
+//        val graphicBlocks = graphicOverlayHelper.convertWordsToGraphicBlocks(result,
+//                listOf("word1", "word2"),
+//                pageView)
         updateGraphicOverlay(graphicBlocks)
 
         updatePanel("")

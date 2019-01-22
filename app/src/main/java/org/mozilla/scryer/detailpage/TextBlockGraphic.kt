@@ -12,8 +12,7 @@ import org.mozilla.scryer.R
 import org.mozilla.scryer.extension.dpToPx
 
 class TextBlockGraphic internal constructor(
-        val overlay: GraphicOverlay,
-        val block: FirebaseVisionText.TextBlock
+        val overlay: GraphicOverlay
 ) : GraphicOverlay.Graphic(overlay) {
 
     companion object {
@@ -55,22 +54,39 @@ class TextBlockGraphic internal constructor(
     }
 
     private val rectPaint: Paint = Paint()
+
     var isSelected: Boolean = false
         set(value) {
             field = value
             postInvalidate()
         }
 
+    var textBlock: FirebaseVisionText.TextBlock? = null
+    var lineBlock: FirebaseVisionText.Line? = null
+    var elementBlock: FirebaseVisionText.Element? = null
+
     init {
         rectPaint.apply {
             style = Paint.Style.FILL
-            //xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_IN)
         }
         postInvalidate()
     }
 
+    fun isTextBlock(): Boolean {
+        return textBlock != null
+    }
+
+    fun isLineBlock(): Boolean {
+        return lineBlock != null
+    }
+
+    @Suppress("unused")
+    fun isElementBlock(): Boolean {
+        return elementBlock != null
+    }
+
     override fun draw(canvas: Canvas) {
-        boundingBox.set(block.boundingBox)
+        boundingBox.set(getBoundingBox() ?: return)
 
         if (overlay.overlayMode == GraphicOverlay.MODE_HIGHLIGHT) {
             rectPaint.xfermode = PorterDuffXfermode(PorterDuff.Mode.ADD)
@@ -94,5 +110,9 @@ class TextBlockGraphic internal constructor(
         debugPaint?.takeIf { isSelected }?.let {
             canvas.drawText("($left, $top, ${left + width}, ${top + height})", left, top, it)
         }
+    }
+
+    private fun getBoundingBox(): Rect? {
+        return textBlock?.boundingBox ?: lineBlock?.boundingBox ?: elementBlock?.boundingBox
     }
 }

@@ -26,7 +26,6 @@ import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.text.FirebaseVisionText
 import kotlinx.android.synthetic.main.activity_detail_page.*
-import kotlinx.android.synthetic.main.activity_detail_page.view.*
 import kotlinx.coroutines.experimental.CoroutineScope
 import kotlinx.coroutines.experimental.Dispatchers
 import kotlinx.coroutines.experimental.launch
@@ -634,19 +633,17 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
             behavior.state = BottomSheetBehavior.STATE_COLLAPSED
         } else {
             switchToTextModePanelLayout()
-            behavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED
+            behavior.state = BottomSheetBehavior.STATE_EXPANDED
         }
     }
 
     private fun switchToHintModePanelLayout() {
-        text_mode_panel_content.layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
         textModePanelHandler.visibility = View.GONE
         textModePanelTextView.visibility = View.GONE
         textModePanelHint.visibility = View.VISIBLE
     }
 
     private fun switchToTextModePanelLayout() {
-        text_mode_panel_content.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
         textModePanelHandler.visibility = View.VISIBLE
         textModePanelTextView.visibility = View.VISIBLE
         textModePanelHint.visibility = View.GONE

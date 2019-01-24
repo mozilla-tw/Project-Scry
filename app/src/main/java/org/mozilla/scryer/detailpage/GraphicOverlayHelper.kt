@@ -27,7 +27,7 @@ class GraphicOverlayHelper(private val overlay: GraphicOverlay) {
         blocks.forEach { block ->
             builder.append(buildLines(block)).append("\n")
         }
-        return builder.toString()
+        return builder.trim().toString()
     }
 
     fun convertToGraphicBlocks(

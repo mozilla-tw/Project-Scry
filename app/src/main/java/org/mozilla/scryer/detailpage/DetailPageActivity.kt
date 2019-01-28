@@ -9,6 +9,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.*
 import android.os.Bundle
+import android.provider.Settings
 import android.view.*
 import android.widget.TextView
 import android.widget.Toast
@@ -19,6 +20,8 @@ import androidx.core.graphics.drawable.DrawableCompat
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.ml.common.FirebaseMLException
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.text.FirebaseVisionText
@@ -383,6 +386,10 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
                     }
                 }
 
+            } else if (result is Result.Unavailable) {
+                showConnectPromptSnackbar()
+                TelemetryWrapper.viewTextInScreenshot(TelemetryWrapper.Value.FAIL, result.msg)
+
             } else if (result is Result.Failed) {
                 ScryerToast.makeText(this@DetailPageActivity,
                         getString(R.string.detail_ocr_error_failed),
@@ -393,6 +400,15 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
 
             isRecognizing = false
             updateUI()
+        }
+    }
+
+    private fun showConnectPromptSnackbar() {
+        Snackbar.make(snackbar_container, R.string.detail_ocr_error_module, Snackbar.LENGTH_LONG).apply {
+            setAction(R.string.detail_ocr_error_action_connect) {
+                startActivity(Intent(Settings.ACTION_WIFI_SETTINGS))
+            }
+            show()
         }
     }
 
@@ -414,7 +430,11 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
                     }
                 }
             } catch (e: Exception) {
-                Result.Failed("recognize failed: " + e.message)
+                if ((e as? FirebaseMLException)?.code == FirebaseMLException.UNAVAILABLE) {
+                    Result.Unavailable("recognize failed: " + e.message)
+                } else {
+                    Result.Failed("recognize failed: " + e.message)
+                }
             }
 
         } ?: Result.Failed("invalid bitmap")
@@ -717,7 +737,8 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
                 value: FirebaseVisionText,
                 @Suppress("unused") val msg: String
         ) : Success(value)
-        class Failed(@Suppress("unused") val msg: String) : Result()
+        open class Failed(@Suppress("unused") val msg: String) : Result()
+        class Unavailable(msg: String) : Failed(msg)
     }
 
 }

@@ -30,4 +30,16 @@
             android:transitionName="shared_in" />
     </androidx.cardview.widget.CardView>
 
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/ocr_onboarding_hint"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:elevation="2dp"
+        android:visibility="gone"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:lottie_rawRes="@raw/image_notification"
+        app:lottie_loop="true"
+        app:lottie_autoPlay="false" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

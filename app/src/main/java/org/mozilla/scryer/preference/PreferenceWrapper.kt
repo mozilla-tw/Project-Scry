@@ -19,6 +19,7 @@ class PreferenceWrapper(context: Context) {
     private val shouldPromptEnableService = PrefConfig("prompt_service_enable", false)
     private val isFirstTimeLaunch = PrefConfig("first_time_launch", true)
     private val grantStoragePermissionCount = PrefConfig("grant_storage_permission_count", 1)
+    private val isOcrOnboardingShown = PrefConfig("ocr_onboarding_shown", false)
 
     private val pref: SharedPreferences by lazy {
         context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
@@ -44,6 +45,14 @@ class PreferenceWrapper(context: Context) {
         val count = pref.getInt(grantStoragePermissionCount.key, 1)
         pref.edit().putInt(grantStoragePermissionCount.key, (count + 1)).apply()
         return count
+    }
+
+    fun isOcrOnboardingShown(): Boolean {
+        return pref.getBoolean(isOcrOnboardingShown.key, isOcrOnboardingShown.defaultValue)
+    }
+
+    fun setOcrOnboardingShown() {
+        pref.edit().putBoolean(isOcrOnboardingShown.key, true).apply()
     }
 }
 

@@ -139,7 +139,11 @@ dependencies {
     implementation project(':telemetry-annotation')
     kapt project(':telemetry-compiler')
 
+    // SubsamplingScaleImageView
     implementation "com.davemorrissey.labs:subsampling-scale-image-view:${Versions.subsampling_image_view}"
+
+    // Lottie
+    implementation "com.airbnb.android:lottie:${Versions.lottie}"
 
     // License
     implementation "com.google.android.gms:play-services-oss-licenses:${Versions.license}"

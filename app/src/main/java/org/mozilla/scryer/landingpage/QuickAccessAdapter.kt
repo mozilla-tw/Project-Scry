@@ -8,12 +8,15 @@ package org.mozilla.scryer.landingpage
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.MenuItem
+import android.view.View
 import android.view.ViewGroup
 import com.bumptech.glide.Glide
+import kotlinx.android.synthetic.main.item_quick_access.view.*
 import org.mozilla.scryer.R
 import org.mozilla.scryer.collectionview.*
 import org.mozilla.scryer.extension.getValidPosition
 import org.mozilla.scryer.persistence.ScreenshotModel
+import org.mozilla.scryer.preference.PreferenceWrapper
 import org.mozilla.scryer.sortingpanel.SortingPanelActivity
 import java.io.File
 
@@ -26,6 +29,7 @@ class QuickAccessAdapter(val context: Context?) : androidx.recyclerview.widget.R
     var list: List<ScreenshotModel> = emptyList()
     var clickListener: ItemClickListener? = null
 
+    private var pref = context?.let { PreferenceWrapper(it) }
     private val maxItemsToDisplay = HomeFragment.QUICK_ACCESS_ITEM_COUNT
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): androidx.recyclerview.widget.RecyclerView.ViewHolder {
@@ -100,11 +104,24 @@ class QuickAccessAdapter(val context: Context?) : androidx.recyclerview.widget.R
     private fun bindItemHolder(holder: androidx.recyclerview.widget.RecyclerView.ViewHolder, position: Int) {
         val path = list[position].absolutePath
         val fileName = path.substring(path.lastIndexOf(File.separator) + 1)
+        if (position == 0) {
+            holder.setIsRecyclable(false)
+        }
         (holder as? ScreenshotItemHolder)?.apply {
             holder.title?.text = fileName
             holder.image?.let {
                 Glide.with(holder.itemView.context)
                         .load(File(list[position].absolutePath)).into(it)
+            }
+
+            if (position == 0 && pref?.isOcrOnboardingShown() == false) {
+                // TODO: Quick fix to avoid issue where lottie anim cannot be played again after being recycled
+                holder.setIsRecyclable(false)
+
+                holder.itemView.ocr_onboarding_hint.visibility = View.VISIBLE
+                holder.itemView.ocr_onboarding_hint.post {
+                    holder.itemView.ocr_onboarding_hint.playAnimation()
+                }
             }
         }
     }

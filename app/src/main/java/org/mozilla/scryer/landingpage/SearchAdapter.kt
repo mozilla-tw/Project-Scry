@@ -12,6 +12,7 @@ import android.text.Spanned
 import android.text.style.BackgroundColorSpan
 import android.widget.Filter
 import android.widget.Filterable
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import org.mozilla.scryer.collectionview.ScreenshotAdapter
 import org.mozilla.scryer.collectionview.ScreenshotItemHolder
@@ -27,7 +28,7 @@ class SearchAdapter(context: Context?) : ScreenshotAdapter(context), Filterable 
         super.setScreenshotList(list)
     }
 
-    override fun onBindViewHolder(holder: androidx.recyclerview.widget.RecyclerView.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val titleView = (holder as? ScreenshotItemHolder)?.title
         titleView?.apply {
             val name = getItemFileName(position)

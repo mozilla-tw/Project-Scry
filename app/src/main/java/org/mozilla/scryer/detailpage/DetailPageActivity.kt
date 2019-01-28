@@ -7,10 +7,7 @@ package org.mozilla.scryer.detailpage
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Point
-import android.graphics.RectF
+import android.graphics.*
 import android.os.Bundle
 import android.view.*
 import android.widget.TextView
@@ -40,6 +37,7 @@ import org.mozilla.scryer.collectionview.showScreenshotInfoDialog
 import org.mozilla.scryer.collectionview.showShareScreenshotDialog
 import org.mozilla.scryer.persistence.CollectionModel
 import org.mozilla.scryer.persistence.ScreenshotModel
+import org.mozilla.scryer.preference.PreferenceWrapper
 import org.mozilla.scryer.promote.Promoter
 import org.mozilla.scryer.sortingpanel.SortingPanelActivity
 import org.mozilla.scryer.telemetry.TelemetryWrapper
@@ -104,6 +102,8 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
         LoadingViewGroup(this)
     }
 
+    private val prefs = PreferenceWrapper(this)
+
     private var isRecognizing = false
     private var isTextMode = false
     private var isEnterTransitionPostponed = true
@@ -158,7 +158,35 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
 
         updateUI()
 
+        if (!prefs.isOcrOnboardingShown()) {
+            showOcrOnboarding()
+        }
+
         TelemetryWrapper.viewScreenshot()
+    }
+
+    private fun showOcrOnboarding() {
+        onboarding_view.visibility = View.VISIBLE
+        onboarding_view.setOnClickListener {
+            (onboarding_view.parent as ViewGroup).removeView(onboarding_view)
+        }
+
+        onboarding_overlay.overlayMode = GraphicOverlay.MODE_HIGHLIGHT
+        onboarding_overlay.overlayColor = ContextCompat.getColor(this, R.color.detail_onboarding_overlay)
+        onboarding_overlay.add(object : GraphicOverlay.Graphic(onboarding_overlay) {
+            private val spotlightPaint: Paint = Paint().apply {
+                xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR)
+            }
+
+            override fun draw(canvas: Canvas) {
+                canvas.drawCircle((text_mode_fab.left + text_mode_fab.right) / 2f,
+                        (text_mode_fab.top + text_mode_fab.bottom) / 2f,
+                        (text_mode_fab.right - text_mode_fab.left).toFloat(),
+                        spotlightPaint)
+            }
+        })
+
+        prefs.setOcrOnboardingShown()
     }
 
     override fun onBackPressed() {

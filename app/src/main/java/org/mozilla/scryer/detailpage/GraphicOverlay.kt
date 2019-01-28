@@ -35,6 +35,12 @@ class GraphicOverlay(context: Context, attrs: AttributeSet) : View(context, attr
     private var touchX: Int = 0
     private var touchY: Int = 0
 
+    var overlayColor: Int? = null
+        set(value) {
+            field = value
+            postInvalidate()
+        }
+
     var overlayMode: Int = DEFAULT_MODE
         set(value) {
             field = value
@@ -111,11 +117,15 @@ class GraphicOverlay(context: Context, attrs: AttributeSet) : View(context, attr
         super.onDraw(canvas)
 
         synchronized(lock) {
-            canvas.drawColor(if (overlayMode == MODE_OVERLAY_HIGHLIGHT) {
-                COLOR_OVERLAY
-            } else {
-                Color.TRANSPARENT
-            })
+            overlayColor?.let {
+                canvas.drawColor(it)
+            } ?: run {
+                canvas.drawColor(if (overlayMode == MODE_OVERLAY_HIGHLIGHT) {
+                    COLOR_OVERLAY
+                } else {
+                    Color.TRANSPARENT
+                })
+            }
 
             for (graphic in graphics) {
                 graphic.draw(canvas)

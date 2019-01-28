@@ -39,6 +39,9 @@
     <!-- Notification -->
     <color name="foreground_notification">@color/primaryTeal</color>
 
+    <!-- DetailPage -->
+    <color name="detail_onboarding_overlay">#cc000000</color>
+
     <array name="collection_colors">
         <item>#235dff</item>
         <item>#10c1b6</item>

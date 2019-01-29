@@ -101,6 +101,10 @@ class QuickAccessAdapter(val context: Context?) : androidx.recyclerview.widget.R
         return holder
     }
 
+    private fun shouldPlayOcrHint(holder: ScreenshotItemHolder): Boolean {
+        return holder.adapterPosition == 0 && pref?.isOcrOnboardingShown() == false
+    }
+
     private fun bindItemHolder(holder: androidx.recyclerview.widget.RecyclerView.ViewHolder, position: Int) {
         val path = list[position].absolutePath
         val fileName = path.substring(path.lastIndexOf(File.separator) + 1)
@@ -114,15 +118,27 @@ class QuickAccessAdapter(val context: Context?) : androidx.recyclerview.widget.R
                         .load(File(list[position].absolutePath)).into(it)
             }
 
-            if (position == 0 && pref?.isOcrOnboardingShown() == false) {
-                // TODO: Quick fix to avoid issue where lottie anim cannot be played again after being recycled
-                holder.setIsRecyclable(false)
-
+            if (shouldPlayOcrHint(this)) {
                 holder.itemView.ocr_onboarding_hint.visibility = View.VISIBLE
-                holder.itemView.ocr_onboarding_hint.post {
-                    holder.itemView.ocr_onboarding_hint.playAnimation()
-                }
+            } else {
+                holder.itemView.ocr_onboarding_hint.visibility = View.GONE
             }
+
+            // TODO: RecyclerView will temporarily detach child view during
+            // onLayoutChildren(this happens after onBindViewHolder), making
+            // LottieAnimationView stop the animation.
+            holder.itemView.addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
+                override fun onViewAttachedToWindow(v: View?) {
+                    if (shouldPlayOcrHint(this@apply)) {
+                        holder.itemView.ocr_onboarding_hint.playAnimation()
+                    }
+                }
+
+                override fun onViewDetachedFromWindow(v: View?) {
+                    // LottieAnimationView will stop animation once being detached, no need to call
+                    // cancelAnimation()
+                }
+            })
         }
     }
 

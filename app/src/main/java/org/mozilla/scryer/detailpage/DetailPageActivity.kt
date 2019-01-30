@@ -409,7 +409,7 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
     private fun showConnectPromptSnackbar() {
         Snackbar.make(snackbar_container, R.string.detail_ocr_error_module, Snackbar.LENGTH_LONG).apply {
             setAction(R.string.detail_ocr_error_action_connect) {
-                startActivity(Intent(Settings.ACTION_WIFI_SETTINGS))
+                startActivity(Intent(Settings.ACTION_WIRELESS_SETTINGS))
                 TelemetryWrapper.clickOnOCRErrorTip(getString(R.string.detail_ocr_error_module))
             }
             show()

@@ -98,6 +98,9 @@ class TelemetryWrapper {
         const val MESSAGE = "message"
         const val TRIGGER = "trigger"
         const val FROM = "from"
+        const val LINKS_FOUND = "links_found"
+        const val TEXT_BLOCKS = "text_blocks"
+        const val TOTAL_LENGTH = "total_length"
     }
 
     object ExtraValue {
@@ -484,9 +487,17 @@ class TelemetryWrapper {
                 method = Method.V1,
                 `object` = Object.GO,
                 value = "success,weird_size,fail",
-                extras = [TelemetryExtra(name = Extra.MESSAGE, value = "empty or failing reason")])
-        fun viewTextInScreenshot(value: String, message: String = "") {
-            EventBuilder(Category.VIEW_TEXT_IN_SCREENSHOT, Method.V1, Object.GO, value).extra(Extra.MESSAGE, message).queue()
+                extras = [TelemetryExtra(name = Extra.MESSAGE, value = "empty or failing reason"),
+                    TelemetryExtra(name = Extra.LINKS_FOUND, value = "[0-9]+"),
+                    TelemetryExtra(name = Extra.TEXT_BLOCKS, value = "[0-9]+"),
+                    TelemetryExtra(name = Extra.TOTAL_LENGTH, value = "[0-9]+")])
+        fun viewTextInScreenshot(textRecognitionResult: TextRecognitionResult) {
+            EventBuilder(Category.VIEW_TEXT_IN_SCREENSHOT, Method.V1, Object.GO, textRecognitionResult.value)
+                    .extra(Extra.MESSAGE, textRecognitionResult.message)
+                    .extra(Extra.LINKS_FOUND, textRecognitionResult.linksFound.toString())
+                    .extra(Extra.TEXT_BLOCKS, textRecognitionResult.textBlocks.toString())
+                    .extra(Extra.TOTAL_LENGTH, textRecognitionResult.totalLength.toString())
+                    .queue()
             AdjustHelper.trackEvent(ADJUST_EVENT_VIEW_TEXT_IN_SCREENSHOT)
         }
 
@@ -819,4 +830,10 @@ class TelemetryWrapper {
             private const val MEASUREMENT_SCREENSHOT_COUNT = "screenshot_count"
         }
     }
+
+    data class TextRecognitionResult(val value: String,
+                                     val message: String = "",
+                                     val linksFound: Int = 0,
+                                     val textBlocks: Int = 0,
+                                     val totalLength: Int = 0)
 }

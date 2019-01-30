@@ -28,7 +28,7 @@
 |View screenshot|View screenshot|1|go|""|"" 
 |Share screenshot|Share screenshot|1|go|""|"" 
 |Extract text from screenshot|Extract text from screenshot|1|go|""|"" 
-|View text in screenshot|View text in screenshot|1|go|"success,weird_size,fail"|"message=empty or failing reason," 
+|View text in screenshot|View text in screenshot|1|go|"success,weird_size,fail"|"message=empty or failing reason,links_found=[0-9]+,text_blocks=[0-9]+,total_length=[0-9]+," 
 |Prompt extracted text menu|Prompt extracted text menu|1|go|""|"" 
 |Search from extracted text|Search from extracted text|1|go|""|"" 
 |Copy extracted text|Copy extracted text|1|go|""|"" 

@@ -374,9 +374,9 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
                     ScryerToast.makeText(this@DetailPageActivity,
                             getString(R.string.detail_ocr_error_edgecase),
                             Toast.LENGTH_SHORT).show()
-                    TelemetryWrapper.viewTextInScreenshot(TelemetryWrapper.Value.WEIRD_SIZE)
+                    TelemetryWrapper.viewTextInScreenshot(textRecognitionResultForTelemetry(TelemetryWrapper.Value.WEIRD_SIZE, result.value))
                 } else {
-                    TelemetryWrapper.viewTextInScreenshot(TelemetryWrapper.Value.SUCCESS)
+                    TelemetryWrapper.viewTextInScreenshot(textRecognitionResultForTelemetry(TelemetryWrapper.Value.SUCCESS, result.value))
                 }
 
                 if (isRecognizing) {
@@ -391,19 +391,30 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
 
             } else if (result is Result.Unavailable) {
                 showConnectPromptSnackbar()
-                TelemetryWrapper.viewTextInScreenshot(TelemetryWrapper.Value.FAIL, result.msg)
+                TelemetryWrapper.viewTextInScreenshot(TelemetryWrapper.TextRecognitionResult(TelemetryWrapper.Value.FAIL, result.msg))
 
             } else if (result is Result.Failed) {
                 ScryerToast.makeText(this@DetailPageActivity,
                         getString(R.string.detail_ocr_error_failed),
                         Toast.LENGTH_SHORT).show()
 
-                TelemetryWrapper.viewTextInScreenshot(TelemetryWrapper.Value.FAIL, result.msg)
+                TelemetryWrapper.viewTextInScreenshot(TelemetryWrapper.TextRecognitionResult(TelemetryWrapper.Value.FAIL, result.msg))
             }
 
             isRecognizing = false
             updateUI()
         }
+    }
+
+    private fun textRecognitionResultForTelemetry(value: String, textResult: FirebaseVisionText): TelemetryWrapper.TextRecognitionResult {
+        val regex = "http://|https://".toRegex()
+        val match = regex.find(textResult.text)
+
+        val textBlocks = textResult.textBlocks.size
+        val totalLength = textResult.text.length
+
+        return TelemetryWrapper.TextRecognitionResult(value, "",
+                match?.groupValues?.size ?: 0, textBlocks, totalLength)
     }
 
     private fun showConnectPromptSnackbar() {

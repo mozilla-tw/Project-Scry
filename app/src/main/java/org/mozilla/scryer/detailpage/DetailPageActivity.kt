@@ -261,6 +261,7 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
             }
             R.id.action_select_all -> {
                 selectAllBlocks()
+                TelemetryWrapper.selectAllExtractedText()
             }
             else -> return super.onOptionsItemSelected(item)
         }
@@ -355,6 +356,8 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
                         }
                     }
                 })
+
+        textModePanelHint.setOnClickListener { TelemetryWrapper.clickOnOCRBottomTip() }
     }
 
     private fun startRecognition() {
@@ -407,6 +410,7 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
         Snackbar.make(snackbar_container, R.string.detail_ocr_error_module, Snackbar.LENGTH_LONG).apply {
             setAction(R.string.detail_ocr_error_action_connect) {
                 startActivity(Intent(Settings.ACTION_WIFI_SETTINGS))
+                TelemetryWrapper.clickOnOCRErrorTip(getString(R.string.detail_ocr_error_module))
             }
             show()
         }
@@ -638,7 +642,12 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
         val touchHelper = GraphicOverlayTouchHelper(this, blocks)
         touchHelper.callback = object : GraphicOverlayTouchHelper.Callback {
             override fun onBlockSelectStateChanged(block: TextBlockGraphic?) {
-                updatePanel(graphicOverlayHelper.getSelectedText())
+                val selectedText = graphicOverlayHelper.getSelectedText()
+                updatePanel(selectedText)
+
+                if (!selectedText.isEmpty()) {
+                    TelemetryWrapper.clickOnTextBlock()
+                }
             }
         }
         graphicOverlay.setOnTouchListener { _, event ->

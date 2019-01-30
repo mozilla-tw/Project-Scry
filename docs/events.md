@@ -34,6 +34,7 @@
 |Copy extracted text|Copy extracted text|1|go|""|"" 
 |Share extracted text|Share extracted text|1|go|""|"" 
 |Click on text block|Click on text block|1|go|""|"" 
+|Click link in extracted text|Click link in extracted text|1|go|""|"" 
 |Select all extracted text|Select all extracted text|1|go|""|"" 
 |Click on OCR bottom tip|Click on OCR bottom tip|1|go|""|"" 
 |Click on OCR error tip|Click on OCR error tip|1|go|""|"message=ui message," 

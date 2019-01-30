@@ -45,6 +45,7 @@ import org.mozilla.scryer.promote.Promoter
 import org.mozilla.scryer.sortingpanel.SortingPanelActivity
 import org.mozilla.scryer.telemetry.TelemetryWrapper
 import org.mozilla.scryer.ui.ScryerToast
+import org.mozilla.scryer.ui.TextViewClickMovement
 import org.mozilla.scryer.viewmodel.ScreenshotViewModel
 import kotlin.coroutines.experimental.CoroutineContext
 import kotlin.coroutines.experimental.suspendCoroutine
@@ -356,6 +357,12 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
                         }
                     }
                 })
+
+        textModePanelTextView.movementMethod = TextViewClickMovement(this, object : TextViewClickMovement.OnTextViewClickMovementListener {
+            override fun onLinkClicked(linkText: String, linkType: TextViewClickMovement.LinkType) {
+                TelemetryWrapper.clickLinkInExtractedText()
+            }
+        })
 
         textModePanelHint.setOnClickListener { TelemetryWrapper.clickOnOCRBottomTip() }
     }

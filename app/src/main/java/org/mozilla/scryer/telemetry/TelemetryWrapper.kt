@@ -57,6 +57,7 @@ class TelemetryWrapper {
         const val COPY_EXTRACTED_TEXT = "Copy extracted text"
         const val SHARE_EXTRACTED_TEXT = "Share extracted text"
         const val CLICK_ON_TEXT_BLOCK = "Click on text block"
+        const val CLICK_LINK_IN_EXTRACTED_TEXT = "Click link in extracted text"
         const val SELECT_ALL_EXTRACTED_TEXT = "Select all extracted text"
         const val CLICK_ON_OCR_BOTTOM_TIP = "Click on OCR bottom tip"
         const val CLICK_ON_OCR_ERROR_TIP = "Click on OCR error tip"
@@ -554,6 +555,17 @@ class TelemetryWrapper {
                 extras = [])
         fun clickOnTextBlock() {
             EventBuilder(Category.CLICK_ON_TEXT_BLOCK, Method.V1, Object.GO).queue()
+        }
+
+        @TelemetryDoc(
+                name = Category.CLICK_LINK_IN_EXTRACTED_TEXT,
+                category = Category.CLICK_LINK_IN_EXTRACTED_TEXT,
+                method = Method.V1,
+                `object` = Object.GO,
+                value = "",
+                extras = [])
+        fun clickLinkInExtractedText() {
+            EventBuilder(Category.CLICK_LINK_IN_EXTRACTED_TEXT, Method.V1, Object.GO).queue()
         }
 
         @TelemetryDoc(

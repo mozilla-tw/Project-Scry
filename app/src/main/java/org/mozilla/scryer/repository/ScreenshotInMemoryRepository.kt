@@ -85,4 +85,8 @@ class ScreenshotInMemoryRepository : ScreenshotRepository {
     override fun getCollection(id: String): CollectionModel? {
         return null
     }
+
+    override fun searchScreenshots(queryText: String): LiveData<List<ScreenshotModel>> {
+        return screenshotData
+    }
 }

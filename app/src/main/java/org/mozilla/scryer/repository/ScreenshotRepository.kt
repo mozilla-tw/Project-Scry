@@ -17,15 +17,7 @@ import org.mozilla.scryer.persistence.ScreenshotModel
 interface ScreenshotRepository {
     companion object Factory {
         fun createRepository(context: Context, onCreated: () -> Unit): ScreenshotRepository {
-            val callback = object : RoomDatabase.Callback() {
-                override fun onCreate(db: SupportSQLiteDatabase) {
-                    onCreated()
-                }
-            }
-            return ScreenshotDatabaseRepository(Room.databaseBuilder(context.applicationContext,
-                    ScreenshotDatabase::class.java, "screenshot-db")
-                    .addCallback(callback)
-                    .build())
+            return ScreenshotDatabaseRepository.create(context, onCreated)
         }
     }
 
@@ -47,6 +39,7 @@ interface ScreenshotRepository {
     fun getScreenshots(collectionIds: List<String>): LiveData<List<ScreenshotModel>>
     fun getScreenshotList(collectionIds: List<String>): List<ScreenshotModel>
     fun deleteScreenshot(screenshot: ScreenshotModel)
+    fun searchScreenshots(queryText: String): LiveData<List<ScreenshotModel>>
 
     fun setupDefaultContent(context: Context) {
         TODO("not implemented")

@@ -651,6 +651,7 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
                 // TODO: Do we really need to save(rewrite) existed item to db again here(replace)?
                 externalModel.id = localModel.id
                 externalModel.collectionId = localModel.collectionId
+                externalModel.contentText = localModel.contentText
 
                 // Remove processed item from the lookup table
                 localModels.remove(externalModel.absolutePath)

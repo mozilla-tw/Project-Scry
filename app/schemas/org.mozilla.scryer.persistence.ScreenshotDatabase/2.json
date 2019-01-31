@@ -1,0 +1,156 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 2,
+    "identityHash": "8f07646786f4215ae640feb57a9587ee",
+    "entities": [
+      {
+        "tableName": "collection",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `date` INTEGER NOT NULL, `color` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdDate",
+            "columnName": "date",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "color",
+            "columnName": "color",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "screenshot",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `absolute_path` TEXT NOT NULL, `last_modified` INTEGER NOT NULL, `collection_id` TEXT NOT NULL, `content_text` TEXT, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "absolutePath",
+            "columnName": "absolute_path",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lastModified",
+            "columnName": "last_modified",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "collectionId",
+            "columnName": "collection_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "contentText",
+            "columnName": "content_text",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_screenshot_collection_id",
+            "unique": false,
+            "columnNames": [
+              "collection_id"
+            ],
+            "createSql": "CREATE  INDEX `index_screenshot_collection_id` ON `${TABLE_NAME}` (`collection_id`)"
+          },
+          {
+            "name": "index_screenshot_absolute_path",
+            "unique": true,
+            "columnNames": [
+              "absolute_path"
+            ],
+            "createSql": "CREATE UNIQUE INDEX `index_screenshot_absolute_path` ON `${TABLE_NAME}` (`absolute_path`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "ftsVersion": "FTS4",
+        "ftsOptions": {
+          "tokenizer": "simple",
+          "tokenizerArgs": [],
+          "contentTable": "screenshot",
+          "languageIdColumnName": "",
+          "matchInfo": "FTS4",
+          "notIndexedColumns": [],
+          "prefixSizes": [],
+          "preferredOrder": "ASC"
+        },
+        "contentSyncTriggers": [
+          "CREATE TRIGGER IF NOT EXISTS room_fts_content_sync_fts_BEFORE_UPDATE BEFORE UPDATE ON `screenshot` BEGIN DELETE FROM `fts` WHERE `docid`=OLD.`rowid`; END",
+          "CREATE TRIGGER IF NOT EXISTS room_fts_content_sync_fts_BEFORE_DELETE BEFORE DELETE ON `screenshot` BEGIN DELETE FROM `fts` WHERE `docid`=OLD.`rowid`; END",
+          "CREATE TRIGGER IF NOT EXISTS room_fts_content_sync_fts_AFTER_UPDATE AFTER UPDATE ON `screenshot` BEGIN INSERT INTO `fts`(`docid`, `content_text`) VALUES (NEW.`rowid`, NEW.`content_text`); END",
+          "CREATE TRIGGER IF NOT EXISTS room_fts_content_sync_fts_AFTER_INSERT AFTER INSERT ON `screenshot` BEGIN INSERT INTO `fts`(`docid`, `content_text`) VALUES (NEW.`rowid`, NEW.`content_text`); END"
+        ],
+        "tableName": "fts",
+        "createSql": "CREATE VIRTUAL TABLE IF NOT EXISTS `${TABLE_NAME}` USING FTS4(`content_text` TEXT NOT NULL, content=`screenshot`)",
+        "fields": [
+          {
+            "fieldPath": "rowid",
+            "columnName": "rowid",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "contentText",
+            "columnName": "content_text",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "rowid"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"8f07646786f4215ae640feb57a9587ee\")"
+    ]
+  }
+}

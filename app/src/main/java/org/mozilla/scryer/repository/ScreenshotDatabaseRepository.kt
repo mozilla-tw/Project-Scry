@@ -9,6 +9,10 @@ import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
+import androidx.room.Room
+import androidx.room.RoomDatabase
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import org.mozilla.scryer.R
 import org.mozilla.scryer.persistence.CollectionModel
 import org.mozilla.scryer.persistence.ScreenshotDatabase
@@ -17,6 +21,34 @@ import org.mozilla.scryer.persistence.SuggestCollectionHelper
 import org.mozilla.scryer.util.launchIO
 
 class ScreenshotDatabaseRepository(private val database: ScreenshotDatabase) : ScreenshotRepository {
+    companion object {
+        fun create(context: Context, onCreated: () -> Unit): ScreenshotDatabaseRepository {
+            val callback = object : RoomDatabase.Callback() {
+                override fun onCreate(db: SupportSQLiteDatabase) {
+                    onCreated()
+                }
+            }
+            return ScreenshotDatabaseRepository(
+                    Room.databaseBuilder(context.applicationContext, ScreenshotDatabase::class.java,
+                            "screenshot-db")
+                            .addMigrations(MIGRATION_1_2)
+                            .addCallback(callback)
+                            .build()
+            )
+        }
+
+        private val MIGRATION_1_2 = object : Migration(1, 2) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE screenshot ADD COLUMN content_text TEXT")
+                database.execSQL(
+                        "CREATE VIRTUAL TABLE IF NOT EXISTS `fts` USING FTS4(" +
+                        "`content_text`, " +
+                        "content=`screenshot`)"
+                )
+            }
+        }
+    }
+
     private var collectionListData = database.collectionDao().getCollections()
     private val screenshotListData = database.screenshotDao().getScreenshots()
 
@@ -109,5 +141,9 @@ class ScreenshotDatabaseRepository(private val database: ScreenshotDatabase) : S
 
     override fun updateCollectionId(collection: CollectionModel, id: String) {
         database.collectionDao().updateCollectionId(collection, id)
+    }
+
+    override fun searchScreenshots(queryText: String): LiveData<List<ScreenshotModel>> {
+        return database.screenshotDao().searchScreenshots(queryText)
     }
 }

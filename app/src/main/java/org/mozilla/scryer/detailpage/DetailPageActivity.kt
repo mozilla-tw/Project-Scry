@@ -26,10 +26,7 @@ import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.text.FirebaseVisionText
 import kotlinx.android.synthetic.main.activity_detail_page.*
-import kotlinx.coroutines.experimental.CoroutineScope
-import kotlinx.coroutines.experimental.Dispatchers
-import kotlinx.coroutines.experimental.launch
-import kotlinx.coroutines.experimental.withContext
+import kotlinx.coroutines.experimental.*
 import mozilla.components.browser.search.SearchEngineManager
 import mozilla.components.browser.search.provider.AssetsSearchEngineProvider
 import mozilla.components.browser.search.provider.localization.LocaleSearchLocalizationProvider
@@ -372,8 +369,9 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
         launch(Dispatchers.Main) {
             updateUI()
 
+            val screenshot = screenshots[view_pager.currentItem]
             val result = withContext(Dispatchers.Default) {
-                runTextRecognition(screenshots[view_pager.currentItem])
+                runTextRecognition(screenshot)
             }
 
             if (result is Result.Success) {
@@ -385,6 +383,8 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
                 } else {
                     TelemetryWrapper.viewTextInScreenshot(textRecognitionResultForTelemetry(TelemetryWrapper.Value.SUCCESS, result.value))
                 }
+
+                writeContentTextToDb(screenshot, result.value.text)
 
                 if (isRecognizing) {
                     isTextMode = true
@@ -410,6 +410,13 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
 
             isRecognizing = false
             updateUI()
+        }
+    }
+
+    private fun writeContentTextToDb(screenshot: ScreenshotModel, contentText: String) {
+        GlobalScope.launch {
+            screenshot.contentText = contentText
+            viewModel.updateScreenshot(screenshot)
         }
     }
 

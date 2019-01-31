@@ -34,6 +34,10 @@ interface ScreenshotDao {
     @Delete
     fun deleteScreenshot(screenshot: ScreenshotModel)
 
+    @Query("SELECT screenshot.* FROM screenshot JOIN fts ON " +
+            "screenshot.rowid = fts.docid WHERE fts.content_text MATCH :queryText")
+    fun searchScreenshots(queryText: String): LiveData<List<ScreenshotModel>>
+
     @Query("SELECT screenshot.* FROM (SELECT id, max(last_modified) AS max_date FROM screenshot GROUP BY collection_id) AS latest INNER JOIN screenshot ON latest.id = screenshot.id AND screenshot.last_modified = latest.max_date")
     fun getCollectionCovers(): LiveData<List<ScreenshotModel>>
 }

@@ -8,10 +8,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.app.ActionBar
+import androidx.fragment.app.Fragment
 import org.mozilla.scryer.R
 import org.mozilla.scryer.getSupportActionBar
 
-class YourRightsFragment : androidx.fragment.app.Fragment() {
+class YourRightsFragment : Fragment() {
     companion object {
         const val TAG: String = "YourRightsFragment"
     }

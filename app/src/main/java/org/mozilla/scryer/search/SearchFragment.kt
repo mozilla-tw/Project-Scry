@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.preference.PreferenceManager
 import org.mozilla.scryer.R
 import org.mozilla.scryer.extension.getNavController
@@ -21,7 +22,7 @@ import org.mozilla.scryer.setSupportActionBar
 import org.mozilla.scryer.telemetry.TelemetryWrapper
 import org.mozilla.scryer.ui.ScryerToast
 
-class SearchFragment : androidx.fragment.app.Fragment() {
+class SearchFragment : Fragment() {
     private val PREF_SEARCH_FEEDBACK_HAS_SHOWN = "pref_search_feedback_has_shown"
 
     private val toast: ScryerToast by lazy {

@@ -12,6 +12,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.FragmentActivity
 import org.mozilla.scryer.overlay.OverlayPermission
 
 class PermissionHelper {
@@ -20,7 +21,7 @@ class PermissionHelper {
                 Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
 
         @TargetApi(Build.VERSION_CODES.M)
-        fun shouldShowStorageRational(activity: androidx.fragment.app.FragmentActivity): Boolean {
+        fun shouldShowStorageRational(activity: FragmentActivity): Boolean {
             return activity.shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)
         }
 

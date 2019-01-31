@@ -23,6 +23,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.view.ViewCompat
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.dialog_collection_info.view.*
 import kotlinx.android.synthetic.main.dialog_screenshot_info.view.*
@@ -50,7 +52,7 @@ import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
-class CollectionFragment : androidx.fragment.app.Fragment() {
+class CollectionFragment : Fragment() {
     companion object {
         const val ARG_COLLECTION_ID = "collection_id"
         const val ARG_COLLECTION_NAME = "collection_name"
@@ -58,7 +60,7 @@ class CollectionFragment : androidx.fragment.app.Fragment() {
         private const val SPAN_COUNT = 3
     }
 
-    private lateinit var screenshotListView: androidx.recyclerview.widget.RecyclerView
+    private lateinit var screenshotListView: RecyclerView
     private lateinit var subtitleView: TextView
     private lateinit var selectAllCheckbox: AppCompatCheckBox
 
@@ -356,7 +358,7 @@ class CollectionFragment : androidx.fragment.app.Fragment() {
     }
 
     private fun initScreenshotList(context: Context) {
-        val manager = androidx.recyclerview.widget.GridLayoutManager(context, SPAN_COUNT,
+        val manager = GridLayoutManager(context, SPAN_COUNT,
                 RecyclerView.VERTICAL, false)
         screenshotListView.itemAnimator = null
         screenshotListView.layoutManager = manager

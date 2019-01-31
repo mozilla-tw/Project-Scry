@@ -12,13 +12,14 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
+import androidx.recyclerview.widget.RecyclerView
 import org.mozilla.scryer.R
 import org.mozilla.scryer.extension.dpToPx
 import org.mozilla.scryer.extension.getValidPosition
 import org.mozilla.scryer.persistence.CollectionModel
 import org.mozilla.scryer.persistence.SuggestCollectionHelper
 
-class SortingPanelAdapter : androidx.recyclerview.widget.RecyclerView.Adapter<androidx.recyclerview.widget.RecyclerView.ViewHolder>() {
+class SortingPanelAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     companion object {
         private const val TYPE_NEW_COLLECTION = 0
         private const val TYPE_COLLECTION_ITEM = 1
@@ -38,7 +39,7 @@ class SortingPanelAdapter : androidx.recyclerview.widget.RecyclerView.Adapter<an
 
     private var selectedHolder: ItemHolder? = null
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): androidx.recyclerview.widget.RecyclerView.ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         when (viewType) {
             TYPE_NEW_COLLECTION -> {
                 return createNewCollectionHolder(parent)
@@ -62,7 +63,7 @@ class SortingPanelAdapter : androidx.recyclerview.widget.RecyclerView.Adapter<an
         }
     }
 
-    override fun onBindViewHolder(holder: androidx.recyclerview.widget.RecyclerView.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (position == newCollectionItemPosition) {
             bindNewCollectionItem(holder)
         } else {
@@ -70,13 +71,13 @@ class SortingPanelAdapter : androidx.recyclerview.widget.RecyclerView.Adapter<an
         }
     }
 
-    private fun bindNewCollectionItem(holder: androidx.recyclerview.widget.RecyclerView.ViewHolder) {
+    private fun bindNewCollectionItem(holder: RecyclerView.ViewHolder) {
         (holder as? NewItemHolder)?.let {
             holder.title?.text = holder.itemView.resources.getString(R.string.action_create)
         }
     }
 
-    private fun bindCollectionItem(holder: androidx.recyclerview.widget.RecyclerView.ViewHolder, position: Int) {
+    private fun bindCollectionItem(holder: RecyclerView.ViewHolder, position: Int) {
         val itemHolder = (holder as? ItemHolder) ?: return
         val item = getItem(position) ?: return
         val context = itemHolder.itemView.context
@@ -108,7 +109,7 @@ class SortingPanelAdapter : androidx.recyclerview.widget.RecyclerView.Adapter<an
         return collections?.get(position)
     }
 
-    private fun createNewCollectionHolder(parent: ViewGroup): androidx.recyclerview.widget.RecyclerView.ViewHolder {
+    private fun createNewCollectionHolder(parent: ViewGroup): RecyclerView.ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.view_sorting_panel_item, parent, false)
         view.findViewById<View>(R.id.plus_icon).visibility = View.VISIBLE
         view.background = parent.context.getDrawable(R.drawable.sorting_panel_create_bkg)
@@ -126,7 +127,7 @@ class SortingPanelAdapter : androidx.recyclerview.widget.RecyclerView.Adapter<an
         return holder
     }
 
-    private fun createCollectionHolder(parent: ViewGroup): androidx.recyclerview.widget.RecyclerView.ViewHolder {
+    private fun createCollectionHolder(parent: ViewGroup): RecyclerView.ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.view_sorting_panel_item, parent, false)
         view.findViewById<View>(R.id.plus_icon).visibility = View.GONE
         view.background = parent.context.getDrawable(R.drawable.rect_2dp)
@@ -161,13 +162,13 @@ class SortingPanelAdapter : androidx.recyclerview.widget.RecyclerView.Adapter<an
         }, DURATION_SELECT_ANIMATION)
     }
 
-    private class ItemHolder(itemView: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView) {
+    private class ItemHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var title: TextView? = null
         var checkIcon: View? = null
         var background: Drawable? = null
     }
 
-    private class NewItemHolder(itemView: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView) {
+    private class NewItemHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var title: TextView? = null
     }
 

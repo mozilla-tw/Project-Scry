@@ -12,6 +12,7 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.FragmentActivity
 import kotlinx.android.synthetic.main.view_sorting_panel.view.*
 import kotlinx.coroutines.experimental.Dispatchers
 import kotlinx.coroutines.experimental.GlobalScope
@@ -33,7 +34,7 @@ import org.mozilla.scryer.viewmodel.ScreenshotViewModel
 import java.util.*
 
 class SortingPanelDialog(
-        private val activity: androidx.fragment.app.FragmentActivity,
+        private val activity: FragmentActivity,
         val screenshots: List<ScreenshotModel>
 ) {
     private val suggestCollectionCreateTime = mutableListOf<Pair<CollectionModel, Long>>()

@@ -26,10 +26,14 @@ import androidx.appcompat.widget.AppCompatCheckBox
 import androidx.appcompat.widget.SearchView
 import androidx.constraintlayout.widget.Group
 import androidx.core.app.ActivityCompat
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.navigation.Navigation
 import androidx.preference.PreferenceManager
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import kotlinx.coroutines.experimental.*
@@ -60,7 +64,7 @@ import org.mozilla.scryer.viewmodel.ScreenshotViewModel
 import java.io.File
 import java.util.*
 
-class HomeFragment : androidx.fragment.app.Fragment(), PermissionFlow.ViewDelegate {
+class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
 
     companion object {
         private const val LOG_TAG = "HomeFragment"
@@ -78,10 +82,10 @@ class HomeFragment : androidx.fragment.app.Fragment(), PermissionFlow.ViewDelega
         QuickAccessAdapter(context)
     }
 
-    private lateinit var mainListView: androidx.recyclerview.widget.RecyclerView
+    private lateinit var mainListView: RecyclerView
     private val mainAdapter: MainAdapter = MainAdapter(this)
 
-    private lateinit var searchListView: androidx.recyclerview.widget.RecyclerView
+    private lateinit var searchListView: RecyclerView
     private val searchListAdapter: SearchAdapter by lazy {
         SearchAdapter(context)
     }
@@ -291,7 +295,7 @@ class HomeFragment : androidx.fragment.app.Fragment(), PermissionFlow.ViewDelega
 
         val receiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context, intent: Intent) {
-                androidx.localbroadcastmanager.content.LocalBroadcastManager.getInstance(context).unregisterReceiver(this)
+                LocalBroadcastManager.getInstance(context).unregisterReceiver(this)
 
                 val activity = activity ?: return
                 if (activity.isFinishing || activity.isDestroyed) {
@@ -304,12 +308,12 @@ class HomeFragment : androidx.fragment.app.Fragment(), PermissionFlow.ViewDelega
             }
         }
 
-        androidx.localbroadcastmanager.content.LocalBroadcastManager.getInstance(context).registerReceiver(receiver,
+        LocalBroadcastManager.getInstance(context).registerReceiver(receiver,
                 IntentFilter(ScryerService.EVENT_TAKE_SCREENSHOT))
 
         permissionDialog = dialog
         dialogQueue.show(dialog, DialogInterface.OnDismissListener {
-            androidx.localbroadcastmanager.content.LocalBroadcastManager.getInstance(context).unregisterReceiver(receiver)
+            LocalBroadcastManager.getInstance(context).unregisterReceiver(receiver)
         })
     }
 
@@ -446,20 +450,25 @@ class HomeFragment : androidx.fragment.app.Fragment(), PermissionFlow.ViewDelega
                 TelemetryWrapper.clickOnQuickAccess(holder.adapterPosition)
             }
 
-            override fun onMoreClick(holder: androidx.recyclerview.widget.RecyclerView.ViewHolder) {
+            override fun onMoreClick(holder: RecyclerView.ViewHolder) {
                 Navigation.findNavController(holder.itemView).navigate(R.id.action_navigate_to_collection, Bundle())
                 TelemetryWrapper.clickMoreOnQuickAccess()
             }
         }
 
-        with (quickAccessContainer.findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.list_view)) {
-            layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context, androidx.recyclerview.widget.LinearLayoutManager.HORIZONTAL, false)
+        with (quickAccessContainer.findViewById<RecyclerView>(R.id.list_view)) {
+            layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
             adapter = quickAccessAdapter
 
             val spaceOuter = resources.getDimensionPixelSize(R.dimen.home_horizontal_padding)
             val spaceInner = resources.getDimensionPixelSize(R.dimen.quick_access_item_space)
-            addItemDecoration(object : androidx.recyclerview.widget.RecyclerView.ItemDecoration() {
-                override fun getItemOffsets(outRect: Rect, view: View, parent: androidx.recyclerview.widget.RecyclerView, state: androidx.recyclerview.widget.RecyclerView.State) {
+            addItemDecoration(object : RecyclerView.ItemDecoration() {
+                override fun getItemOffsets(
+                        outRect: Rect,
+                        view: View,
+                        parent: RecyclerView,
+                        state: RecyclerView.State
+                ) {
                     val position = parent.getChildAdapterPosition(view)
                     if (position == 0) {
                         outRect.left = spaceOuter
@@ -483,7 +492,7 @@ class HomeFragment : androidx.fragment.app.Fragment(), PermissionFlow.ViewDelega
     }
 
     private fun initCollectionList(context: Context) {
-        val manager = androidx.recyclerview.widget.GridLayoutManager(context, COLLECTION_COLUMN_COUNT,
+        val manager = GridLayoutManager(context, COLLECTION_COLUMN_COUNT,
                 RecyclerView.VERTICAL, false)
         manager.spanSizeLookup = MainAdapter.SpanSizeLookup(COLLECTION_COLUMN_COUNT)
         mainListView.layoutManager = manager
@@ -515,7 +524,7 @@ class HomeFragment : androidx.fragment.app.Fragment(), PermissionFlow.ViewDelega
     }
 
     private fun initSearchList(context: Context) {
-        val manager = androidx.recyclerview.widget.GridLayoutManager(context, COLLECTION_COLUMN_COUNT,
+        val manager = GridLayoutManager(context, COLLECTION_COLUMN_COUNT,
                 RecyclerView.VERTICAL, false)
         searchListView.layoutManager = manager
         searchListView.adapter = searchListAdapter

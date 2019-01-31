@@ -11,11 +11,12 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.ActionBar
+import androidx.fragment.app.Fragment
 import org.mozilla.scryer.R
 import org.mozilla.scryer.getSupportActionBar
 import java.util.*
 
-class AboutFragment : androidx.fragment.app.Fragment() {
+class AboutFragment : Fragment() {
     companion object {
         const val TAG: String = "AboutFragment"
     }

@@ -6,7 +6,6 @@
 package org.mozilla.scryer.landingpage
 
 import android.Manifest
-
 import android.app.Activity
 import android.app.SearchManager
 import android.content.*
@@ -24,7 +23,6 @@ import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatDialog
 import androidx.appcompat.widget.AppCompatCheckBox
 import androidx.appcompat.widget.SearchView
-import androidx.constraintlayout.widget.Group
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -36,13 +34,15 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import kotlinx.android.synthetic.main.fragment_home.*
+import kotlinx.android.synthetic.main.fragment_home.view.*
+import kotlinx.android.synthetic.main.view_quick_access.view.*
 import kotlinx.coroutines.experimental.*
 import mozilla.components.support.base.log.Log
 import org.mozilla.scryer.*
 import org.mozilla.scryer.capture.ScreenCaptureManager
 import org.mozilla.scryer.collectionview.ScreenshotItemHolder
 import org.mozilla.scryer.detailpage.DetailPageActivity
-import org.mozilla.scryer.extension.dpToPx
 import org.mozilla.scryer.extension.navigateSafely
 import org.mozilla.scryer.filemonitor.ScreenshotFetcher
 import org.mozilla.scryer.permission.PermissionFlow
@@ -58,7 +58,6 @@ import org.mozilla.scryer.setting.SettingsActivity
 import org.mozilla.scryer.sortingpanel.SortingPanelActivity
 import org.mozilla.scryer.telemetry.TelemetryWrapper
 import org.mozilla.scryer.ui.BottomDialogFactory
-import org.mozilla.scryer.ui.GridItemDecoration
 import org.mozilla.scryer.util.launchIO
 import org.mozilla.scryer.viewmodel.ScreenshotViewModel
 import java.io.File
@@ -76,19 +75,12 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
         private const val PREF_SHOW_ENABLE_SERVICE_DIALOG = "show_enable_service_dialog"
     }
 
-    private lateinit var quickAccessContainer: ViewGroup
-    private lateinit var quickAccessEmptyView: Group
+    private var quickAccessContainer: ViewGroup? = null
     private val quickAccessAdapter: QuickAccessAdapter by lazy {
         QuickAccessAdapter(context)
     }
 
-    private lateinit var mainListView: RecyclerView
     private val mainAdapter: MainAdapter = MainAdapter(this)
-
-    private lateinit var searchListView: RecyclerView
-    private val searchListAdapter: SearchAdapter by lazy {
-        SearchAdapter(context)
-    }
 
     private lateinit var permissionFlow: PermissionFlow
     private var storagePermissionView: View? = null
@@ -100,12 +92,6 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
         ScreenshotViewModel.get(this)
     }
 
-    private val searchObserver = Observer<List<ScreenshotModel>> { screenshots ->
-        screenshots?.let { newData ->
-            searchListAdapter.setScreenshotList(newData)
-        }
-    }
-
     private val pref: PreferenceWrapper? by lazy {
         context?.let {
             PreferenceWrapper(it)
@@ -114,17 +100,13 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val layout = inflater.inflate(R.layout.fragment_home, container, false)
-        mainListView = layout.findViewById(R.id.main_list)
         quickAccessContainer = View.inflate(inflater.context, R.layout.view_quick_access, null) as ViewGroup
-        quickAccessEmptyView = quickAccessContainer.findViewById(R.id.empty_view_group)
-        searchListView = layout.findViewById(R.id.search_list)
         return layout
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         initQuickAccessList(view.context)
         initCollectionList(view.context)
-        initSearchList(view.context)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -132,8 +114,6 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
 
         initActionBar()
         initPermissionFlow()
-
-        view!!.findViewById<View>(R.id.root_view).requestFocus()
     }
 
     override fun onResume() {
@@ -144,6 +124,13 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
     override fun onStart() {
         super.onStart()
         promptPromotionIfNeeded()
+    }
+
+    override fun onDestroyView() {
+        main_list.adapter = null
+        quickAccessContainer?.list_view?.adapter = null
+        quickAccessContainer = null
+        super.onDestroyView()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -407,20 +394,6 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
             Toast.makeText(context, "WIP!", Toast.LENGTH_SHORT).show()
         }
 
-        searchView.addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
-            override fun onViewDetachedFromWindow(v: View?) {
-//                searchListView.visibility = View.INVISIBLE
-//                mainListView.visibility = View.VISIBLE
-                viewModel.getScreenshots().removeObserver(searchObserver)
-            }
-
-            override fun onViewAttachedToWindow(v: View?) {
-//                searchListView.visibility = View.VISIBLE
-//                mainListView.visibility = View.INVISIBLE
-                viewModel.getScreenshots().observe(this@HomeFragment, searchObserver)
-            }
-        })
-
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 //searchListAdapter.filter.filter(query)
@@ -456,7 +429,7 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
             }
         }
 
-        with (quickAccessContainer.findViewById<RecyclerView>(R.id.list_view)) {
+        quickAccessContainer?.list_view?.apply {
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
             adapter = quickAccessAdapter
 
@@ -482,7 +455,7 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
             })
         }
 
-        viewModel.getScreenshots().observe(this, Observer { screenshots ->
+        viewModel.getScreenshots().observe(this.viewLifecycleOwner, Observer { screenshots ->
             screenshots?.let { newList ->
                 val finalList = newList.sortedByDescending { it.lastModified }
                         .subList(0, Math.min(newList.size, QUICK_ACCESS_ITEM_COUNT + 1))
@@ -495,15 +468,17 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
         val manager = GridLayoutManager(context, COLLECTION_COLUMN_COUNT,
                 RecyclerView.VERTICAL, false)
         manager.spanSizeLookup = MainAdapter.SpanSizeLookup(COLLECTION_COLUMN_COUNT)
-        mainListView.layoutManager = manager
+        root_view.main_list.layoutManager = manager
 
-        mainAdapter.quickAccessContainer = quickAccessContainer
-        mainListView.adapter = mainAdapter
+        quickAccessContainer?.let {
+            mainAdapter.quickAccessContainer = it
+        }
+        root_view.main_list.adapter = mainAdapter
 
         val spaceOuter = resources.getDimensionPixelSize(R.dimen.home_horizontal_padding)
-        mainListView.addItemDecoration(MainAdapter.ItemDecoration(context, COLLECTION_COLUMN_COUNT, spaceOuter, 0))
+        root_view.main_list.addItemDecoration(MainAdapter.ItemDecoration(context, COLLECTION_COLUMN_COUNT, spaceOuter, 0))
 
-        viewModel.getCollections().observe(this, Observer { collections ->
+        viewModel.getCollections().observe(this.viewLifecycleOwner, Observer { collections ->
             collections?.asSequence()?.filter {
                 !SuggestCollectionHelper.isSuggestCollection(it)
 
@@ -515,7 +490,7 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
             }
         })
 
-        viewModel.getCollectionCovers().observe(this, Observer { coverMap ->
+        viewModel.getCollectionCovers().observe(this.viewLifecycleOwner, Observer { coverMap ->
             coverMap?.let { newData ->
                 mainAdapter.coverList = newData
                 mainAdapter.notifyDataSetChanged()
@@ -523,17 +498,8 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
         })
     }
 
-    private fun initSearchList(context: Context) {
-        val manager = GridLayoutManager(context, COLLECTION_COLUMN_COUNT,
-                RecyclerView.VERTICAL, false)
-        searchListView.layoutManager = manager
-        searchListView.adapter = searchListAdapter
-        val space = 8f.dpToPx(context.resources.displayMetrics)
-        searchListView.addItemDecoration(GridItemDecoration(COLLECTION_COLUMN_COUNT, space))
-    }
-
     private fun updateQuickAccessListView(screenshots: List<ScreenshotModel>) {
-        quickAccessEmptyView.visibility = if (screenshots.isEmpty()) {
+        quickAccessContainer?.empty_view_group?.visibility = if (screenshots.isEmpty()) {
             View.VISIBLE
         } else {
             View.INVISIBLE

@@ -55,7 +55,7 @@ class MainAdapter(private val fragment: Fragment?): RecyclerView.Adapter<Recycle
         const val CONTEXT_MENU_ID_DELETE = 2
     }
 
-    lateinit var quickAccessContainer: View
+    lateinit var quickAccessContainer: ViewGroup
 
     var collectionList: List<CollectionModel> = emptyList()
     var coverList: Map<String, ScreenshotModel> = HashMap()

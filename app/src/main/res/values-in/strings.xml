@@ -115,9 +115,18 @@
   <string name="onboarding_search_content_feedback">Terima kasih atas umpan balik Anda!</string>
   <string name="onboarding_ocr_title_more">Lakukan lebih banyak dengan tangkapan layar</string>
   <string name="onboarding_ocr_content_examples">Cari produk, salin kode kupon, dan bagikan penawaran di tangkapan layar Anda</string>
+  <string name="onboarding_search_title_search">Menemukan tangkapan layar sekarang lebih mudah</string>
+  <string name="onboarding_search_content_typeword">Cukup ketik untuk mencari kata dalam tangkapan layar</string>
+  <string name="onboarding_search_caption_battery">Untuk mewujudkan ini, kami akan mengenali tangkapan layar Anda terlebih dahulu. Mungkin menghabiskan lebih banyak baterai, tetapi tidak akan lama!</string>
   <string name="dialogue_feedback_title">Suka %1$s?</string>
   <string name="dialogue_share_title">Bagikan %1$s dengan teman!</string>
   <string name="dialogue_take_share_description">Nikmati mengambil tangkapan layar? Bagikan sekarang!</string>
   <string name="dialogue_sort_share_description">Nikmati mengatur screenshot? Bagikan sekarang!</string>
   <string name="dialogue_ocr_share_description">Apakah screenshot berguna? Bagikan sekarang!</string>
+  <string name="search_transition_searching">Mencari...</string>
+  <string name="search_error_title_noresult">Tidak ada yang ditemukan</string>
+  <string name="search_error_content_try">Coba kata lain</string>
+  <string name="search_separator_results">%1$d hasil</string>
+  <string name="search_transition_progress">%1$d tangkapan layar tersisa ...</string>
+  <string name="search_transition_content_searchable">Kami membuat semua tangkapan layar dapat dicari. Anda dapat segera mengetik untuk mencari kata dalam tangkapan layar!</string>
 </resources>

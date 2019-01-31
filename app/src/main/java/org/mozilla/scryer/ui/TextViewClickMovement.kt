@@ -64,7 +64,11 @@ class TextViewClickMovement(context: Context, private val mListener: OnTextViewC
         mBuffer = buffer
         mGestureDetector.onTouchEvent(event)
 
-        return super.onTouchEvent(widget, buffer, event)
+        // Workaround to the crash happened when textIsSelectable is true
+        // and linkify is enable with custom LinkMovementMethod
+        // https://issuetracker.google.com/issues/37020604
+        // https://stackoverflow.com/questions/22810147/error-when-selecting-text-from-textview-java-lang-indexoutofboundsexception-se
+        return false
     }
 
     /**

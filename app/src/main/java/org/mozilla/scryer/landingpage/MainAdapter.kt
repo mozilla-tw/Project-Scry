@@ -14,15 +14,9 @@ import android.view.*
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.LayoutRes
-import androidx.constraintlayout.widget.Group
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import kotlinx.android.synthetic.main.view_quick_access.view.*
 import org.mozilla.scryer.R
 import org.mozilla.scryer.collectionview.CollectionFragment
 import org.mozilla.scryer.collectionview.OnContextMenuActionListener
@@ -38,7 +32,7 @@ import org.mozilla.scryer.ui.GridItemDecoration
 import org.mozilla.scryer.viewmodel.ScreenshotViewModel
 import java.io.File
 
-class MainAdapter(private val fragment: Fragment?): RecyclerView.Adapter<RecyclerView.ViewHolder>(),
+class MainAdapter(private val fragment: androidx.fragment.app.Fragment?): androidx.recyclerview.widget.RecyclerView.Adapter<androidx.recyclerview.widget.RecyclerView.ViewHolder>(),
         OnContextMenuActionListener {
     companion object {
         const val TYPE_SECTION_NAME = 0
@@ -58,20 +52,17 @@ class MainAdapter(private val fragment: Fragment?): RecyclerView.Adapter<Recycle
         const val CONTEXT_MENU_ID_DELETE = 2
     }
 
-    private var quickAccessContainer: ViewGroup? = null
-    private var quickAccessEmptyView: Group? = null
-
-    lateinit var quickAccessAdapter: QuickAccessAdapter
+    lateinit var quickAccessContainer: View
 
     var collectionList: List<CollectionModel> = emptyList()
     var coverList: Map<String, ScreenshotModel> = HashMap()
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): androidx.recyclerview.widget.RecyclerView.ViewHolder {
         when (viewType) {
             TYPE_SECTION_NAME ->
                 return createSectionNameHolder(parent)
             TYPE_QUICK_ACCESS ->
-                return createQuickAccessHolder(parent)
+                return createQuickAccessHolder()
             TYPE_COLLECTION_ITEM ->
                 return createCollectionHolder(parent)
             TYPE_NEW_COLLECTION_ITEM ->
@@ -100,7 +91,7 @@ class MainAdapter(private val fragment: Fragment?): RecyclerView.Adapter<Recycle
         }
     }
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: androidx.recyclerview.widget.RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is SectionNameHolder -> bindSectionNameHolder(holder, position)
             is StaticHolder -> return
@@ -108,7 +99,7 @@ class MainAdapter(private val fragment: Fragment?): RecyclerView.Adapter<Recycle
         }
     }
 
-    override fun onViewRecycled(holder: RecyclerView.ViewHolder) {
+    override fun onViewRecycled(holder: androidx.recyclerview.widget.RecyclerView.ViewHolder) {
         when (holder) {
             is CollectionHolder -> holder.image?.setImageBitmap(null)
         }
@@ -136,20 +127,7 @@ class MainAdapter(private val fragment: Fragment?): RecyclerView.Adapter<Recycle
         }
     }
 
-    fun onDestroyView() {
-        quickAccessContainer = null
-        quickAccessEmptyView = null
-    }
-
-    fun onQuickAccessDataSetChanged(list: List<ScreenshotModel>) {
-        quickAccessEmptyView?.visibility = if (list.isEmpty()) {
-            View.VISIBLE
-        } else {
-            View.INVISIBLE
-        }
-    }
-
-    private fun createCollectionHolder(parent: ViewGroup): RecyclerView.ViewHolder {
+    private fun createCollectionHolder(parent: ViewGroup): androidx.recyclerview.widget.RecyclerView.ViewHolder {
         val itemView = wrapInItemView(parent, R.layout.item_collection)
 
         val itemHolder = CollectionHolder(itemView, this)
@@ -175,7 +153,7 @@ class MainAdapter(private val fragment: Fragment?): RecyclerView.Adapter<Recycle
         return itemHolder
     }
 
-    private fun createNewCollectionHolder(parent: ViewGroup): RecyclerView.ViewHolder {
+    private fun createNewCollectionHolder(parent: ViewGroup): androidx.recyclerview.widget.RecyclerView.ViewHolder {
         val itemView = wrapInItemView(parent, R.layout.item_new_collection)
         itemView.elevation = 0f
 
@@ -212,40 +190,8 @@ class MainAdapter(private val fragment: Fragment?): RecyclerView.Adapter<Recycle
         return holder
     }
 
-    private fun createQuickAccessHolder(parent: ViewGroup): RecyclerView.ViewHolder {
-        return StaticHolder((View.inflate(
-                parent.context,
-                R.layout.view_quick_access,
-                null
-        ) as ViewGroup).apply {
-            quickAccessContainer = this
-            quickAccessEmptyView = this.empty_view_group
-            this.list_view.apply {
-                layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-                adapter = quickAccessAdapter
-
-                val spaceOuter = resources.getDimensionPixelSize(R.dimen.home_horizontal_padding)
-                val spaceInner = resources.getDimensionPixelSize(R.dimen.quick_access_item_space)
-                addItemDecoration(object : RecyclerView.ItemDecoration() {
-                    override fun getItemOffsets(
-                            outRect: Rect,
-                            view: View,
-                            parent: RecyclerView,
-                            state: RecyclerView.State
-                    ) {
-                        val position = parent.getChildAdapterPosition(view)
-                        if (position == 0) {
-                            outRect.left = spaceOuter
-                        }
-                        if (position == quickAccessAdapter.itemCount - 1) {
-                            outRect.right = spaceOuter
-                        } else {
-                            outRect.right = spaceInner
-                        }
-                    }
-                })
-            }
-        })
+    private fun createQuickAccessHolder(): androidx.recyclerview.widget.RecyclerView.ViewHolder {
+        return StaticHolder(quickAccessContainer)
     }
 
     private fun bindSectionNameHolder(holder: SectionNameHolder, position: Int) {
@@ -300,16 +246,15 @@ class MainAdapter(private val fragment: Fragment?): RecyclerView.Adapter<Recycle
     }
 
 
-    class StaticHolder(itemView: View): RecyclerView.ViewHolder(itemView)
+    class StaticHolder(itemView: View): androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView)
 
-    class SectionNameHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
+    class SectionNameHolder(itemView: View): androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView) {
         var title: TextView? = null
     }
 
-    class CollectionHolder(
-            itemView: View,
-            private val onContextMenuActionListener: OnContextMenuActionListener
-    ) : RecyclerView.ViewHolder(itemView), View.OnCreateContextMenuListener, MenuItem.OnMenuItemClickListener {
+    class CollectionHolder(itemView: View,
+                           private val onContextMenuActionListener: OnContextMenuActionListener)
+        : androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView), View.OnCreateContextMenuListener, MenuItem.OnMenuItemClickListener {
         var image: ImageView? = null
         var title: TextView? = null
         var overlay: View? = null
@@ -338,7 +283,7 @@ class MainAdapter(private val fragment: Fragment?): RecyclerView.Adapter<Recycle
         }
     }
 
-    class SpanSizeLookup(private val columnCount: Int) : GridLayoutManager.SpanSizeLookup() {
+    class SpanSizeLookup(private val columnCount: Int) : androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup() {
         override fun getSpanSize(position: Int): Int {
             return when (position) {
                 POS_COLLECTION_LIST_TITLE -> columnCount
@@ -368,8 +313,8 @@ class MainAdapter(private val fragment: Fragment?): RecyclerView.Adapter<Recycle
         override fun getItemOffsets(
                 outRect: Rect,
                 view: View,
-                parent: RecyclerView,
-                state: RecyclerView.State
+                parent: androidx.recyclerview.widget.RecyclerView,
+                state: androidx.recyclerview.widget.RecyclerView.State
         ) {
             val position = parent.getChildAdapterPosition(view) - PREFIX_ITEM_COUNT
             if (position < 0) {
@@ -378,7 +323,7 @@ class MainAdapter(private val fragment: Fragment?): RecyclerView.Adapter<Recycle
             setSpaces(outRect, position)
         }
 
-        override fun onDraw(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
+        override fun onDraw(c: Canvas, parent: androidx.recyclerview.widget.RecyclerView, state: androidx.recyclerview.widget.RecyclerView.State) {
             val childCount = parent.childCount
             for (child in (0 until childCount).map { parent.getChildAt(it) }) {
                 val pos = parent.getChildAdapterPosition(child)
@@ -396,7 +341,7 @@ class MainAdapter(private val fragment: Fragment?): RecyclerView.Adapter<Recycle
             super.onDraw(c, parent, state)
         }
 
-//        override fun onDrawOver(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
+//        override fun onDrawOver(c: Canvas, parent: androidx.recyclerview.widget.RecyclerView, state: androidx.recyclerview.widget.RecyclerView.State) {
 //            super.onDrawOver(c, parent, state)
 //            val childCount = parent.childCount
 //            for (child in (0 until childCount).map { parent.getChildAt(it) }) {

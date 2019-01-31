@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.item_quick_access.view.*
 import org.mozilla.scryer.R
@@ -146,6 +147,14 @@ class QuickAccessAdapter(val context: Context?) : androidx.recyclerview.widget.R
         super.onViewRecycled(holder)
         (holder as? ScreenshotItemHolder)?.image?.let {
             Glide.with(holder.itemView.context).clear(it)
+        }
+    }
+
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        // Make the first item the last one being drawn, so the ocr hint animation will not be
+        // covered by the second item
+        recyclerView.setChildDrawingOrderCallback { childCount, i ->
+            (i + 1) % childCount
         }
     }
 

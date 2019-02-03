@@ -98,9 +98,17 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
+    ): View? {
         val layout = inflater.inflate(R.layout.fragment_home, container, false)
-        quickAccessContainer = View.inflate(inflater.context, R.layout.view_quick_access, null) as ViewGroup
+        quickAccessContainer = View.inflate(
+                inflater.context,
+                R.layout.view_quick_access,
+                null
+        ) as ViewGroup
         return layout
     }
 
@@ -233,7 +241,10 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
         val appNameGo = getString(R.string.app_name_go)
         dialog.findViewById<View>(R.id.image)?.visibility = View.VISIBLE
         dialog.findViewById<TextView>(R.id.title)?.text = getString(R.string.onboarding_fab_title_fab, appNameGo)
-        dialog.findViewById<TextView>(R.id.subtitle)?.text = getString(R.string.onboarding_fab_content_permission, appNameGo)
+        dialog.findViewById<TextView>(R.id.subtitle)?.text = getString(
+                R.string.onboarding_fab_content_permission,
+                appNameGo
+        )
         dialog.findViewById<View>(R.id.dont_ask_again_checkbox)?.visibility = View.GONE
 
         dialog.findViewById<TextView>(R.id.positive_button)?.apply {
@@ -269,7 +280,10 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
         val dialog = BottomDialogFactory.create(context, R.layout.dialog_bottom)
         dialog.findViewById<View>(R.id.image)?.visibility = View.VISIBLE
         dialog.findViewById<TextView>(R.id.title)?.visibility = View.GONE
-        dialog.findViewById<TextView>(R.id.subtitle)?.text = getString(R.string.onboarding_autogrant_overlay_title, getString(R.string.app_name_go))
+        dialog.findViewById<TextView>(R.id.subtitle)?.text = getString(
+                R.string.onboarding_autogrant_overlay_title,
+                getString(R.string.app_name_go)
+        )
         dialog.findViewById<View>(R.id.dont_ask_again_checkbox)?.visibility = View.GONE
         dialog.findViewById<View>(R.id.positive_button)?.setOnClickListener {
             action.run()
@@ -424,7 +438,10 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
             }
 
             override fun onMoreClick(holder: RecyclerView.ViewHolder) {
-                Navigation.findNavController(holder.itemView).navigate(R.id.action_navigate_to_collection, Bundle())
+                Navigation.findNavController(holder.itemView).navigate(
+                        R.id.action_navigate_to_collection,
+                        Bundle()
+                )
                 TelemetryWrapper.clickMoreOnQuickAccess()
             }
         }
@@ -476,7 +493,10 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
         root_view.main_list.adapter = mainAdapter
 
         val spaceOuter = resources.getDimensionPixelSize(R.dimen.home_horizontal_padding)
-        root_view.main_list.addItemDecoration(MainAdapter.ItemDecoration(context, COLLECTION_COLUMN_COUNT, spaceOuter, 0))
+        root_view.main_list.addItemDecoration(MainAdapter.ItemDecoration(context,
+                COLLECTION_COLUMN_COUNT,
+                spaceOuter,
+                0))
 
         viewModel.getCollections().observe(this.viewLifecycleOwner, Observer { collections ->
             collections?.asSequence()?.filter {
@@ -567,7 +587,8 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
         val context = context?: return
         val dialog = BottomDialogFactory.create(context, R.layout.dialog_bottom)
 
-        dialog.findViewById<TextView>(R.id.title)?.text = getString(R.string.sheet_enable_title_enable, getString(R.string.app_full_name))
+        dialog.findViewById<TextView>(R.id.title)?.text = getString(R.string.sheet_enable_title_enable,
+                getString(R.string.app_full_name))
         dialog.findViewById<TextView>(R.id.subtitle)?.text = getString(R.string.sheet_enable_content_enable)
 
         dialog.findViewById<TextView>(R.id.positive_button)?.apply {

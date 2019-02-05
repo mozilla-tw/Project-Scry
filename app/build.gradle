@@ -148,6 +148,9 @@ dependencies {
     // License
     implementation "com.google.android.gms:play-services-oss-licenses:${Versions.license}"
 
+    // BetterLinkMovementMethod
+    implementation "me.saket:better-link-movement-method:${Versions.better_link_movement_method}"
+
     // junit
     testImplementation "junit:junit:${Versions.junit}"
 

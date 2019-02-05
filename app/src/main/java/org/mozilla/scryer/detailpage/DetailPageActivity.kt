@@ -10,6 +10,7 @@ import android.content.Intent
 import android.graphics.*
 import android.os.Bundle
 import android.provider.Settings
+import android.text.util.Linkify
 import android.view.*
 import android.widget.TextView
 import android.widget.Toast
@@ -27,6 +28,7 @@ import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.text.FirebaseVisionText
 import kotlinx.android.synthetic.main.activity_detail_page.*
 import kotlinx.coroutines.experimental.*
+import me.saket.bettermovementmethod.BetterLinkMovementMethod
 import mozilla.components.browser.search.SearchEngineManager
 import mozilla.components.browser.search.provider.AssetsSearchEngineProvider
 import mozilla.components.browser.search.provider.localization.LocaleSearchLocalizationProvider
@@ -42,7 +44,6 @@ import org.mozilla.scryer.promote.Promoter
 import org.mozilla.scryer.sortingpanel.SortingPanelActivity
 import org.mozilla.scryer.telemetry.TelemetryWrapper
 import org.mozilla.scryer.ui.ScryerToast
-import org.mozilla.scryer.ui.TextViewClickMovement
 import org.mozilla.scryer.viewmodel.ScreenshotViewModel
 import kotlin.coroutines.experimental.CoroutineContext
 import kotlin.coroutines.experimental.suspendCoroutine
@@ -355,11 +356,10 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
                     }
                 })
 
-        textModePanelTextView.movementMethod = TextViewClickMovement(this, object : TextViewClickMovement.OnTextViewClickMovementListener {
-            override fun onLinkClicked(linkText: String, linkType: TextViewClickMovement.LinkType) {
-                TelemetryWrapper.clickLinkInExtractedText()
-            }
-        })
+        textModePanelTextView.movementMethod = BetterLinkMovementMethod.newInstance().setOnLinkClickListener { _, _ ->
+            TelemetryWrapper.clickLinkInExtractedText()
+            false
+        }
 
         textModePanelHint.setOnClickListener { TelemetryWrapper.clickOnOCRBottomTip() }
     }
@@ -708,6 +708,7 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
     }
 
     private fun updatePanel(panelText: String) {
+        textModePanelTextView.autoLinkMask = Linkify.ALL
         textModePanelTextView.text = panelText
 
         val behavior = BottomSheetBehavior.from(text_mode_panel_content)

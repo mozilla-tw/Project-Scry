@@ -150,7 +150,6 @@
                         android:paddingTop="16dp"
                         android:paddingBottom="24dp"
                         android:textIsSelectable="true"
-                        android:autoLink="all"
                         android:lineSpacingMultiplier="1.38"
                         style="body1" />
                 </LinearLayout>

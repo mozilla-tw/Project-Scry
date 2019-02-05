@@ -40,6 +40,7 @@ object Versions {
     val glide = "4.7.1"
     val subsampling_image_view = "3.10.0"
     val lottie = "2.7.0"
+    val better_link_movement_method = "2.2.0"
 
     // Mozilla
     val android_components = "0.27.0"

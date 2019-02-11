@@ -9,6 +9,7 @@ import android.content.Context
 import android.preference.PreferenceManager
 import androidx.fragment.app.FragmentActivity
 import org.mozilla.scryer.MainActivity
+import java.lang.ref.WeakReference
 
 class PermissionFlow(private var permissionState: PermissionStateProvider,
                      private var pageState: PageStateProvider,
@@ -19,22 +20,23 @@ class PermissionFlow(private var permissionState: PermissionStateProvider,
         private const val KEY_CAPTURE_PAGE_SHOWN = "capture_page_shown"
 
         fun createDefaultPermissionProvider(activity: FragmentActivity?): PermissionStateProvider {
+            val weakActivity = WeakReference<FragmentActivity>(activity)
             return object : PermissionFlow.PermissionStateProvider {
 
                 override fun isStorageGranted(): Boolean {
-                    return activity?.let {
+                    return weakActivity.get()?.let {
                         PermissionHelper.hasStoragePermission(it)
                     }?: false
                 }
 
                 override fun isOverlayGranted(): Boolean {
-                    return activity?.let {
+                    return weakActivity.get()?.let {
                         PermissionHelper.hasOverlayPermission(it)
                     }?: false
                 }
 
                 override fun shouldShowStorageRational(): Boolean {
-                    return activity?.let {
+                    return weakActivity.get()?.let {
                         PermissionHelper.shouldShowStorageRational(it)
                     }?: false
                 }
@@ -42,8 +44,9 @@ class PermissionFlow(private var permissionState: PermissionStateProvider,
         }
 
         fun createDefaultPageStateProvider(context: Context?): PageStateProvider {
+            val prefs = PreferenceManager.getDefaultSharedPreferences(context?.applicationContext)
             return object : PermissionFlow.PageStateProvider {
-                private val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+                //private val prefs = PreferenceManager.getDefaultSharedPreferences(context?.applicationContext)
 
                 override fun isWelcomePageShown(): Boolean {
                     return prefs.getBoolean(KEY_WELCOME_PAGE_SHOWN, false)

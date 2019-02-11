@@ -76,11 +76,9 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
     }
 
     private var quickAccessContainer: ViewGroup? = null
-    private val quickAccessAdapter: QuickAccessAdapter by lazy {
-        QuickAccessAdapter(context)
-    }
+    private var quickAccessAdapter: QuickAccessAdapter? = null
 
-    private val mainAdapter: MainAdapter = MainAdapter(this)
+    private var mainAdapter: MainAdapter? = null
 
     private lateinit var permissionFlow: PermissionFlow
     private var storagePermissionView: View? = null
@@ -103,6 +101,9 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
             container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
+        mainAdapter = MainAdapter(this)
+        quickAccessAdapter = QuickAccessAdapter(context)
+
         val layout = inflater.inflate(R.layout.fragment_home, container, false)
         quickAccessContainer = View.inflate(
                 inflater.context,
@@ -135,8 +136,8 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
     }
 
     override fun onDestroyView() {
-        main_list.adapter = null
-        quickAccessContainer?.list_view?.adapter = null
+        mainAdapter = null
+        quickAccessAdapter = null
         quickAccessContainer = null
         super.onDestroyView()
     }
@@ -431,7 +432,7 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
     }
 
     private fun initQuickAccessList(context: Context) {
-        quickAccessAdapter.clickListener = object : QuickAccessAdapter.ItemClickListener {
+        quickAccessAdapter?.clickListener = object : QuickAccessAdapter.ItemClickListener {
             override fun onItemClick(screenshotModel: ScreenshotModel, holder: ScreenshotItemHolder) {
                 DetailPageActivity.showDetailPage(context, screenshotModel, holder.image)
                 TelemetryWrapper.clickOnQuickAccess(holder.adapterPosition)
@@ -463,7 +464,7 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
                     if (position == 0) {
                         outRect.left = spaceOuter
                     }
-                    if (position == quickAccessAdapter.itemCount - 1) {
+                    if (position == quickAccessAdapter?.let { it.itemCount - 1 } ?: 0) {
                         outRect.right = spaceOuter
                     } else {
                         outRect.right = spaceInner
@@ -488,7 +489,7 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
         root_view.main_list.layoutManager = manager
 
         quickAccessContainer?.let {
-            mainAdapter.quickAccessContainer = it
+            mainAdapter?.quickAccessContainer = it
         }
         root_view.main_list.adapter = mainAdapter
 
@@ -512,8 +513,8 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
 
         viewModel.getCollectionCovers().observe(this.viewLifecycleOwner, Observer { coverMap ->
             coverMap?.let { newData ->
-                mainAdapter.coverList = newData
-                mainAdapter.notifyDataSetChanged()
+                mainAdapter?.coverList = newData
+                mainAdapter?.notifyDataSetChanged()
             }
         })
     }
@@ -525,13 +526,13 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
             View.INVISIBLE
         }
 
-        quickAccessAdapter.list = screenshots
-        quickAccessAdapter.notifyDataSetChanged()
+        quickAccessAdapter?.list = screenshots
+        quickAccessAdapter?.notifyDataSetChanged()
     }
 
     private fun updateCollectionListView(collections: List<CollectionModel>) {
-        mainAdapter.collectionList = collections
-        mainAdapter.notifyDataSetChanged()
+        mainAdapter?.collectionList = collections
+        mainAdapter?.notifyDataSetChanged()
     }
 
     private suspend fun syncAndGetNewScreenshotsFromExternal(): List<ScreenshotModel> {
@@ -620,8 +621,10 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
         }
     }
 
-    private suspend fun mergeExternalToDatabase(externalList: List<ScreenshotModel>,
-                                        dbList: List<ScreenshotModel>): List<ScreenshotModel> {
+    private suspend fun mergeExternalToDatabase(
+            externalList: List<ScreenshotModel>,
+            dbList: List<ScreenshotModel>
+    ): List<ScreenshotModel> {
         // A lookup table consist of files recorded in the database, so we can quickly check whether each file
         // from external storage had already been recorded before
         val localModels = dbList.map { it.absolutePath to it }.toMap().toMutableMap()
@@ -661,7 +664,7 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
         }
 
         withContext(Dispatchers.Main) {
-            mainAdapter.notifyDataSetChanged()
+            mainAdapter?.notifyDataSetChanged()
         }
 
         viewModel.addScreenshot(results)

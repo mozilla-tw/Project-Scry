@@ -62,8 +62,9 @@ import org.mozilla.scryer.util.launchIO
 import org.mozilla.scryer.viewmodel.ScreenshotViewModel
 import java.io.File
 import java.util.*
+import kotlin.coroutines.experimental.CoroutineContext
 
-class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
+class HomeFragment : Fragment(), PermissionFlow.ViewDelegate, CoroutineScope {
 
     companion object {
         private const val LOG_TAG = "HomeFragment"
@@ -74,6 +75,11 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
         private const val PREF_SHOW_NEW_SCREENSHOT_DIALOG = "show_new_screenshot_dialog"
         private const val PREF_SHOW_ENABLE_SERVICE_DIALOG = "show_enable_service_dialog"
     }
+
+    private val fragmentJob = Job()
+
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.Main + fragmentJob
 
     private var quickAccessContainer: ViewGroup? = null
     private var quickAccessAdapter: QuickAccessAdapter? = null
@@ -140,6 +146,11 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
         quickAccessAdapter = null
         quickAccessContainer = null
         super.onDestroyView()
+    }
+
+    override fun onDestroy() {
+        fragmentJob.cancel()
+        super.onDestroy()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -324,8 +335,11 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
         welcomeView?.visibility = View.GONE
         storagePermissionView?.visibility = View.GONE
 
-        GlobalScope.launch(Dispatchers.Main) {
+        launch(Dispatchers.Main) {
             val newScreenshots = syncAndGetNewScreenshotsFromExternal()
+            yield() // Skip the following UI work if the fragmentJob is already cancelled
+
+            mainAdapter?.notifyDataSetChanged()
 
             val showNewScreenshotDialog = newScreenshots.isNotEmpty()
                     && isDialogAllowed(PREF_SHOW_NEW_SCREENSHOT_DIALOG)
@@ -536,7 +550,7 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
     }
 
     private suspend fun syncAndGetNewScreenshotsFromExternal(): List<ScreenshotModel> {
-        return withContext(Dispatchers.Default) {
+        return withContext(Dispatchers.IO + NonCancellable) {
             context?.let {
                 val externalList = ScreenshotFetcher().fetchScreenshots(it)
                 val dbList = viewModel.getScreenshotList()
@@ -621,7 +635,7 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
         }
     }
 
-    private suspend fun mergeExternalToDatabase(
+    private fun mergeExternalToDatabase(
             externalList: List<ScreenshotModel>,
             dbList: List<ScreenshotModel>
     ): List<ScreenshotModel> {
@@ -661,10 +675,6 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate {
             if (!file.exists()) {
                 viewModel.deleteScreenshot(model)
             }
-        }
-
-        withContext(Dispatchers.Main) {
-            mainAdapter?.notifyDataSetChanged()
         }
 
         viewModel.addScreenshot(results)

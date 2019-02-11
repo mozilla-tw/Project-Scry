@@ -49,8 +49,6 @@ import kotlin.coroutines.experimental.CoroutineContext
 import kotlin.coroutines.experimental.suspendCoroutine
 
 class DetailPageActivity : AppCompatActivity(), CoroutineScope {
-    override val coroutineContext: CoroutineContext
-        get() = Dispatchers.Main
 
     companion object Launcher {
         private const val EXTRA_SCREENSHOT_ID = "screenshot_id"
@@ -144,6 +142,11 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
         }
     }
 
+    private val activityJob = Job()
+
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.Main + activityJob
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -167,28 +170,9 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
         TelemetryWrapper.viewScreenshot()
     }
 
-    private fun showOcrOnboarding() {
-        onboarding_view.visibility = View.VISIBLE
-        onboarding_view.setOnClickListener {
-            (onboarding_view.parent as ViewGroup).removeView(onboarding_view)
-        }
-
-        onboarding_overlay.overlayMode = GraphicOverlay.MODE_HIGHLIGHT
-        onboarding_overlay.overlayColor = ContextCompat.getColor(this, R.color.detail_onboarding_overlay)
-        onboarding_overlay.add(object : GraphicOverlay.Graphic(onboarding_overlay) {
-            private val spotlightPaint: Paint = Paint().apply {
-                xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR)
-            }
-
-            override fun draw(canvas: Canvas) {
-                canvas.drawCircle((text_mode_fab.left + text_mode_fab.right) / 2f,
-                        (text_mode_fab.top + text_mode_fab.bottom) / 2f,
-                        (text_mode_fab.right - text_mode_fab.left).toFloat(),
-                        spotlightPaint)
-            }
-        })
-
-        prefs.setOcrOnboardingShown()
+    override fun onDestroy() {
+        activityJob.cancel()
+        super.onDestroy()
     }
 
     override fun onBackPressed() {
@@ -414,7 +398,7 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
     }
 
     private fun writeContentTextToDb(screenshot: ScreenshotModel, contentText: String) {
-        GlobalScope.launch {
+        launch(Dispatchers.IO + NonCancellable) {
             screenshot.contentText = contentText
             viewModel.updateScreenshot(screenshot)
         }
@@ -747,6 +731,31 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
 //                View.SYSTEM_UI_FLAG_FULLSCREEN or
 //                View.SYSTEM_UI_FLAG_IMMERSIVE
 //    }
+
+
+    private fun showOcrOnboarding() {
+        onboarding_view.visibility = View.VISIBLE
+        onboarding_view.setOnClickListener {
+            (onboarding_view.parent as ViewGroup).removeView(onboarding_view)
+        }
+
+        onboarding_overlay.overlayMode = GraphicOverlay.MODE_HIGHLIGHT
+        onboarding_overlay.overlayColor = ContextCompat.getColor(this, R.color.detail_onboarding_overlay)
+        onboarding_overlay.add(object : GraphicOverlay.Graphic(onboarding_overlay) {
+            private val spotlightPaint: Paint = Paint().apply {
+                xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR)
+            }
+
+            override fun draw(canvas: Canvas) {
+                canvas.drawCircle((text_mode_fab.left + text_mode_fab.right) / 2f,
+                        (text_mode_fab.top + text_mode_fab.bottom) / 2f,
+                        (text_mode_fab.right - text_mode_fab.left).toFloat(),
+                        spotlightPaint)
+            }
+        })
+
+        prefs.setOcrOnboardingShown()
+    }
 
     private class LoadingViewGroup(private val activity: DetailPageActivity) {
         fun show() {

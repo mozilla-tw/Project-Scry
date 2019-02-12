@@ -24,6 +24,13 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slid_in_left"
             app:popExitAnim="@anim/slide_out_right"/>
+        <action
+            android:id="@+id/action_navigate_to_full_text_search"
+            app:destination="@id/FullTextSearchFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slid_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
     </fragment>
     <fragment
         android:id="@+id/CollectionFragment"
@@ -44,4 +51,8 @@
         android:name="org.mozilla.scryer.search.SearchFragment"
         android:label="Search">
     </fragment>
+    <fragment
+        android:id="@+id/FullTextSearchFragment"
+        android:name="org.mozilla.scryer.search.FullTextSearchFragment"
+        android:label="FullTextSearch" />
 </navigation>

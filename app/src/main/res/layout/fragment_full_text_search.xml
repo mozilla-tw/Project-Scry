@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?><!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/home_background" />
+
+    <FrameLayout
+        android:id="@+id/toolbar_holder"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/statusBarColor"
+        android:elevation="@dimen/collection_chrome_elevation"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/home_background"
+            app:navigationIcon="@drawable/back">
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/searchEditText"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </androidx.appcompat.widget.Toolbar>
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/subtitleLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/common_padding_24dp"
+        android:layout_marginEnd="@dimen/common_padding_24dp"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/toolbar_holder">
+
+        <androidx.appcompat.widget.AppCompatCheckBox
+            android:id="@+id/select_all_checkbox"
+            android:layout_width="@dimen/home_select_mode_checkbox_size"
+            android:layout_height="@dimen/home_select_mode_checkbox_size"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/circle_2dp_grey50"
+            android:button="@drawable/screenshot_select_checkbox"
+            android:buttonTint="@color/primaryTeal"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/subtitleTextView"
+            style="@style/Subtitle1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/common_padding_12dp"
+            android:paddingBottom="@dimen/common_padding_12dp"
+            android:textColor="@color/grey60" />
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/screenshotListView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:paddingStart="@dimen/collection_horizontal_padding"
+        android:paddingEnd="@dimen/collection_horizontal_padding"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/subtitleLayout" />
+
+    <LinearLayout
+        android:id="@+id/emptyView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="60dp"
+        android:orientation="vertical"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar_holder">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/image_noresult" />
+
+        <TextView
+            style="@style/H3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/common_padding_8dp"
+            android:color="@color/grey90"
+            android:text="@string/search_error_title_noresult" />
+
+        <TextView
+            style="@style/Body2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/common_padding_4dp"
+            android:color="@color/grey50"
+            android:text="@string/search_error_content_try" />
+    </LinearLayout>
+
+    <View
+        android:id="@+id/sorting_panel_background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#88ff0000"
+        android:elevation="@dimen/collection_chrome_elevation" />
+
+    <org.mozilla.scryer.sortingpanel.SortingPanel
+        android:id="@+id/sorting_panel"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:elevation="@dimen/collection_chrome_elevation" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/sorting_panel_group"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:constraint_referenced_ids="sorting_panel_background,sorting_panel" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

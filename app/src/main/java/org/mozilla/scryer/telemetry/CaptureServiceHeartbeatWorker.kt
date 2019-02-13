@@ -2,7 +2,6 @@ package org.mozilla.scryer.telemetry
 
 import android.app.ActivityManager
 import android.content.Context
-import androidx.work.Result
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import org.mozilla.scryer.ScryerService

@@ -7,7 +7,7 @@ object Versions {
     val lifecycle = "2.1.0-alpha01"
     val room = "2.1.0-alpha03"
     val navigation = "1.0.0-alpha05"
-    val work = "1.0.0-alpha12"
+    val work = "1.0.0-beta05"
     val app_compat = "1.1.0-alpha01"
     val material = "1.1.0-alpha02"
     val recycler_view = "1.1.0-alpha01"

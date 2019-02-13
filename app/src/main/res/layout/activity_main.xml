@@ -21,5 +21,11 @@
         app:navGraph="@navigation/nav_graph"
         app:defaultNavHost="true" />
 
+    <ProgressBar
+        android:id="@+id/scan_progress_bar"
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:visibility="gone"
+        style="@android:style/Widget.ProgressBar.Horizontal" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

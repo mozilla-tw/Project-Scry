@@ -23,8 +23,6 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.ml.common.FirebaseMLException
-import com.google.firebase.ml.vision.FirebaseVision
-import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.text.FirebaseVisionText
 import kotlinx.android.synthetic.main.activity_detail_page.*
 import kotlinx.coroutines.experimental.*
@@ -41,12 +39,12 @@ import org.mozilla.scryer.persistence.CollectionModel
 import org.mozilla.scryer.persistence.ScreenshotModel
 import org.mozilla.scryer.preference.PreferenceWrapper
 import org.mozilla.scryer.promote.Promoter
+import org.mozilla.scryer.scan.FirebaseVisionTextHelper
 import org.mozilla.scryer.sortingpanel.SortingPanelActivity
 import org.mozilla.scryer.telemetry.TelemetryWrapper
 import org.mozilla.scryer.ui.ScryerToast
 import org.mozilla.scryer.viewmodel.ScreenshotViewModel
 import kotlin.coroutines.experimental.CoroutineContext
-import kotlin.coroutines.experimental.suspendCoroutine
 
 class DetailPageActivity : AppCompatActivity(), CoroutineScope {
 
@@ -368,7 +366,7 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
                     TelemetryWrapper.viewTextInScreenshot(textRecognitionResultForTelemetry(TelemetryWrapper.Value.SUCCESS, result.value))
                 }
 
-                writeContentTextToDb(screenshot, result.value.text)
+                FirebaseVisionTextHelper.writeContentTextToDb(screenshot, result.value.text)
 
                 if (isRecognizing) {
                     isTextMode = true
@@ -394,13 +392,6 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
 
             isRecognizing = false
             updateUI()
-        }
-    }
-
-    private fun writeContentTextToDb(screenshot: ScreenshotModel, contentText: String) {
-        launch(Dispatchers.IO + NonCancellable) {
-            screenshot.contentText = contentText
-            viewModel.updateScreenshot(screenshot)
         }
     }
 
@@ -432,25 +423,24 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
             return Result.Failed("decode failed: " + e.message)
         }
 
-        return decoded?.let { bitmap ->
-            try {
-                runTextRecognition(bitmap)?.let { result ->
-                    if (isValidSize(bitmap)) {
-                        Result.Success(result)
-                    } else {
-                        Result.WeiredImageSize(result,
-                                "weird image size: ${bitmap.width}x${bitmap.height}")
-                    }
-                }
-            } catch (e: Exception) {
-                if ((e as? FirebaseMLException)?.code == FirebaseMLException.UNAVAILABLE) {
-                    Result.Unavailable("recognize failed: " + e.message)
-                } else {
-                    Result.Failed("recognize failed: " + e.message)
-                }
+        return try {
+            val result = FirebaseVisionTextHelper.extractText(decoded)
+            if (isValidSize(decoded)) {
+                Result.Success(result)
+            } else {
+                Result.WeiredImageSize(
+                        result,
+                        "weird image size: ${decoded.width}x${decoded.height}"
+                )
             }
 
-        } ?: Result.Failed("invalid bitmap")
+        } catch (e: Exception) {
+            if ((e as? FirebaseMLException)?.code == FirebaseMLException.UNAVAILABLE) {
+                Result.Unavailable("recognize failed: " + e.message)
+            } else {
+                Result.Failed("recognize failed: " + e.message)
+            }
+        }
     }
 
     private fun isValidSize(bitmap: Bitmap): Boolean {
@@ -609,21 +599,6 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
             text_mode_fab.hide()
             cancel_fab.hide()
         }
-    }
-
-    private suspend fun runTextRecognition(
-            selectedImage: Bitmap
-    ): FirebaseVisionText? = suspendCoroutine { cont ->
-
-        val image = FirebaseVisionImage.fromBitmap(selectedImage)
-        val detector = FirebaseVision.getInstance().onDeviceTextRecognizer
-        detector.processImage(image)
-                .addOnSuccessListener { texts ->
-                    cont.resume(texts)
-                }
-                .addOnFailureListener { exception ->
-                    cont.resumeWithException(exception)
-                }
     }
 
     private fun processTextRecognitionResult(result: FirebaseVisionText) {

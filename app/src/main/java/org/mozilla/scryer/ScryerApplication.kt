@@ -9,6 +9,8 @@ import android.app.Application
 import mozilla.components.support.base.log.Log
 import mozilla.components.support.base.log.sink.AndroidLogSink
 import org.mozilla.scryer.repository.ScreenshotRepository
+import org.mozilla.scryer.scan.ContentScanner
+import org.mozilla.scryer.scan.ForegroundAndBackgroundCharging
 import org.mozilla.scryer.setting.PreferenceSettingsRepository
 import org.mozilla.scryer.setting.SettingsRepository
 import org.mozilla.scryer.telemetry.TelemetryWrapper
@@ -26,6 +28,10 @@ class ScryerApplication : Application() {
         fun getSettingsRepository(): SettingsRepository {
             return instance.settingsRepository
         }
+
+        fun getContentScanner(): ContentScanner {
+            return instance.contentScanner
+        }
     }
 
     private object ApplicationHolder {
@@ -34,6 +40,8 @@ class ScryerApplication : Application() {
 
     lateinit var screenshotRepository: ScreenshotRepository
     lateinit var settingsRepository: SettingsRepository
+
+    private val contentScanner = ContentScanner()
 
     override fun onCreate() {
         super.onCreate()
@@ -46,5 +54,7 @@ class ScryerApplication : Application() {
             screenshotRepository.setupDefaultContent(this)
         }
         settingsRepository = PreferenceSettingsRepository.getInstance(this)
+
+        contentScanner.onCreate(ForegroundAndBackgroundCharging())
     }
 }

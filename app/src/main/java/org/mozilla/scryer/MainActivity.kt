@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProviders
+import kotlinx.android.synthetic.main.activity_main.*
 import org.mozilla.scryer.notification.ScryerMessagingService
 import org.mozilla.scryer.permission.PermissionViewModel
 import org.mozilla.scryer.preference.PreferenceWrapper
@@ -56,6 +57,22 @@ class MainActivity : AppCompatActivity() {
             openUrlIntent.data = Uri.parse(this)
             openUrlIntent.action = Intent.ACTION_VIEW
             startActivity(openUrlIntent)
+        }
+
+        if (BuildConfig.DEBUG) {
+            scan_progress_bar.visibility = View.VISIBLE
+            ScryerApplication.getContentScanner().getProgress().observe(this, Observer {
+                scan_progress_bar.progress = if (it.first == it.second) {
+                    100
+                } else {
+                    (100 * it.first / it.second.toFloat()).toInt()
+                }
+                scan_progress_bar.visibility = if (scan_progress_bar.progress == 100) {
+                    View.GONE
+                } else {
+                    View.VISIBLE
+                }
+            })
         }
     }
 

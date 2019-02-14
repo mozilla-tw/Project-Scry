@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 2,
-    "identityHash": "8f07646786f4215ae640feb57a9587ee",
+    "identityHash": "567d5628db5bb8187474eb32f2f37689",
     "entities": [
       {
         "tableName": "collection",
@@ -44,7 +44,7 @@
       },
       {
         "tableName": "screenshot",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `absolute_path` TEXT NOT NULL, `last_modified` INTEGER NOT NULL, `collection_id` TEXT NOT NULL, `content_text` TEXT, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `absolute_path` TEXT NOT NULL, `last_modified` INTEGER NOT NULL, `collection_id` TEXT NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -69,12 +69,6 @@
             "columnName": "collection_id",
             "affinity": "TEXT",
             "notNull": true
-          },
-          {
-            "fieldPath": "contentText",
-            "columnName": "content_text",
-            "affinity": "TEXT",
-            "notNull": false
           }
         ],
         "primaryKey": {
@@ -104,11 +98,49 @@
         "foreignKeys": []
       },
       {
+        "tableName": "screenshot_content",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `content_text` TEXT, PRIMARY KEY(`id`), FOREIGN KEY(`id`) REFERENCES `screenshot`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "contentText",
+            "columnName": "content_text",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": [
+          {
+            "table": "screenshot",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
         "ftsVersion": "FTS4",
         "ftsOptions": {
           "tokenizer": "simple",
           "tokenizerArgs": [],
-          "contentTable": "screenshot",
+          "contentTable": "screenshot_content",
           "languageIdColumnName": "",
           "matchInfo": "FTS4",
           "notIndexedColumns": [],
@@ -116,20 +148,14 @@
           "preferredOrder": "ASC"
         },
         "contentSyncTriggers": [
-          "CREATE TRIGGER IF NOT EXISTS room_fts_content_sync_fts_BEFORE_UPDATE BEFORE UPDATE ON `screenshot` BEGIN DELETE FROM `fts` WHERE `docid`=OLD.`rowid`; END",
-          "CREATE TRIGGER IF NOT EXISTS room_fts_content_sync_fts_BEFORE_DELETE BEFORE DELETE ON `screenshot` BEGIN DELETE FROM `fts` WHERE `docid`=OLD.`rowid`; END",
-          "CREATE TRIGGER IF NOT EXISTS room_fts_content_sync_fts_AFTER_UPDATE AFTER UPDATE ON `screenshot` BEGIN INSERT INTO `fts`(`docid`, `content_text`) VALUES (NEW.`rowid`, NEW.`content_text`); END",
-          "CREATE TRIGGER IF NOT EXISTS room_fts_content_sync_fts_AFTER_INSERT AFTER INSERT ON `screenshot` BEGIN INSERT INTO `fts`(`docid`, `content_text`) VALUES (NEW.`rowid`, NEW.`content_text`); END"
+          "CREATE TRIGGER IF NOT EXISTS room_fts_content_sync_fts_BEFORE_UPDATE BEFORE UPDATE ON `screenshot_content` BEGIN DELETE FROM `fts` WHERE `docid`=OLD.`rowid`; END",
+          "CREATE TRIGGER IF NOT EXISTS room_fts_content_sync_fts_BEFORE_DELETE BEFORE DELETE ON `screenshot_content` BEGIN DELETE FROM `fts` WHERE `docid`=OLD.`rowid`; END",
+          "CREATE TRIGGER IF NOT EXISTS room_fts_content_sync_fts_AFTER_UPDATE AFTER UPDATE ON `screenshot_content` BEGIN INSERT INTO `fts`(`docid`, `content_text`) VALUES (NEW.`rowid`, NEW.`content_text`); END",
+          "CREATE TRIGGER IF NOT EXISTS room_fts_content_sync_fts_AFTER_INSERT AFTER INSERT ON `screenshot_content` BEGIN INSERT INTO `fts`(`docid`, `content_text`) VALUES (NEW.`rowid`, NEW.`content_text`); END"
         ],
         "tableName": "fts",
-        "createSql": "CREATE VIRTUAL TABLE IF NOT EXISTS `${TABLE_NAME}` USING FTS4(`content_text` TEXT NOT NULL, content=`screenshot`)",
+        "createSql": "CREATE VIRTUAL TABLE IF NOT EXISTS `${TABLE_NAME}` USING FTS4(`content_text` TEXT NOT NULL, content=`screenshot_content`)",
         "fields": [
-          {
-            "fieldPath": "rowid",
-            "columnName": "rowid",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
           {
             "fieldPath": "contentText",
             "columnName": "content_text",
@@ -138,10 +164,8 @@
           }
         ],
         "primaryKey": {
-          "columnNames": [
-            "rowid"
-          ],
-          "autoGenerate": true
+          "columnNames": [],
+          "autoGenerate": false
         },
         "indices": [],
         "foreignKeys": []
@@ -150,7 +174,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"8f07646786f4215ae640feb57a9587ee\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"567d5628db5bb8187474eb32f2f37689\")"
     ]
   }
 }

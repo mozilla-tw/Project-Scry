@@ -8,14 +8,17 @@ package org.mozilla.scryer.repository
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import org.mozilla.scryer.persistence.CollectionModel
+import org.mozilla.scryer.persistence.ScreenshotContentModel
 import org.mozilla.scryer.persistence.ScreenshotModel
 
 @Suppress("unused")
 class ScreenshotInMemoryRepository : ScreenshotRepository {
+
     private val collectionData = MutableLiveData<List<CollectionModel>>()
     private val collectionList = mutableListOf<CollectionModel>()
     private val screenshotData = MutableLiveData<List<ScreenshotModel>>()
     private val screenshotList = mutableListOf<ScreenshotModel>()
+    private val screenshotContentData = MutableLiveData<List<ScreenshotContentModel>>()
 
     init {
         collectionData.value = collectionList
@@ -88,5 +91,15 @@ class ScreenshotInMemoryRepository : ScreenshotRepository {
 
     override fun searchScreenshots(queryText: String): LiveData<List<ScreenshotModel>> {
         return screenshotData
+    }
+
+    override fun updateScreenshotContent(screenshotContent: ScreenshotContentModel) {}
+
+    override fun getContentText(screenshot: ScreenshotModel): String? {
+        return ""
+    }
+
+    override fun getScreenshotContent(): LiveData<List<ScreenshotContentModel>> {
+        return screenshotContentData
     }
 }

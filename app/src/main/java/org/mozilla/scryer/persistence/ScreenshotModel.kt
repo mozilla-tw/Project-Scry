@@ -6,26 +6,25 @@
 package org.mozilla.scryer.persistence
 
 import androidx.room.*
+import org.mozilla.scryer.ScryerApplication
 import java.util.*
 
 @Entity(tableName = "screenshot",
-//        foreignKeys = [(ForeignKey(
-//                entity = CollectionModel::class,
-//                parentColumns = ["id"],
-//                childColumns = ["collection_id"]))],
-        indices = [Index("collection_id"), Index("absolute_path", unique = true)])
+        indices = [
+            Index("collection_id"),
+            Index("absolute_path", unique = true)
+        ]
+)
 data class ScreenshotModel constructor (
         @PrimaryKey(autoGenerate = false) var id: String,
         @ColumnInfo(name = "absolute_path") var absolutePath: String,
         @ColumnInfo(name = "last_modified") var lastModified: Long,
-        @ColumnInfo(name = "collection_id") var collectionId: String,
-        @ColumnInfo(name = "content_text") var contentText: String?
+        @ColumnInfo(name = "collection_id") var collectionId: String
 ) {
     @Ignore
     constructor(
             absolutePath: String,
             lastModified: Long,
-            collectionId: String,
-            contentText: String? = null
-    ) : this(UUID.randomUUID().toString(), absolutePath, lastModified, collectionId, contentText)
+            collectionId: String
+    ) : this(UUID.randomUUID().toString(), absolutePath, lastModified, collectionId)
 }

@@ -438,7 +438,7 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate, CoroutineScope {
         view!!.findViewById<View>(R.id.intercept_view).setOnClickListener {
             if (this::permissionFlow.isInitialized && permissionFlow.isFinished()) {
                 Navigation.findNavController(view!!).navigateSafely(R.id.MainFragment,
-                        R.id.action_navigate_to_search,
+                        R.id.action_navigate_to_full_text_search,
                         Bundle())
                 TelemetryWrapper.startSearch()
             }
@@ -655,7 +655,6 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate, CoroutineScope {
                 // TODO: Do we really need to save(rewrite) existed item to db again here(replace)?
                 externalModel.id = localModel.id
                 externalModel.collectionId = localModel.collectionId
-                externalModel.contentText = localModel.contentText
 
                 // Remove processed item from the lookup table
                 localModels.remove(externalModel.absolutePath)
@@ -664,9 +663,9 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate, CoroutineScope {
                 // No record found, make a new uncategorized item
                 externalModel.id = UUID.randomUUID().toString()
                 externalModel.collectionId = CollectionModel.UNCATEGORIZED
-            }
 
-            results.add(externalModel)
+                results.add(externalModel)
+            }
         }
 
         for (entry in localModels) {

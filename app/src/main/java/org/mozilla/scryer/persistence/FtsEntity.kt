@@ -4,14 +4,10 @@
 
 package org.mozilla.scryer.persistence
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.Fts4
-import androidx.room.PrimaryKey
+import androidx.room.*
 
-@Fts4(contentEntity = ScreenshotModel::class)
+@Fts4(contentEntity = ScreenshotContentModel::class)
 @Entity(tableName = "fts")
 data class FtsEntity(
-        @PrimaryKey(autoGenerate = true) var rowid: Int = 0,
         @ColumnInfo(name = "content_text") var contentText: String
 )

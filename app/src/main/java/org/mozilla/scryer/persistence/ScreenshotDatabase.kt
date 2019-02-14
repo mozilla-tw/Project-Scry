@@ -9,7 +9,12 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 
 @Database(
-        entities = [CollectionModel::class, ScreenshotModel::class, FtsEntity::class],
+        entities = [
+            CollectionModel::class,
+            ScreenshotModel::class,
+            ScreenshotContentModel::class,
+            FtsEntity::class
+        ],
         version = 2
 )
 abstract class ScreenshotDatabase: RoomDatabase() {

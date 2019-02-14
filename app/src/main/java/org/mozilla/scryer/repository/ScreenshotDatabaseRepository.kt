@@ -37,11 +37,13 @@ class ScreenshotDatabaseRepository(private val database: ScreenshotDatabase) : S
 
         private val MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(database: SupportSQLiteDatabase) {
-                database.execSQL("ALTER TABLE screenshot ADD COLUMN content_text TEXT")
+                database.execSQL(
+                        "CREATE TABLE IF NOT EXISTS `screenshot_content` (`id` TEXT NOT NULL, `content_text` TEXT, PRIMARY KEY(`id`), FOREIGN KEY(`id`) REFERENCES `screenshot`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )"
+                )
                 database.execSQL(
                         "CREATE VIRTUAL TABLE IF NOT EXISTS `fts` USING FTS4(" +
                         "`content_text`, " +
-                        "content=`screenshot`)"
+                        "content=`screenshot_content`)"
                 )
             }
         }

@@ -14,13 +14,11 @@ import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import org.mozilla.scryer.R
-import org.mozilla.scryer.persistence.CollectionModel
-import org.mozilla.scryer.persistence.ScreenshotDatabase
-import org.mozilla.scryer.persistence.ScreenshotModel
-import org.mozilla.scryer.persistence.SuggestCollectionHelper
+import org.mozilla.scryer.persistence.*
 import org.mozilla.scryer.util.launchIO
 
 class ScreenshotDatabaseRepository(private val database: ScreenshotDatabase) : ScreenshotRepository {
+
     companion object {
         fun create(context: Context, onCreated: () -> Unit): ScreenshotDatabaseRepository {
             val callback = object : RoomDatabase.Callback() {
@@ -145,5 +143,17 @@ class ScreenshotDatabaseRepository(private val database: ScreenshotDatabase) : S
 
     override fun searchScreenshots(queryText: String): LiveData<List<ScreenshotModel>> {
         return database.screenshotDao().searchScreenshots(queryText)
+    }
+
+    override fun getScreenshotContent(): LiveData<List<ScreenshotContentModel>> {
+        return database.screenshotDao().getScreenshotContent()
+    }
+
+    override fun updateScreenshotContent(screenshotContent: ScreenshotContentModel) {
+        return database.screenshotDao().updateContentText(screenshotContent)
+    }
+
+    override fun getContentText(screenshot: ScreenshotModel): String? {
+        return database.screenshotDao().getContentText(screenshot.id)?.contentText
     }
 }

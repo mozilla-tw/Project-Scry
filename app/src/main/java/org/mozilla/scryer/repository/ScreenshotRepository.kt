@@ -6,12 +6,9 @@
 package org.mozilla.scryer.repository
 
 import androidx.lifecycle.LiveData
-import androidx.sqlite.db.SupportSQLiteDatabase
-import androidx.room.Room
-import androidx.room.RoomDatabase
 import android.content.Context
 import org.mozilla.scryer.persistence.CollectionModel
-import org.mozilla.scryer.persistence.ScreenshotDatabase
+import org.mozilla.scryer.persistence.ScreenshotContentModel
 import org.mozilla.scryer.persistence.ScreenshotModel
 
 interface ScreenshotRepository {
@@ -40,6 +37,10 @@ interface ScreenshotRepository {
     fun getScreenshotList(collectionIds: List<String>): List<ScreenshotModel>
     fun deleteScreenshot(screenshot: ScreenshotModel)
     fun searchScreenshots(queryText: String): LiveData<List<ScreenshotModel>>
+
+    fun getScreenshotContent(): LiveData<List<ScreenshotContentModel>>
+    fun updateScreenshotContent(screenshotContent: ScreenshotContentModel)
+    fun getContentText(screenshot: ScreenshotModel): String?
 
     fun setupDefaultContent(context: Context) {
         TODO("not implemented")

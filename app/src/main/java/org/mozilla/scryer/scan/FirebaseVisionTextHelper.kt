@@ -14,6 +14,7 @@ import kotlinx.coroutines.experimental.isActive
 import kotlinx.coroutines.experimental.withContext
 import mozilla.components.support.base.log.Log
 import org.mozilla.scryer.ScryerApplication
+import org.mozilla.scryer.persistence.ScreenshotContentModel
 import org.mozilla.scryer.persistence.ScreenshotModel
 import kotlin.coroutines.experimental.suspendCoroutine
 
@@ -27,7 +28,10 @@ class FirebaseVisionTextHelper {
         ) = withContext(Dispatchers.IO) {
 
             val list = ScryerApplication.getScreenshotRepository().getScreenshotList()
-            val remains = list.filter { it.contentText == null }
+
+            val remains = list.filter {
+                ScryerApplication.getScreenshotRepository().getContentText(it) == null
+            }
 
             if (remains.isEmpty()) {
                 return@withContext
@@ -78,8 +82,8 @@ class FirebaseVisionTextHelper {
                 screenshot: ScreenshotModel,
                 contentText: String
         ) = withContext(Dispatchers.IO) {
-            screenshot.contentText = contentText
-            ScryerApplication.getScreenshotRepository().updateScreenshot(screenshot)
+            val model = ScreenshotContentModel(screenshot.id, contentText)
+            ScryerApplication.getScreenshotRepository().updateScreenshotContent(model)
         }
     }
 }

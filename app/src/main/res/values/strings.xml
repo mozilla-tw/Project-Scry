@@ -165,6 +165,7 @@
     Refer to UX spec 7.1: https://mozilla.invisionapp.com/share/24N3MMQB986#/310133929_7-1_Onboarding Parameter %1$s is the app name, i.e. Firefox ScreenshotGo -->
     <string name="onboarding_storage_title_welcome">Welcome to %1$s</string>
     <string name="onboarding_storage_content_permission">To help you organize and find your screenshots better, we’ll need your permission to access your storage.</string>
+    <string name="onboarding_storage_caption_duplicates">*Don’t worry, this won’t duplicate files.</string>
     <!-- The string displays if the system autogrants storage permission. Parameter %1$s is the app name, i.e. Firefox ScreenshotGo -->
     <string name="onboarding_storage_content_autogrant">%1$s helps you organize and find your screenshots better.</string>
     <string name="onboarding_storage_action_confirm" translatable="false">Let’s GO</string>
@@ -194,9 +195,9 @@
     <string name="onboarding_search_action_disagree">Nope</string>
     <string name="onboarding_search_content_feedback">Thanks for your feedback!</string>
     <!-- String displayed with an illustration to introduce a new feature -->
-    <string name="onboarding_ocr_title_more">Do more with screenshots</string>
+    <string name="onboarding_ocr_title_more">Take Action on Text</string>
     <!-- String displayed to give examples of what the new feature can do -->
-    <string name="onboarding_ocr_content_examples">Look up products, copy coupon codes, and share quotes in your screenshots</string>
+    <string name="onboarding_ocr_content_examples">Search the web for products, copy coupon codes, and share quotes in your screenshots.</string>
     <!-- Onboarding: strings displayed with an illustration to introduce users the new search feature, Refer to UX spec 5-1 https://mozilla.invisionapp.com/share/24N3MMQB986#/310133925_5-1_Search -->
     <string name="onboarding_search_title_search">Finding screenshots is now easier</string>
     <!-- String displayed to instruct users to type words to search -->

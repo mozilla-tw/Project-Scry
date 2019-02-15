@@ -27,7 +27,9 @@ class FirebaseVisionTextHelper {
                 updateListener: suspend (((model: ScreenshotModel, index: Int, total: Int) -> Unit))
         ) = withContext(Dispatchers.IO) {
 
-            val list = ScryerApplication.getScreenshotRepository().getScreenshotList()
+            val list = ScryerApplication.getScreenshotRepository().getScreenshotList().sortedByDescending {
+                it.lastModified
+            }
 
             val remains = list.filter {
                 ScryerApplication.getScreenshotRepository().getContentText(it) == null

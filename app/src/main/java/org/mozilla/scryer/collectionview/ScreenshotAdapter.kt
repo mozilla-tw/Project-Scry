@@ -23,12 +23,12 @@ import org.mozilla.scryer.sortingpanel.SortingPanelActivity
 import java.io.File
 
 open class ScreenshotAdapter(
-        val context: Context?,
+        private val context: Context?,
         private val selector: ListSelector<ScreenshotModel>? = null,
         private val onItemClickListener: ((item: ScreenshotModel, view: View?) -> Unit)? = null
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), OnContextMenuActionListener {
 
-    private var screenshotList: List<ScreenshotModel> = emptyList()
+    var screenshotList: List<ScreenshotModel> = emptyList()
     private var recyclerView: RecyclerView? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -135,14 +135,6 @@ open class ScreenshotAdapter(
 
     fun getItem(position: Int): ScreenshotModel {
         return screenshotList[position]
-    }
-
-    open fun setScreenshotList(list: List<ScreenshotModel>) {
-        screenshotList = list
-    }
-
-    fun getScreenshotList(): List<ScreenshotModel> {
-        return screenshotList
     }
 
     private fun isSelected(screenshot: ScreenshotModel): Boolean {

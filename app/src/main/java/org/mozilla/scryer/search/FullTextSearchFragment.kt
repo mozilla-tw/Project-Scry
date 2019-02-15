@@ -16,10 +16,12 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.fragment_full_text_search.*
 import org.mozilla.scryer.R
+import org.mozilla.scryer.ScryerApplication
 import org.mozilla.scryer.collectionview.ScreenshotAdapter
 import org.mozilla.scryer.detailpage.DetailPageActivity
 import org.mozilla.scryer.extension.getNavController
 import org.mozilla.scryer.getSupportActionBar
+import org.mozilla.scryer.persistence.LoadingViewModel
 import org.mozilla.scryer.persistence.ScreenshotModel
 import org.mozilla.scryer.setSupportActionBar
 import org.mozilla.scryer.ui.InnerSpaceDecoration
@@ -31,7 +33,7 @@ class FullTextSearchFragment : androidx.fragment.app.Fragment() {
         private const val SPAN_COUNT = 3
     }
 
-    private lateinit var screenshotAdapter: ScreenshotAdapter
+    private lateinit var screenshotAdapter: SearchAdapter
     private lateinit var liveData: LiveData<List<ScreenshotModel>>
     private lateinit var viewModel: ScreenshotViewModel
 
@@ -49,6 +51,7 @@ class FullTextSearchFragment : androidx.fragment.app.Fragment() {
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                screenshotAdapter.showLoadingView(LoadingViewModel(getText(R.string.search_transition_searching)))
                 val queryText = s.toString().split(" ").joinToString(" AND ", "*", "*")
                 liveData = viewModel.searchScreenshots(queryText)
             }
@@ -66,7 +69,15 @@ class FullTextSearchFragment : androidx.fragment.app.Fragment() {
                     subtitleTextView.text = getString(R.string.search_separator_results, screenshots.size)
 
                     screenshots.sortedByDescending { it.lastModified }.let { sorted ->
-                        screenshotAdapter.setScreenshotList(sorted)
+                        ScryerApplication.getContentScanner().getProgress().observe(this@FullTextSearchFragment, org.mozilla.scryer.Observer {
+                            if (it.first != it.second) {
+                                screenshotAdapter.showLoadingView(LoadingViewModel(getString(R.string.search_transition_progress, (it.second - it.first)),
+                                        getString(R.string.search_transition_content_searchable)))
+                            } else {
+                                screenshotAdapter.showLoadingView(null)
+                            }
+                        })
+                        screenshotAdapter.screenshotList = sorted
                         screenshotAdapter.notifyDataSetChanged()
                     }
                 })
@@ -80,10 +91,9 @@ class FullTextSearchFragment : androidx.fragment.app.Fragment() {
         super.onActivityCreated(savedInstanceState)
         val activity = activity ?: return
 
-        screenshotAdapter = ScreenshotAdapter(context) { item, view ->
-            val context = context ?: return@ScreenshotAdapter
+        screenshotAdapter = SearchAdapter(context) { item, view ->
+            val context = context ?: return@SearchAdapter
             DetailPageActivity.showDetailPage(context, item, view)
-
         }
 
         setHasOptionsMenu(true)
@@ -116,6 +126,15 @@ class FullTextSearchFragment : androidx.fragment.app.Fragment() {
     private fun initScreenshotList(context: Context) {
         val manager = GridLayoutManager(context, SPAN_COUNT,
                 RecyclerView.VERTICAL, false)
+        manager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+            override fun getSpanSize(position: Int): Int {
+                return when (screenshotAdapter.getItemViewType(position)) {
+                    SearchAdapter.VIEW_TYPE_ITEM -> 1
+                    SearchAdapter.VIEW_TYPE_LOADING -> SPAN_COUNT
+                    else -> -1
+                }
+            }
+        }
         screenshotListView.itemAnimator = null
         screenshotListView.layoutManager = manager
         screenshotListView.adapter = screenshotAdapter
@@ -139,7 +158,7 @@ class FullTextSearchFragment : androidx.fragment.app.Fragment() {
             }
 
             screenshots.sortedByDescending { it.lastModified }.let { sorted ->
-                screenshotAdapter.setScreenshotList(sorted)
+                screenshotAdapter.screenshotList = sorted
                 screenshotAdapter.notifyDataSetChanged()
             }
         })

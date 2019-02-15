@@ -154,7 +154,7 @@ class CollectionFragment : Fragment() {
                 "${selected.size}"
             }
 
-            selectAllCheckbox.isChecked = screenshotAdapter.getScreenshotList().all {
+            selectAllCheckbox.isChecked = screenshotAdapter.screenshotList.all {
                 isSelected(it)
             }
             selectAllCheckbox.invalidate()
@@ -207,7 +207,7 @@ class CollectionFragment : Fragment() {
         selectAllCheckbox.setOnClickListener { _ ->
             val isChecked = selectAllCheckbox.isChecked
             selectAllCheckbox.invalidate()
-            screenshotAdapter.getScreenshotList().forEach {
+            screenshotAdapter.screenshotList.forEach {
                 if (isChecked != selector.isSelected(it)) {
                     selector.toggleSelection(it)
                 }
@@ -292,7 +292,7 @@ class CollectionFragment : Fragment() {
 
             R.id.action_sort -> {
                 collectionId?.takeIf {
-                    screenshotAdapter.getScreenshotList().isNotEmpty()
+                    screenshotAdapter.screenshotList.isNotEmpty()
                 }?.let {
                     startSortingActivity(it)
                     TelemetryWrapper.clickOnSortingButton()
@@ -354,7 +354,7 @@ class CollectionFragment : Fragment() {
     }
 
     private fun updateSortMenuItem(item: MenuItem?) {
-        item?.isVisible = screenshotAdapter.getScreenshotList().isNotEmpty()
+        item?.isVisible = screenshotAdapter.screenshotList.isNotEmpty()
     }
 
     private fun initScreenshotList(context: Context) {
@@ -392,7 +392,7 @@ class CollectionFragment : Fragment() {
             }
 
             screenshots.sortedByDescending { it.lastModified }.let { sorted ->
-                screenshotAdapter.setScreenshotList(sorted)
+                screenshotAdapter.screenshotList = sorted
                 screenshotAdapter.notifyDataSetChanged()
             }
 

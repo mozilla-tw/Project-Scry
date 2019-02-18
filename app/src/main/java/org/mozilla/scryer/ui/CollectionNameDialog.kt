@@ -87,7 +87,7 @@ class CollectionNameDialog(private val context: Context,
                 override fun onPositiveAction(collectionName: String) {
                     collection.name = collectionName
                     launchIO {
-                        viewModel.updateCollection(collection)
+                        updateCollectionName(viewModel, collection)
                     }
                 }
 
@@ -135,6 +135,24 @@ class CollectionNameDialog(private val context: Context,
                 }
                 model
             }
+        }
+
+        private suspend fun updateCollectionName(
+                viewModel: ScreenshotViewModel,
+                collection: CollectionModel
+        ): CollectionModel = withContext(Dispatchers.IO) {
+            val collections = viewModel.getCollectionList()
+            collections.find {
+                it.name.equals(collection.name, true)
+
+            }?.let {
+                // User won't be able to proceed to here if the input name is conflict with s the
+                // others user-defined collection. So the conflict one here should be one of our
+                // pre-defined collection
+                viewModel.deleteCollection(it)
+            }
+            viewModel.updateCollection(collection)
+            collection
         }
 
         private suspend fun queryCollectionList(viewModel: ScreenshotViewModel): List<CollectionModel> {

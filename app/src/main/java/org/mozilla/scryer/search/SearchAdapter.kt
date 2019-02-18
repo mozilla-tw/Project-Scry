@@ -7,21 +7,20 @@ package org.mozilla.scryer.search
 
 import android.content.Context
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import org.mozilla.scryer.R
-import org.mozilla.scryer.collectionview.*
+import org.mozilla.scryer.collectionview.ListSelector
+import org.mozilla.scryer.collectionview.ScreenshotAdapter
 import org.mozilla.scryer.persistence.LoadingViewModel
 import org.mozilla.scryer.persistence.ScreenshotModel
-import org.mozilla.scryer.sortingpanel.SortingPanelActivity
 
 class SearchAdapter(
-        private val context: Context?,
-        private val selector: ListSelector<ScreenshotModel>? = null,
-        private val onItemClickListener: ((item: ScreenshotModel, view: View?) -> Unit)? = null
+        context: Context?,
+        selector: ListSelector<ScreenshotModel>? = null,
+        onItemClickListener: ((item: ScreenshotModel, view: View?) -> Unit)? = null
 ) : ScreenshotAdapter(context, selector, onItemClickListener) {
 
     companion object {
@@ -81,7 +80,7 @@ class SearchAdapter(
 
     fun showLoadingView(loadingViewModel: LoadingViewModel?) {
         this.loadingViewModel = loadingViewModel
-        notifyItemInserted(itemCount -1)
+        notifyItemInserted(itemCount - 1)
     }
 }
 

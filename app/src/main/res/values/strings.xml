@@ -164,7 +164,7 @@
     <!-- Onboarding: strings to onboard users to grant permissions,
     Refer to UX spec 7.1: https://mozilla.invisionapp.com/share/24N3MMQB986#/310133929_7-1_Onboarding Parameter %1$s is the app name, i.e. Firefox ScreenshotGo -->
     <string name="onboarding_storage_title_welcome">Welcome to %1$s</string>
-    <string name="onboarding_storage_content_permission">To help you organize and find your screenshots better, we’ll need your permission to access your storage.</string>
+    <string name="onboarding_storage_content_permission">To help you organize and find your screenshots better, we’ll need your permission to access phone storage.</string>
     <string name="onboarding_storage_caption_duplicates">*Don’t worry, this won’t duplicate files.</string>
     <!-- The string displays if the system autogrants storage permission. Parameter %1$s is the app name, i.e. Firefox ScreenshotGo -->
     <string name="onboarding_storage_content_autogrant">%1$s helps you organize and find your screenshots better.</string>

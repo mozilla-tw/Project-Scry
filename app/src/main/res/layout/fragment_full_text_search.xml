@@ -45,7 +45,7 @@
         app:layout_constraintTop_toBottomOf="@id/toolbar_holder">
 
         <androidx.appcompat.widget.AppCompatCheckBox
-            android:id="@+id/select_all_checkbox"
+            android:id="@+id/selectAllCheckbox"
             android:layout_width="@dimen/home_select_mode_checkbox_size"
             android:layout_height="@dimen/home_select_mode_checkbox_size"
             android:layout_gravity="center_vertical"

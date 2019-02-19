@@ -56,8 +56,8 @@ class ScreenshotDatabaseRepository(private val database: ScreenshotDatabase) : S
         database.screenshotDao().addScreenshot(screenshots)
     }
 
-    override fun updateScreenshot(screenshot: ScreenshotModel) {
-        database.screenshotDao().updateScreenshot(screenshot)
+    override fun updateScreenshots(screenshots: List<ScreenshotModel>) {
+        database.screenshotDao().updateScreenshot(screenshots)
     }
 
     override fun getScreenshot(screenshotId: String): ScreenshotModel? {

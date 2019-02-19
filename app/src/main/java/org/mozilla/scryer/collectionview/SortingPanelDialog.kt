@@ -57,7 +57,7 @@ class SortingPanelDialog(
 
                 screenshots.forEach { it.collectionId = collection.id }
                 withContext(Dispatchers.Default) {
-                    model.addScreenshot(screenshots)
+                    model.updateScreenshots(screenshots)
                 }
 
                 if (screenshots.size > 1) {

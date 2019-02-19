@@ -47,7 +47,7 @@ class ScreenshotInMemoryRepository : ScreenshotRepository {
         screenshotData.value = screenshotList
     }
 
-    override fun updateScreenshot(screenshot: ScreenshotModel) {
+    override fun updateScreenshots(screenshots: List<ScreenshotModel>) {
         screenshotData.value = screenshotList
     }
 

@@ -257,7 +257,7 @@ class SortingPanelActivity : AppCompatActivity() {
         if (screenshot.collectionId == CollectionModel.UNCATEGORIZED) {
             screenshot.collectionId = CollectionModel.CATEGORY_NONE
             launchIO {
-                screenshotViewModel.updateScreenshot(screenshot)
+                screenshotViewModel.updateScreenshots(listOf(screenshot))
             }
         }
     }

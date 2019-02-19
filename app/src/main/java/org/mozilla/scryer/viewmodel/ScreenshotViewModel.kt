@@ -38,7 +38,7 @@ class ScreenshotViewModel(private val delegate: ScreenshotRepository) : ViewMode
     ) = withContext(Dispatchers.Default) {
         screenshots.forEach {
             it.collectionId = collectionId
-            updateScreenshot(it)
+            updateScreenshots(listOf(it))
         }
     }
 }

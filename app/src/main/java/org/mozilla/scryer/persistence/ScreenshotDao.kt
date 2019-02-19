@@ -25,11 +25,11 @@ interface ScreenshotDao {
     @Query("SELECT * FROM screenshot WHERE collection_id IN(:collectionIds)")
     fun getScreenshotList(collectionIds: List<String>): List<ScreenshotModel>
 
-    @Insert(onConflict = REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun addScreenshot(screenshot: List<ScreenshotModel>)
 
     @Update(onConflict = REPLACE)
-    fun updateScreenshot(screenshot: ScreenshotModel)
+    fun updateScreenshot(screenshots: List<ScreenshotModel>)
 
     @Delete
     fun deleteScreenshot(screenshot: ScreenshotModel)

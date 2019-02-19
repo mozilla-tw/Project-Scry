@@ -651,12 +651,6 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate, CoroutineScope {
         }.forEach { externalModel ->
             val localModel = localModels[externalModel.absolutePath]
             localModel?.let {
-                // Already recorded before, sync id and collectionId from local record
-                // TODO: Do we really need to save(rewrite) existed item to db again here(replace)?
-                externalModel.id = localModel.id
-                externalModel.collectionId = localModel.collectionId
-
-                // Remove processed item from the lookup table
                 localModels.remove(externalModel.absolutePath)
 
             }?: run {

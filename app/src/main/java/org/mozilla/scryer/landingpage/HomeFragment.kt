@@ -40,7 +40,6 @@ import kotlinx.android.synthetic.main.view_quick_access.view.*
 import kotlinx.coroutines.experimental.*
 import mozilla.components.support.base.log.Log
 import org.mozilla.scryer.*
-import org.mozilla.scryer.capture.ScreenCaptureManager
 import org.mozilla.scryer.collectionview.ScreenshotItemHolder
 import org.mozilla.scryer.detailpage.DetailPageActivity
 import org.mozilla.scryer.extension.navigateSafely
@@ -154,24 +153,24 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate, CoroutineScope {
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        activity?.let {
+        activity?.let { safeActivity ->
             inflater.inflate(R.menu.menu_main, menu)
 
-            menu.findItem(R.id.action_settings).setOnMenuItemClickListener { _ ->
-                startActivity(Intent(it, SettingsActivity::class.java))
+            menu.findItem(R.id.action_settings).setOnMenuItemClickListener {
+                startActivity(Intent(safeActivity, SettingsActivity::class.java))
                 TelemetryWrapper.enterSettings()
                 true
             }
 
             menu.findItem(R.id.action_svg_viewer).apply {
-                setOnMenuItemClickListener { _ ->
-                    startActivity(Intent(it, SvgViewerActivity::class.java))
+                setOnMenuItemClickListener {
+                    startActivity(Intent(safeActivity, SvgViewerActivity::class.java))
                     true
                 }
                 isVisible = BuildConfig.DEBUG
             }
 
-            createOptionsMenuSearchView(it)
+            createOptionsMenuSearchView(safeActivity)
         }
     }
 
@@ -336,7 +335,7 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate, CoroutineScope {
         storagePermissionView?.visibility = View.GONE
 
         launch(Dispatchers.Main) {
-            val newScreenshots = syncAndGetNewScreenshotsFromExternal()
+            val newScreenshots = checkNewScreenshots()
             yield() // Skip the following UI work if the fragmentJob is already cancelled
 
             mainAdapter?.notifyDataSetChanged()
@@ -549,16 +548,33 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate, CoroutineScope {
         mainAdapter?.notifyDataSetChanged()
     }
 
-    private suspend fun syncAndGetNewScreenshotsFromExternal(): List<ScreenshotModel> {
-        return withContext(Dispatchers.IO + NonCancellable) {
-            context?.let {
-                val externalList = ScreenshotFetcher().fetchScreenshots(it)
-                val dbList = viewModel.getScreenshotList()
-                mergeExternalToDatabase(externalList, dbList).filter { screenshot ->
-                    screenshot.collectionId == CollectionModel.UNCATEGORIZED
-                }
-            } ?: emptyList()
+    private suspend fun checkNewScreenshots(): List<ScreenshotModel> {
+        return withContext (Dispatchers.IO + NonCancellable) {
+            val dbList = viewModel.getScreenshotList()
+            arrayListOf<ScreenshotModel>().apply {
+                addAll(syncExternalScreenshots(dbList))
+                addAll(getLocalNewScreenshots(dbList))
+            }
         }
+    }
+
+    private fun syncExternalScreenshots(
+            localScreenshots: List<ScreenshotModel>
+    ): List<ScreenshotModel> {
+        val context = context ?: return emptyList()
+        val externalList = ScreenshotFetcher().fetchScreenshots(context)
+        return mergeExternalScreenshots(
+                externalList,
+                localScreenshots
+        ).filter { screenshot ->
+            screenshot.collectionId == CollectionModel.UNCATEGORIZED
+        }
+    }
+
+    private fun getLocalNewScreenshots(
+            localScreenshots: List<ScreenshotModel>
+    ): List<ScreenshotModel> {
+        return localScreenshots.filter { it.collectionId == CollectionModel.UNCATEGORIZED }
     }
 
     private fun showNewScreenshotsDialog(newScreenshots: List<ScreenshotModel>) {
@@ -635,7 +651,10 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate, CoroutineScope {
         }
     }
 
-    private fun mergeExternalToDatabase(
+    /**
+     * @return screenshots from external that hasn't been recorded in db
+     */
+    private fun mergeExternalScreenshots(
             externalList: List<ScreenshotModel>,
             dbList: List<ScreenshotModel>
     ): List<ScreenshotModel> {
@@ -644,11 +663,7 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate, CoroutineScope {
         val localModels = dbList.map { it.absolutePath to it }.toMap().toMutableMap()
 
         val results = mutableListOf<ScreenshotModel>()
-        externalList.filterNot {
-            // skip screenshots that were taken by our self
-            File(it.absolutePath).parent.endsWith(File.separator + ScreenCaptureManager.SCREENSHOT_DIR)
-
-        }.forEach { externalModel ->
+        externalList.forEach { externalModel ->
             val localModel = localModels[externalModel.absolutePath]
             localModel?.let {
                 localModels.remove(externalModel.absolutePath)
@@ -770,7 +785,7 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate, CoroutineScope {
         private fun schedule() {
             current?: run {
                 current = queue.poll()?.let { dialog ->
-                    dialog.setOnDismissListener { _ ->
+                    dialog.setOnDismissListener {
                         val listener = listeners[dialog]
                         listener?.let { targetInterface ->
                             targetInterface.onDismiss(dialog)

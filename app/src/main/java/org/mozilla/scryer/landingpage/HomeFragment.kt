@@ -9,8 +9,7 @@ import android.Manifest
 import android.app.Activity
 import android.app.SearchManager
 import android.content.*
-import android.graphics.Color
-import android.graphics.Rect
+import android.graphics.*
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -24,6 +23,7 @@ import androidx.appcompat.app.AppCompatDialog
 import androidx.appcompat.widget.AppCompatCheckBox
 import androidx.appcompat.widget.SearchView
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -43,6 +43,7 @@ import org.mozilla.scryer.*
 import org.mozilla.scryer.capture.ScreenCaptureManager
 import org.mozilla.scryer.collectionview.ScreenshotItemHolder
 import org.mozilla.scryer.detailpage.DetailPageActivity
+import org.mozilla.scryer.detailpage.GraphicOverlay
 import org.mozilla.scryer.extension.navigateSafely
 import org.mozilla.scryer.filemonitor.ScreenshotFetcher
 import org.mozilla.scryer.permission.PermissionFlow
@@ -372,6 +373,10 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate, CoroutineScope {
             context?.startService(Intent(context, ScryerService::class.java))
         }
         TelemetryWrapper.visitHomePage()
+
+        if (shouldShowSearchOnboarding()) {
+            showSearchOnboarding()
+        }
     }
 
     override fun requestStoragePermission() {
@@ -392,6 +397,42 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate, CoroutineScope {
     }
 
     private fun dismissPermissionDialog() = permissionDialog?.takeIf { it.isShowing }?.dismiss()
+
+    private fun shouldShowSearchOnboarding(): Boolean {
+        return !(pref?.isSearchOnboardingShown() ?: true)
+    }
+
+    private fun showSearchOnboarding() {
+        activity?.window?.let {
+            it.statusBarColor = ContextCompat.getColor(context!!, R.color.detail_onboarding_overlay)
+        }
+        onboarding_view.visibility = View.VISIBLE
+        onboarding_view.setOnClickListener {
+            activity?.window?.let {
+                it.statusBarColor = Color.TRANSPARENT
+            }
+            (onboarding_view.parent as ViewGroup).removeView(onboarding_view)
+        }
+
+        onboarding_overlay.overlayMode = GraphicOverlay.MODE_HIGHLIGHT
+        onboarding_overlay.overlayColor = ContextCompat.getColor(context!!, R.color.detail_onboarding_overlay)
+        onboarding_overlay.add(object : GraphicOverlay.Graphic(onboarding_overlay) {
+            private val spotlightPaint: Paint = Paint().apply {
+                xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR)
+            }
+
+            override fun draw(canvas: Canvas) {
+                val radius = toolbar.height + resources.getDimensionPixelSize(R.dimen.common_padding_12dp)
+
+                canvas.drawCircle(0f,
+                        0f,
+                        radius.toFloat(),
+                        spotlightPaint)
+            }
+        })
+
+        pref?.setSearchOnboardingShown()
+    }
 
     private fun initActionBar() {
         setHasOptionsMenu(true)

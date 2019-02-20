@@ -20,6 +20,7 @@ class PreferenceWrapper(context: Context) {
     private val isFirstTimeLaunch = PrefConfig("first_time_launch", true)
     private val grantStoragePermissionCount = PrefConfig("grant_storage_permission_count", 1)
     private val isOcrOnboardingShown = PrefConfig("ocr_onboarding_shown", false)
+    private val isSearchOnboardingShown = PrefConfig("search_onboarding_shown", false)
 
     private val pref: SharedPreferences by lazy {
         context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
@@ -53,6 +54,14 @@ class PreferenceWrapper(context: Context) {
 
     fun setOcrOnboardingShown() {
         pref.edit().putBoolean(isOcrOnboardingShown.key, true).apply()
+    }
+
+    fun isSearchOnboardingShown(): Boolean {
+        return pref.getBoolean(isSearchOnboardingShown.key, isSearchOnboardingShown.defaultValue)
+    }
+
+    fun setSearchOnboardingShown() {
+        pref.edit().putBoolean(isSearchOnboardingShown.key, true).apply()
     }
 }
 

@@ -12,7 +12,10 @@ import androidx.lifecycle.Transformations
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
+import androidx.sqlite.db.SimpleSQLiteQuery
 import androidx.sqlite.db.SupportSQLiteDatabase
+import kotlinx.coroutines.experimental.Dispatchers
+import kotlinx.coroutines.experimental.withContext
 import org.mozilla.scryer.R
 import org.mozilla.scryer.persistence.*
 import org.mozilla.scryer.util.launchIO
@@ -144,7 +147,7 @@ class ScreenshotDatabaseRepository(private val database: ScreenshotDatabase) : S
     }
 
     override fun searchScreenshots(queryText: String): LiveData<List<ScreenshotModel>> {
-        return database.screenshotDao().searchScreenshots(queryText)
+        return MatchStrategy().search(queryText, database)
     }
 
     override fun getScreenshotContent(): LiveData<List<ScreenshotContentModel>> {
@@ -157,5 +160,71 @@ class ScreenshotDatabaseRepository(private val database: ScreenshotDatabase) : S
 
     override fun getContentText(screenshot: ScreenshotModel): String? {
         return database.screenshotDao().getContentText(screenshot.id)?.contentText
+    }
+
+    private interface SearchStrategy {
+        fun search(
+                queryText: String,
+                database: ScreenshotDatabase
+        ): LiveData<List<ScreenshotModel>>
+    }
+
+    private class MatchStrategy : SearchStrategy {
+        override fun search(
+                queryText: String,
+                database: ScreenshotDatabase
+        ): LiveData<List<ScreenshotModel>> {
+            return database.screenshotDao().searchScreenshots(
+                    queryText
+                            .split("[ \"-]".toRegex())
+                            .joinToString(" ", "*", "*")
+            )
+        }
+    }
+
+    private class TwoWayStrategy : SearchStrategy {
+        override fun search(
+                queryText: String,
+                database: ScreenshotDatabase
+        ): LiveData<List<ScreenshotModel>> {
+            val useFts = queryText.all { Character.isLetterOrDigit(it) }
+            if (useFts) {
+                return database.screenshotDao().searchScreenshots(
+                        queryText
+                                .split(" ")
+                                .joinToString(" ", "*", "*")
+                )
+
+            } else {
+                val liveData = MutableLiveData<List<ScreenshotModel>>()
+                return Transformations.switchMap(database.screenshotDao().getScreenshotContent()) {
+                    launchIO {
+                        val args = queryText.split(" ").map { term -> "%$term%" }
+                        val whereClauseBuilder = StringBuilder()
+                        for (index in 0 until args.size) {
+                            whereClauseBuilder.append("${if (index > 0) {
+                                " AND "
+                            } else {
+                                ""
+                            }}content_text like ?")
+                        }
+
+                        val contentSql = "SELECT content.* " +
+                                "FROM screenshot_content content " +
+                                "WHERE $whereClauseBuilder"
+                        val sql = "SELECT s.* " +
+                                "FROM screenshot s " +
+                                "INNER JOIN ($contentSql) result " +
+                                "ON s.id = result.id"
+                        val query = SimpleSQLiteQuery(sql, args.toTypedArray())
+                        val result = database.screenshotDao().searchScreenshotsRaw(query)
+                        withContext (Dispatchers.Main) {
+                            liveData.value = result
+                        }
+                    }
+                    liveData
+                }
+            }
+        }
     }
 }

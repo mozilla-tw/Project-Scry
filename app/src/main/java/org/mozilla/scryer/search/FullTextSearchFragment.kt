@@ -172,8 +172,7 @@ class FullTextSearchFragment : androidx.fragment.app.Fragment() {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 screenshotAdapter.showLoadingView(LoadingViewModel(getText(R.string.search_transition_searching)))
-                val queryText = s.toString().split(" ").joinToString(" AND ", "*", "*")
-                liveData = viewModel.searchScreenshots(queryText)
+                liveData = viewModel.searchScreenshots(s.toString())
             }
 
             override fun afterTextChanged(s: Editable?) {

@@ -16,6 +16,7 @@ import mozilla.components.support.base.log.Log
 import org.mozilla.scryer.ScryerApplication
 import org.mozilla.scryer.persistence.ScreenshotContentModel
 import org.mozilla.scryer.persistence.ScreenshotModel
+import java.io.File
 import kotlin.coroutines.experimental.suspendCoroutine
 
 class FirebaseVisionTextHelper {
@@ -26,10 +27,9 @@ class FirebaseVisionTextHelper {
         suspend fun scan(
                 updateListener: suspend (((model: ScreenshotModel, index: Int, total: Int) -> Unit))
         ) = withContext(Dispatchers.IO) {
-
-            val list = ScryerApplication.getScreenshotRepository().getScreenshotList().sortedByDescending {
-                it.lastModified
-            }
+            val list = ScryerApplication.getScreenshotRepository()
+                    .getScreenshotList()
+                    .sortedByDescending { it.lastModified }
 
             val remains = list.filter {
                 ScryerApplication.getScreenshotRepository().getContentText(it) == null
@@ -59,25 +59,27 @@ class FirebaseVisionTextHelper {
         }
 
         suspend fun extractText(screenshot: ScreenshotModel): String {
-            val decoded = try {
-                BitmapFactory.decodeFile(screenshot.absolutePath)
+            return try {
+                BitmapFactory.decodeFile(screenshot.absolutePath)?.let {
+                    extractText(it).text
+                } ?: ""
             } catch (e: Error) {
-                return ""
+                ""
             }
-
-            return extractText(decoded).text
         }
 
-        suspend fun extractText(selectedImage: Bitmap): FirebaseVisionText = suspendCoroutine { cont ->
-            val image = FirebaseVisionImage.fromBitmap(selectedImage)
-            val detector = FirebaseVision.getInstance().onDeviceTextRecognizer
-            detector.processImage(image)
-                    .addOnSuccessListener { texts ->
-                        cont.resume(texts)
-                    }
-                    .addOnFailureListener { exception ->
-                        cont.resumeWithException(exception)
-                    }
+        suspend fun extractText(selectedImage: Bitmap): FirebaseVisionText {
+            return suspendCoroutine { cont ->
+                val image = FirebaseVisionImage.fromBitmap(selectedImage)
+                val detector = FirebaseVision.getInstance().onDeviceTextRecognizer
+                detector.processImage(image)
+                        .addOnSuccessListener { texts ->
+                            cont.resume(texts)
+                        }
+                        .addOnFailureListener { exception ->
+                            cont.resumeWithException(exception)
+                        }
+            }
         }
 
         suspend fun writeContentTextToDb(
@@ -85,7 +87,14 @@ class FirebaseVisionTextHelper {
                 contentText: String
         ) = withContext(Dispatchers.IO) {
             val model = ScreenshotContentModel(screenshot.id, contentText)
-            ScryerApplication.getScreenshotRepository().updateScreenshotContent(model)
+            val fileExisted = File(screenshot.absolutePath).exists()
+            val recordExist = ScryerApplication.getScreenshotRepository()
+                    .getScreenshotList()
+                    .find { it.id == screenshot.id }
+                    ?.let { true } ?: false
+            if (fileExisted && recordExist) {
+                ScryerApplication.getScreenshotRepository().updateScreenshotContent(model)
+            }
         }
     }
 }

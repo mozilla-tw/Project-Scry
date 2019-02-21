@@ -11,49 +11,45 @@ import androidx.lifecycle.Transformations
 import kotlinx.coroutines.experimental.CoroutineScope
 import kotlinx.coroutines.experimental.Dispatchers
 import kotlinx.coroutines.experimental.Job
+import kotlinx.coroutines.experimental.channels.Channel
+import kotlinx.coroutines.experimental.channels.SendChannel
+import kotlinx.coroutines.experimental.channels.actor
 import kotlinx.coroutines.experimental.launch
-import mozilla.components.support.base.log.Log
 import org.mozilla.scryer.ScryerApplication
 import org.mozilla.scryer.persistence.ScreenshotModel
 import kotlin.coroutines.experimental.CoroutineContext
 
 class ForegroundScanner : CoroutineScope {
 
-    companion object {
-        private const val TAG = ContentScanner.TAG + "Fg"
-    }
-    private var foregroundScanJob: Job? = null
-    private var dirty = false
-    private var isStart = false
-
-    private val screenshotLiveData = ScryerApplication.getScreenshotRepository().getScreenshots()
+    private val screenshotLiveData =
+            ScryerApplication.getScreenshotRepository().getScreenshots()
     private val screenshotObserver = Observer<List<ScreenshotModel>> {
         scheduleForegroundScan()
     }
 
     private val progressLiveData = MutableLiveData<Pair<Int, Int>>()
 
-    private val job = Job()
+    private val parentJob = Job()
+    private var scanJob: Job? = null
+    private var scanActor: SendChannel<Unit>? = null
 
     override val coroutineContext: CoroutineContext
-        get() = Dispatchers.Default + job
+        get() = Dispatchers.Default + parentJob
 
     fun onCreate() {}
 
     fun onStart() {
-        isStart = true
-        dirty = false
+        prepareScan()
         screenshotLiveData.observeForever(screenshotObserver)
     }
 
     fun onStop() {
-        isStart = false
         screenshotLiveData.removeObserver(screenshotObserver)
-        foregroundScanJob?.cancel()
+        cancelScan()
     }
 
     fun onDestroy() {
-        job.cancel()
+        parentJob.cancel()
     }
 
     fun getProgress(): LiveData<Pair<Int, Int>> {
@@ -61,30 +57,29 @@ class ForegroundScanner : CoroutineScope {
     }
 
     fun isScanning(): Boolean {
-        return foregroundScanJob?.isActive == true
+        return scanJob?.isActive == true
+    }
+
+    private fun prepareScan() {
+        val scanJob = Job(parentJob).apply {
+            scanJob = this
+        }
+
+        scanActor = actor(context = scanJob, capacity = Channel.CONFLATED) {
+            for (msg in channel) {
+                FirebaseVisionTextHelper.scanAndSave()
+            }
+        }
+    }
+
+    private fun cancelScan() {
+        scanActor?.close()
+        scanJob?.cancel()
     }
 
     private fun scheduleForegroundScan() {
-        foregroundScanJob?.let {
-            dirty = true
-            return
-        }
-        dirty = false
-        foregroundScanJob = launch {
-            FirebaseVisionTextHelper.scanAndSave { current, total ->
-                launch(Dispatchers.Main) {
-                    progressLiveData.value = Pair(current, total)
-                }
-            }
-        }
-
-        foregroundScanJob?.invokeOnCompletion {
-            foregroundScanJob = null
-
-            if (dirty && isStart) {
-                Log.log(tag = TAG, message = "dirty, re-schedule scan")
-                scheduleForegroundScan()
-            }
+        launch {
+            scanActor?.send(Unit)
         }
     }
 }

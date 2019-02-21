@@ -10,7 +10,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ActionMode
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
-import androidx.core.view.ViewCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
@@ -39,6 +38,7 @@ class FullTextSearchFragment : androidx.fragment.app.Fragment() {
     private lateinit var viewModel: ScreenshotViewModel
 
     private var actionModeMenu: Menu? = null
+    private var isIndexing: Boolean = false
 
     private val selectActionModeCallback: ActionMode.Callback = object : ActionMode.Callback {
         override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
@@ -178,25 +178,24 @@ class FullTextSearchFragment : androidx.fragment.app.Fragment() {
 
             override fun afterTextChanged(s: Editable?) {
                 liveData.observe(this@FullTextSearchFragment, Observer { screenshots ->
-                    if (screenshots.isNotEmpty()) {
-                        subtitleLayout.visibility = View.VISIBLE
-                        emptyView.visibility = View.GONE
+                    subtitleLayout.visibility = if (screenshots.isEmpty()) {
+                        View.GONE
                     } else {
-                        subtitleLayout.visibility = View.GONE
-                        emptyView.visibility = View.VISIBLE
+                        View.VISIBLE
+                    }
+                    emptyView.visibility = if (screenshots.isEmpty() && s?.isEmpty() == false && !isIndexing) {
+                        View.VISIBLE
+                    } else {
+                        View.GONE
+                    }
+
+                    if (!isIndexing) {
+                        screenshotAdapter.showLoadingView(null)
                     }
 
                     subtitleTextView.text = getString(R.string.search_separator_results, screenshots.size)
 
                     screenshots.sortedByDescending { it.lastModified }.let { sorted ->
-                        ScryerApplication.getContentScanner().getProgress().observe(this@FullTextSearchFragment, org.mozilla.scryer.Observer {
-                            if (it.first != it.second) {
-                                screenshotAdapter.showLoadingView(LoadingViewModel(getString(R.string.search_transition_progress, (it.second - it.first)),
-                                        getString(R.string.search_transition_content_searchable)))
-                            } else {
-                                screenshotAdapter.showLoadingView(null)
-                            }
-                        })
                         screenshotAdapter.screenshotList = sorted
                         screenshotAdapter.notifyDataSetChanged()
                     }
@@ -225,10 +224,43 @@ class FullTextSearchFragment : androidx.fragment.app.Fragment() {
             DetailPageActivity.showDetailPage(context, item, view)
         }
 
+        if (ScryerApplication.getContentScanner().isScanning()) {
+            ScryerApplication.getContentScanner().getProgress().observe(
+                    this@FullTextSearchFragment,
+                    org.mozilla.scryer.Observer {
+                        if (it.first != it.second) {
+                            onIndexProgress(it.first, it.second)
+                        } else {
+                            onIndexEnd()
+                        }
+                    })
+        }
+
         setHasOptionsMenu(true)
         setupActionBar()
         initScreenshotList(activity)
-        setupWindowInsets()
+    }
+
+    private fun onIndexProgress(current: Int, total: Int) {
+        searchEditText.text?.let {
+            if (it.isNotEmpty()) {
+                screenshotAdapter.showLoadingView(LoadingViewModel(
+                        getString(R.string.search_transition_progress, total - current),
+                        getString(R.string.search_transition_content_searchable)))
+
+                emptyView.visibility = View.GONE
+            }
+        }
+
+        isIndexing = true
+    }
+
+    private fun onIndexEnd() {
+        screenshotAdapter.showLoadingView(null)
+        if (screenshotAdapter.screenshotList.isEmpty()) {
+            emptyView.visibility = View.VISIBLE
+        }
+        isIndexing = false
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -269,40 +301,11 @@ class FullTextSearchFragment : androidx.fragment.app.Fragment() {
         screenshotListView.adapter = screenshotAdapter
 
         val itemSpace = context.resources.getDimensionPixelSize(R.dimen.collection_item_space)
-
         screenshotListView.addItemDecoration(InnerSpaceDecoration(itemSpace) {
             SPAN_COUNT
         })
 
         viewModel = ScreenshotViewModel.get(this)
         liveData = viewModel.searchScreenshots("")
-
-        liveData.observe(this, Observer { screenshots ->
-            if (screenshots.isNotEmpty()) {
-                subtitleLayout.visibility = View.VISIBLE
-                emptyView.visibility = View.GONE
-            } else {
-                subtitleLayout.visibility = View.GONE
-                emptyView.visibility = View.VISIBLE
-            }
-
-            screenshots.sortedByDescending { it.lastModified }.let { sorted ->
-                screenshotAdapter.screenshotList = sorted
-                screenshotAdapter.notifyDataSetChanged()
-            }
-        })
-    }
-
-    private fun setupWindowInsets() {
-        val rootView = view ?: return
-        ViewCompat.setOnApplyWindowInsetsListener(rootView) { view, insets ->
-            toolbar_holder.setPadding(toolbar_holder.paddingLeft,
-                    insets.systemWindowInsetTop,
-                    toolbar_holder.paddingRight,
-                    toolbar_holder.paddingBottom)
-            view.setPadding(view.paddingLeft, view.paddingTop, view.paddingRight,
-                    insets.systemWindowInsetBottom)
-            insets
-        }
     }
 }

@@ -1,5 +1,4 @@
 import com.android.build.gradle.api.ApplicationVariant
-import dependencies.Versions
 
 apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'

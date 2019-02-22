@@ -37,7 +37,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.fragment_home.view.*
 import kotlinx.android.synthetic.main.view_quick_access.view.*
-import kotlinx.coroutines.experimental.*
+import kotlinx.coroutines.*
 import mozilla.components.support.base.log.Log
 import org.mozilla.scryer.*
 import org.mozilla.scryer.collectionview.ScreenshotItemHolder
@@ -62,7 +62,7 @@ import org.mozilla.scryer.util.launchIO
 import org.mozilla.scryer.viewmodel.ScreenshotViewModel
 import java.io.File
 import java.util.*
-import kotlin.coroutines.experimental.CoroutineContext
+import kotlin.coroutines.CoroutineContext
 
 class HomeFragment : Fragment(), PermissionFlow.ViewDelegate, CoroutineScope {
 

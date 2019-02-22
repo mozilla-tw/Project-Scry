@@ -29,10 +29,10 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.dialog_collection_info.view.*
 import kotlinx.android.synthetic.main.dialog_screenshot_info.view.*
 import kotlinx.android.synthetic.main.fragment_collection.*
-import kotlinx.coroutines.experimental.Dispatchers
-import kotlinx.coroutines.experimental.GlobalScope
-import kotlinx.coroutines.experimental.launch
-import kotlinx.coroutines.experimental.withContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.mozilla.scryer.*
 import org.mozilla.scryer.Observer
 import org.mozilla.scryer.detailpage.DetailPageActivity

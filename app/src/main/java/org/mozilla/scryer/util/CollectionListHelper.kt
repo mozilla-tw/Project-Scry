@@ -2,8 +2,8 @@ package org.mozilla.scryer.util
 
 import android.content.Context
 import androidx.core.content.ContextCompat
-import kotlinx.coroutines.experimental.Dispatchers
-import kotlinx.coroutines.experimental.withContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.mozilla.scryer.R
 import org.mozilla.scryer.ScryerApplication
 import org.mozilla.scryer.persistence.CollectionModel

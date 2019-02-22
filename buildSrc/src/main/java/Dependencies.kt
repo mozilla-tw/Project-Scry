@@ -41,7 +41,8 @@ object Versions {
     val better_link_movement_method = "2.2.0"
 
     // Mozilla
-    val android_components = "0.27.0"
+    val android_components = "0.43.0"
+    val telemetry = "0.27.0"
 
     // Adjust
     val adjust = "4.15.1"

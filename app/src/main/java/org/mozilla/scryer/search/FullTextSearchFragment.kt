@@ -21,9 +21,12 @@ import org.mozilla.scryer.collectionview.*
 import org.mozilla.scryer.detailpage.DetailPageActivity
 import org.mozilla.scryer.extension.getNavController
 import org.mozilla.scryer.getSupportActionBar
+import org.mozilla.scryer.persistence.CollectionModel
 import org.mozilla.scryer.persistence.LoadingViewModel
 import org.mozilla.scryer.persistence.ScreenshotModel
+import org.mozilla.scryer.persistence.SuggestCollectionHelper
 import org.mozilla.scryer.setSupportActionBar
+import org.mozilla.scryer.telemetry.TelemetryWrapper
 import org.mozilla.scryer.ui.InnerSpaceDecoration
 import org.mozilla.scryer.viewmodel.ScreenshotViewModel
 
@@ -35,10 +38,12 @@ class FullTextSearchFragment : androidx.fragment.app.Fragment() {
 
     private lateinit var screenshotAdapter: SearchAdapter
     private lateinit var liveData: LiveData<List<ScreenshotModel>>
+    private lateinit var collectionList: List<CollectionModel>
     private lateinit var viewModel: ScreenshotViewModel
 
     private var actionModeMenu: Menu? = null
     private var isIndexing: Boolean = false
+    private var enterTimeMillis: Long = 0
 
     private val selectActionModeCallback: ActionMode.Callback = object : ActionMode.Callback {
         override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
@@ -218,10 +223,19 @@ class FullTextSearchFragment : androidx.fragment.app.Fragment() {
         super.onActivityCreated(savedInstanceState)
         val activity = activity ?: return
 
-        screenshotAdapter = SearchAdapter(context, selector) { item, view ->
+        screenshotAdapter = SearchAdapter(context, selector) { item, view, position ->
             val context = context ?: return@SearchAdapter
             DetailPageActivity.showDetailPage(context, item, view)
+
+            TelemetryWrapper.clickSearchResult(
+                    SuggestCollectionHelper.getSuggestCollectionNameForTelemetry(context,
+                            collectionList.find { it.id == item.collectionId }?.name),
+                    screenshotAdapter.itemCount,
+                    position,
+                    searchEditText.text?.length ?: 0,
+                    System.currentTimeMillis() - enterTimeMillis)
         }
+        enterTimeMillis = System.currentTimeMillis()
 
         if (ScryerApplication.getContentScanner().isScanning()) {
             ScryerApplication.getContentScanner().getProgress().observe(
@@ -306,5 +320,13 @@ class FullTextSearchFragment : androidx.fragment.app.Fragment() {
 
         viewModel = ScreenshotViewModel.get(this)
         liveData = viewModel.searchScreenshots("")
+
+        viewModel.getCollections().observe(this.viewLifecycleOwner, Observer { collections ->
+            collections?.asSequence()?.filter {
+                !SuggestCollectionHelper.isSuggestCollection(it)
+            }?.toList()?.let {
+                collectionList = it
+            }
+        })
     }
 }

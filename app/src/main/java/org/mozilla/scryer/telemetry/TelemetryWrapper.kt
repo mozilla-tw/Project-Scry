@@ -64,6 +64,7 @@ class TelemetryWrapper {
         const val VISIT_SEARCH_PAGE = "Visit search page"
         const val INTERESTED_IN_SEARCH = "Interested in search"
         const val NOT_INTERESTED_IN_SEARCH = "Not interested in search"
+        const val CLICK_SEARCH_RESULT = "Click search result"
         const val CLOSE_FAB = "Close FAB"
         const val STOP_CAPTURE_SERVICE = "Stop capture service"
         const val PROMPT_FEEDBACK_DIALOG = "Prompt feedback dialog"
@@ -102,6 +103,12 @@ class TelemetryWrapper {
         const val LINKS_FOUND = "links_found"
         const val TEXT_BLOCKS = "text_blocks"
         const val TOTAL_LENGTH = "total_length"
+        const val INDEX_PROGRESS = "index_progress"
+        const val COLLECTION = "collection"
+        const val RESULT_SIZE = "result_size"
+        const val RESULT_POSITION = "result_position"
+        const val KEYWORD_LENGTH = "keyword_length"
+        const val DURATION = "duration"
     }
 
     object ExtraValue {
@@ -269,9 +276,9 @@ class TelemetryWrapper {
                 method = Method.V1,
                 `object` = Object.GO,
                 value = "",
-                extras = [])
-        fun startSearch() {
-            EventBuilder(Category.START_SEARCH, Method.V1, Object.GO).queue()
+                extras = [TelemetryExtra(name = Extra.INDEX_PROGRESS, value = "(0-100)")])
+        fun startSearch(indexProgress: Int) {
+            EventBuilder(Category.START_SEARCH, Method.V1, Object.GO).extra(Extra.INDEX_PROGRESS, indexProgress.toString()).queue()
             AdjustHelper.trackEvent(ADJUST_EVENT_START_SEARCH)
         }
 
@@ -632,6 +639,27 @@ class TelemetryWrapper {
                 extras = [])
         fun notInterestedInSearch() {
             EventBuilder(Category.NOT_INTERESTED_IN_SEARCH, Method.V1, Object.GO).queue()
+        }
+
+        @TelemetryDoc(
+                name = Category.CLICK_SEARCH_RESULT,
+                category = Category.CLICK_SEARCH_RESULT,
+                method = Method.V1,
+                `object` = Object.GO,
+                value = "",
+                extras = [TelemetryExtra(name = Extra.COLLECTION, value = "collection name"),
+                    TelemetryExtra(name = Extra.RESULT_SIZE, value = "[0-9]+"),
+                    TelemetryExtra(name = Extra.RESULT_POSITION, value = "[0-9]+"),
+                    TelemetryExtra(name = Extra.KEYWORD_LENGTH, value = "[0-9]+"),
+                    TelemetryExtra(name = Extra.DURATION, value = "[0-9]+")])
+        fun clickSearchResult(collection: String, size: Int, position: Int, keywordLength: Int, duration: Long) {
+            EventBuilder(Category.CLICK_SEARCH_RESULT, Method.V1, Object.GO)
+                    .extra(Extra.COLLECTION, collection)
+                    .extra(Extra.RESULT_SIZE, size.toString())
+                    .extra(Extra.RESULT_POSITION, position.toString())
+                    .extra(Extra.KEYWORD_LENGTH, keywordLength.toString())
+                    .extra(Extra.DURATION, duration.toString())
+                    .queue()
         }
 
         @TelemetryDoc(

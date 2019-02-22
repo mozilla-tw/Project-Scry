@@ -20,7 +20,7 @@ import org.mozilla.scryer.persistence.ScreenshotModel
 class SearchAdapter(
         context: Context?,
         selector: ListSelector<ScreenshotModel>? = null,
-        onItemClickListener: ((item: ScreenshotModel, view: View?) -> Unit)? = null
+        onItemClickListener: ((item: ScreenshotModel, view: View?, position: Int) -> Unit)? = null
 ) : ScreenshotAdapter(context, selector, onItemClickListener) {
 
     companion object {

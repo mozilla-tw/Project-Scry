@@ -25,7 +25,7 @@ import java.io.File
 open class ScreenshotAdapter(
         private val context: Context?,
         private val selector: ListSelector<ScreenshotModel>? = null,
-        private val onItemClickListener: ((item: ScreenshotModel, view: View?) -> Unit)? = null
+        private val onItemClickListener: ((item: ScreenshotModel, view: View?, position: Int) -> Unit)? = null
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), OnContextMenuActionListener {
 
     var screenshotList: List<ScreenshotModel> = emptyList()
@@ -47,7 +47,7 @@ open class ScreenshotAdapter(
                     selector.toggleSelection(screenshot)
                     updateSelectionUI(holder, screenshot)
                 } else {
-                    onItemClickListener?.invoke(screenshotList[position], holder.image)
+                    onItemClickListener?.invoke(screenshotList[position], holder.image, position)
                 }
             }
         }

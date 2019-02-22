@@ -25,6 +25,7 @@ import androidx.appcompat.widget.SearchView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -480,9 +481,27 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate, CoroutineScope {
                 Navigation.findNavController(view!!).navigateSafely(R.id.MainFragment,
                         R.id.action_navigate_to_full_text_search,
                         Bundle())
-                TelemetryWrapper.startSearch()
+
+                ScryerApplication.getContentScanner().getProgress().observeOnce(
+                        org.mozilla.scryer.Observer {
+                            val progress: Int = if (it.second != 0) {
+                                (it.first / (it.second.toFloat()) * 100).toInt()
+                            } else {
+                                100
+                            }
+                            TelemetryWrapper.startSearch(progress)
+                        })
             }
         }
+    }
+
+    private fun <T> LiveData<T>.observeOnce(observer: Observer<T>) {
+        observeForever(object : Observer<T> {
+            override fun onChanged(t: T?) {
+                removeObserver(this)
+                observer.onChanged(t)
+            }
+        })
     }
 
     private fun initQuickAccessList(context: Context) {

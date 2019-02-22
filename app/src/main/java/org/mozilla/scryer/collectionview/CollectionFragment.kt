@@ -221,7 +221,7 @@ class CollectionFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         val activity = activity ?: return
 
-        screenshotAdapter = ScreenshotAdapter(context, selector) { item, view ->
+        screenshotAdapter = ScreenshotAdapter(context, selector) { item, view, _ ->
             val context = context ?: return@ScreenshotAdapter
             DetailPageActivity.showDetailPage(context, item, view, collectionId)
 

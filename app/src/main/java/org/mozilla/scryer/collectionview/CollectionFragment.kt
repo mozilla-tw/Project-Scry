@@ -80,6 +80,7 @@ class CollectionFragment : Fragment() {
                         mode.finish()
                     }
                     dialog.show()
+                    TelemetryWrapper.moveScreenshot(TelemetryWrapper.ExtraValue.COLLECTION, selector.selected.size)
                 }
 
                 R.id.action_delete -> {
@@ -89,10 +90,12 @@ class CollectionFragment : Fragment() {
                                     mode.finish()
                                 }
                             })
+                    TelemetryWrapper.deleteScreenshot(TelemetryWrapper.ExtraValue.COLLECTION, selector.selected.size)
                 }
 
                 R.id.action_share -> {
                     showShareScreenshotDialog(activity, selector.selected.toList())
+                    TelemetryWrapper.shareScreenshot(TelemetryWrapper.ExtraValue.COLLECTION, selector.selected.size)
                 }
             }
 
@@ -176,6 +179,8 @@ class CollectionFragment : Fragment() {
             selectAllCheckbox.visibility = View.VISIBLE
             actionMode?.title = getString(R.string.collection_header_select_none)
             selectAllCheckbox.isChecked = false
+
+            TelemetryWrapper.longPressOnScreenshot(TelemetryWrapper.ExtraValue.COLLECTION)
         }
 
         override fun onExitSelectMode() {

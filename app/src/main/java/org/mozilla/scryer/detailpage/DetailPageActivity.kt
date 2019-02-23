@@ -223,11 +223,12 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
         when (item?.itemId) {
             R.id.action_share -> {
                 showShareScreenshotDialog(this, screenshots[view_pager.currentItem])
-                TelemetryWrapper.shareScreenshot()
+                TelemetryWrapper.shareScreenshot(TelemetryWrapper.ExtraValue.SINGLE, 1)
             }
             R.id.action_move_to -> {
                 startActivity(SortingPanelActivity.sortOldScreenshot(this,
                         screenshots[view_pager.currentItem]))
+                TelemetryWrapper.moveScreenshot(TelemetryWrapper.ExtraValue.SINGLE, 1)
             }
             R.id.action_screenshot_info -> {
                 showScreenshotInfoDialog(this, screenshots[view_pager.currentItem])
@@ -239,6 +240,7 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
                                 finish()
                             }
                         })
+                TelemetryWrapper.deleteScreenshot(TelemetryWrapper.ExtraValue.SINGLE, 1)
             }
             R.id.action_select_all -> {
                 selectAllBlocks()

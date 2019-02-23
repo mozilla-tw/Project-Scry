@@ -59,6 +59,7 @@ class FullTextSearchFragment : androidx.fragment.app.Fragment() {
                         mode.finish()
                     }
                     dialog.show()
+                    TelemetryWrapper.moveScreenshot(TelemetryWrapper.ExtraValue.SEARCH, selector.selected.size)
                 }
 
                 R.id.action_delete -> {
@@ -68,10 +69,12 @@ class FullTextSearchFragment : androidx.fragment.app.Fragment() {
                                     mode.finish()
                                 }
                             })
+                    TelemetryWrapper.deleteScreenshot(TelemetryWrapper.ExtraValue.SEARCH, selector.selected.size)
                 }
 
                 R.id.action_share -> {
                     showShareScreenshotDialog(activity, selector.selected.toList())
+                    TelemetryWrapper.shareScreenshot(TelemetryWrapper.ExtraValue.SEARCH, selector.selected.size)
                 }
             }
 
@@ -153,6 +156,8 @@ class FullTextSearchFragment : androidx.fragment.app.Fragment() {
             selectAllCheckbox.visibility = View.VISIBLE
             actionMode?.title = getString(R.string.collection_header_select_none)
             selectAllCheckbox.isChecked = false
+
+            TelemetryWrapper.longPressOnScreenshot(TelemetryWrapper.ExtraValue.SEARCH)
         }
 
         override fun onExitSelectMode() {

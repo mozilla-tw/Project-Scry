@@ -57,7 +57,7 @@ class PreferenceSettingsRepository(private val context: Context) : SettingsRepos
 
 
     override var addToCollectionEnable: Boolean = prefs.getBoolean(KEY_ADD_TO_COLLECTION_ENABLED, true)
-        get() = prefs.getBoolean(KEY_ADD_TO_COLLECTION_ENABLED, true)
+        get() = prefs.getBoolean(KEY_ADD_TO_COLLECTION_ENABLED, false)
         set(value) {
             prefs.edit().putBoolean(KEY_ADD_TO_COLLECTION_ENABLED, value).apply()
             notifyChange(addToCollectionLiveData, field, value)

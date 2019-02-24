@@ -50,6 +50,17 @@
         style="@style/Body2" />
 
     <TextView
+        android:id="@+id/supplement"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        app:layout_constraintLeft_toLeftOf="@id/description"
+        app:layout_constraintTop_toBottomOf="@id/description"
+        android:textColor="@color/errorRed"
+        android:text="@string/onboarding_storage_caption_duplicates"
+        style="@style/Caption" />
+
+    <TextView
         android:id="@+id/action_button"
         android:layout_width="wrap_content"
         android:layout_below="@+id/title"
@@ -57,7 +68,7 @@
         android:layout_marginTop="16dp"
         style="@style/ContainedButton"
         android:text="@string/onboarding_storage_action_confirm"
-        app:layout_constraintTop_toBottomOf="@id/description"
-        app:layout_constraintLeft_toLeftOf="@id/description" />
+        app:layout_constraintTop_toBottomOf="@id/supplement"
+        app:layout_constraintLeft_toLeftOf="@id/supplement" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -97,6 +97,7 @@
   <string name="about_list_privacy">Kebijakan Privasi</string>
   <string name="onboarding_storage_title_welcome">Selamat datang di %1$s</string>
   <string name="onboarding_storage_content_permission">Untuk membantu Anda mengelola dan menemukan cuplikan layar dengan lebih baik, kami memerlukan izin Anda untuk mengakses penyimpanan.</string>
+  <string name="onboarding_storage_caption_duplicates">*Jangan khawatir, ini tidak akan terjadi duplikat file</string>
   <string name="onboarding_storage_content_autogrant">%1$s membantu Anda mengelola dan menemukan cuplikan layar Anda dengan lebih baik.</string>
   <string name="onboarding_transition_loading">Memuat</string>
   <string name="onboarding_fab_title_fab">Dapatkan tombol %1$s</string>

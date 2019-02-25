@@ -176,8 +176,8 @@ class ScreenshotDatabaseRepository(private val database: ScreenshotDatabase) : S
         ): LiveData<List<ScreenshotModel>> {
             return database.screenshotDao().searchScreenshots(
                     queryText
-                            .split("[ \"-]".toRegex())
-                            .joinToString(" ", "*", "*")
+                            .split("[ \"\\-*]".toRegex())
+                            .joinToString(" ", "", "*")
             )
         }
     }

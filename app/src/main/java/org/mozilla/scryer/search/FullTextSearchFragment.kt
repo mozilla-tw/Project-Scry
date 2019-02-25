@@ -249,7 +249,7 @@ class FullTextSearchFragment : androidx.fragment.app.Fragment() {
 
         screenshotAdapter = SearchAdapter(context, selector) { item, view, position ->
             val context = context ?: return@SearchAdapter
-            DetailPageActivity.showDetailPage(context, item, view)
+            DetailPageActivity.showDetailPage(context, item, view, searchKeyword = searchEditText.text.toString())
 
             TelemetryWrapper.clickSearchResult(
                     SuggestCollectionHelper.getSuggestCollectionNameForTelemetry(context,

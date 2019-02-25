@@ -150,6 +150,10 @@ class ScreenshotDatabaseRepository(private val database: ScreenshotDatabase) : S
         return MatchStrategy().search(queryText, database)
     }
 
+    override fun searchScreenshotList(queryText: String): List<ScreenshotModel> {
+        return MatchStrategy().searchList(queryText, database)
+    }
+
     override fun getScreenshotContent(): LiveData<List<ScreenshotContentModel>> {
         return database.screenshotDao().getScreenshotContent()
     }
@@ -167,6 +171,11 @@ class ScreenshotDatabaseRepository(private val database: ScreenshotDatabase) : S
                 queryText: String,
                 database: ScreenshotDatabase
         ): LiveData<List<ScreenshotModel>>
+
+        fun searchList(
+                queryText: String,
+                database: ScreenshotDatabase
+        ): List<ScreenshotModel>
     }
 
     private class MatchStrategy : SearchStrategy {
@@ -175,6 +184,17 @@ class ScreenshotDatabaseRepository(private val database: ScreenshotDatabase) : S
                 database: ScreenshotDatabase
         ): LiveData<List<ScreenshotModel>> {
             return database.screenshotDao().searchScreenshots(
+                    queryText
+                            .split("[ \"-]".toRegex())
+                            .joinToString(" ", "*", "*")
+            )
+        }
+
+        override fun searchList(
+                queryText: String,
+                database: ScreenshotDatabase
+        ): List<ScreenshotModel> {
+            return database.screenshotDao().searchScreenshotList(
                     queryText
                             .split("[ \"-]".toRegex())
                             .joinToString(" ", "*", "*")
@@ -225,6 +245,10 @@ class ScreenshotDatabaseRepository(private val database: ScreenshotDatabase) : S
                     liveData
                 }
             }
+        }
+
+        override fun searchList(queryText: String, database: ScreenshotDatabase): List<ScreenshotModel> {
+            TODO("not implemented")
         }
     }
 }

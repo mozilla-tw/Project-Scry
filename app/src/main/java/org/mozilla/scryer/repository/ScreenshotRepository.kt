@@ -37,6 +37,7 @@ interface ScreenshotRepository {
     fun getScreenshotList(collectionIds: List<String>): List<ScreenshotModel>
     fun deleteScreenshot(screenshot: ScreenshotModel)
     fun searchScreenshots(queryText: String): LiveData<List<ScreenshotModel>>
+    fun searchScreenshotList(queryText: String): List<ScreenshotModel>
 
     fun getScreenshotContent(): LiveData<List<ScreenshotContentModel>>
     fun updateScreenshotContent(screenshotContent: ScreenshotContentModel)

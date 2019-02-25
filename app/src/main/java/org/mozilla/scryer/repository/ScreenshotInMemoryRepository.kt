@@ -93,6 +93,10 @@ class ScreenshotInMemoryRepository : ScreenshotRepository {
         return screenshotData
     }
 
+    override fun searchScreenshotList(queryText: String): List<ScreenshotModel> {
+        return screenshotList
+    }
+
     override fun updateScreenshotContent(screenshotContent: ScreenshotContentModel) {}
 
     override fun getContentText(screenshot: ScreenshotModel): String? {

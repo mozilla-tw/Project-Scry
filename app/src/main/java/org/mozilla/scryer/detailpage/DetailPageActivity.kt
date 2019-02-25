@@ -51,6 +51,7 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
     companion object Launcher {
         private const val EXTRA_SCREENSHOT_ID = "screenshot_id"
         private const val EXTRA_COLLECTION_ID = "collection_id"
+        private const val EXTRA_SEARCH_KEYWORD = "search_keyword"
 
         private const val SUPPORT_SLIDE = true
 
@@ -58,7 +59,7 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
         private const val IMAGE_SCALE_TEXT_MODE = 0.9f
 
         fun showDetailPage(context: Context, screenshot: ScreenshotModel, srcView: View?,
-                           collectionId: String? = null) {
+                           collectionId: String? = null, searchKeyword: String? = null) {
             val intent = Intent(context, DetailPageActivity::class.java)
 //            val bundle = srcView?.let {
 //                ViewCompat.getTransitionName(it)?.let { transitionName ->
@@ -70,6 +71,9 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
             intent.putExtra(EXTRA_SCREENSHOT_ID, screenshot.id)
             collectionId?.let {
                 intent.putExtra(EXTRA_COLLECTION_ID, collectionId)
+            }
+            searchKeyword?.let {
+                intent.putExtra(EXTRA_SEARCH_KEYWORD, searchKeyword)
             }
             (context as AppCompatActivity).startActivity(intent)
         }
@@ -84,6 +88,10 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
     /** Where did the user came from to this page **/
     private val srcCollectionId: String? by lazy {
         intent?.getStringExtra(EXTRA_COLLECTION_ID)
+    }
+
+    private val searchKeyword: String? by lazy {
+        intent?.getStringExtra(EXTRA_SEARCH_KEYWORD)
     }
 
     private val screenshotId: String by lazy {
@@ -568,14 +576,18 @@ class DetailPageActivity : AppCompatActivity(), CoroutineScope {
     private suspend fun getScreenshots(): List<ScreenshotModel> {
         return withContext(Dispatchers.Default) {
             if (SUPPORT_SLIDE) {
-                srcCollectionId?.let {
-                    val list = if (it == CollectionModel.CATEGORY_NONE) {
-                        listOf(it, CollectionModel.UNCATEGORIZED)
-                    } else {
-                        listOf(it)
+                when {
+                    srcCollectionId != null -> {
+                        val list = if (srcCollectionId == CollectionModel.CATEGORY_NONE) {
+                            listOf(srcCollectionId!!, CollectionModel.UNCATEGORIZED)
+                        } else {
+                            listOf(srcCollectionId!!)
+                        }
+                        viewModel.getScreenshotList(list)
                     }
-                    viewModel.getScreenshotList(list)
-                } ?: viewModel.getScreenshotList()
+                    searchKeyword != null -> viewModel.searchScreenshotList(searchKeyword!!)
+                    else -> viewModel.getScreenshotList()
+                }
             } else {
                 viewModel.getScreenshot(screenshotId)?.let { listOf(it) } ?: emptyList()
             }

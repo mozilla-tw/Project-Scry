@@ -63,6 +63,9 @@ interface ScreenshotDao {
     @Query("SELECT s.* FROM screenshot s INNER JOIN (SELECT content.* FROM screenshot_content content INNER JOIN fts ON content.`rowid` = fts.`rowid` WHERE fts.content_text MATCH :queryText) result ON s.id = result.id")
     fun searchScreenshots(queryText: String): LiveData<List<ScreenshotModel>>
 
+    @Query("SELECT s.* FROM screenshot s INNER JOIN (SELECT content.* FROM screenshot_content content INNER JOIN fts ON content.`rowid` = fts.`rowid` WHERE fts.content_text MATCH :queryText) result ON s.id = result.id")
+    fun searchScreenshotList(queryText: String): List<ScreenshotModel>
+
     @RawQuery
     fun searchScreenshotsRaw(query: SimpleSQLiteQuery) : List<ScreenshotModel>
 

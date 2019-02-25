@@ -86,6 +86,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="60dp"
+        android:background="@color/home_background"
         android:orientation="vertical"
         android:visibility="gone"
         app:layout_constraintLeft_toLeftOf="parent"

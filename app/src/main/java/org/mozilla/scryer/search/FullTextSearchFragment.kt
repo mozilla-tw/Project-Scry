@@ -200,7 +200,7 @@ class FullTextSearchFragment : androidx.fragment.app.Fragment() {
                         View.GONE
                     }
 
-                    if (!isIndexing) {
+                    if (s?.isEmpty() == true || !isIndexing) {
                         screenshotAdapter.showLoadingView(null)
                     }
 

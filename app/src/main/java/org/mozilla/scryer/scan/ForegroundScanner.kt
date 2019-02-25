@@ -67,7 +67,11 @@ class ForegroundScanner : CoroutineScope {
 
         scanActor = actor(context = scanJob, capacity = Channel.CONFLATED) {
             for (msg in channel) {
-                FirebaseVisionTextHelper.scanAndSave()
+                FirebaseVisionTextHelper.scanAndSave { a, b ->
+                    launch (Dispatchers.Main) {
+                        progressLiveData.value = Pair(a, b)
+                    }
+                }
             }
         }
     }

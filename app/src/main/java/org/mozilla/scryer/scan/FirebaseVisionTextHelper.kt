@@ -54,7 +54,7 @@ class FirebaseVisionTextHelper {
         suspend fun scanAndSave(updateListener: ((index: Int, total: Int) -> Unit)? = null) {
             scan { model, index, total ->
                 writeContentTextToDb(model, extractText((model)))
-                updateListener?.invoke(index, total)
+                updateListener?.invoke(index + 1, total)
             }
         }
 

@@ -45,14 +45,15 @@ class ForegroundAndBackgroundCharging : ContentScanner.Plan {
     }
 
     override fun getProgress(): LiveData<Pair<Int, Int>> {
-        val contentData = ScryerApplication.getScreenshotRepository().getScreenshotContent()
-        val screenshotData = ScryerApplication.getScreenshotRepository().getScreenshots()
-
-        return Transformations.switchMap(contentData) { contentList ->
-            Transformations.map(screenshotData) { screenshotList ->
-                Pair(contentList.size, screenshotList.size)
-            }
-        }
+//        val contentData = ScryerApplication.getScreenshotRepository().getScreenshotContent()
+//        val screenshotData = ScryerApplication.getScreenshotRepository().getScreenshots()
+//
+//        return Transformations.switchMap(contentData) { contentList ->
+//            Transformations.map(screenshotData) { screenshotList ->
+//                Pair(contentList.size, screenshotList.size)
+//            }
+//        }
+        return foregroundScanner.getProgress()
     }
 
     override fun isScanning(): Boolean {

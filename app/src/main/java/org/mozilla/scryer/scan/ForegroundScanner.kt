@@ -27,7 +27,9 @@ class ForegroundScanner : CoroutineScope {
         scheduleForegroundScan()
     }
 
-    private val progressLiveData = MutableLiveData<Pair<Int, Int>>()
+    private val progressLiveData = MutableLiveData<Pair<Int, Int>>().apply {
+        value = Pair(0, 0)
+    }
 
     private val parentJob = Job()
     private var scanJob: Job? = null

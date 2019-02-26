@@ -25,7 +25,7 @@ class FirebaseVisionTextHelper {
 
         /** Cancellable scan **/
         suspend fun scan(
-                updateListener: suspend (((model: ScreenshotModel, index: Int, total: Int) -> Unit))
+                updateListener: suspend (((model: ScreenshotModel?, index: Int, total: Int) -> Unit))
         ) = withContext(Dispatchers.IO) {
             val list = ScryerApplication.getScreenshotRepository()
                     .getScreenshotList()
@@ -34,6 +34,9 @@ class FirebaseVisionTextHelper {
             val remains = list.filter {
                 ScryerApplication.getScreenshotRepository().getContentText(it) == null
             }
+
+            val indexedCount = list.size - remains.size
+            updateListener.invoke(null, indexedCount, list.size)
 
             if (remains.isEmpty()) {
                 return@withContext
@@ -45,7 +48,7 @@ class FirebaseVisionTextHelper {
                     return@withContext
                 }
 
-                updateListener.invoke(model, index, remains.size)
+                updateListener.invoke(model, indexedCount + index + 1, list.size)
                 Log.log(tag = TAG, message = "progress: ${index + 1}/${remains.size}")
             }
             Log.log(tag = TAG, message = "scan finished")
@@ -53,8 +56,10 @@ class FirebaseVisionTextHelper {
 
         suspend fun scanAndSave(updateListener: ((index: Int, total: Int) -> Unit)? = null) {
             scan { model, index, total ->
-                writeContentTextToDb(model, extractText((model)))
-                updateListener?.invoke(index + 1, total)
+                model?.let {
+                    writeContentTextToDb(model, extractText((model)))
+                }
+                updateListener?.invoke(index, total)
             }
         }
 

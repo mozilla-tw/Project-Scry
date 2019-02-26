@@ -28,9 +28,4 @@
         android:icon="@drawable/move"
         android:visible="false"
         app:showAsAction="always" />
-
-    <item android:id="@+id/action_search"
-        android:title="@string/home_action_search"
-        android:icon="@drawable/search"
-        app:showAsAction="always" />
 </menu>

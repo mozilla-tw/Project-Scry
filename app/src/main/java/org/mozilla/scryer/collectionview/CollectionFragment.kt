@@ -304,12 +304,6 @@ class CollectionFragment : Fragment() {
                 }
             }
 
-            R.id.action_search -> {
-                context?.let {
-                    getNavController()?.navigate(R.id.action_navigate_to_search, Bundle())
-                }
-            }
-
             R.id.action_collection_rename -> {
                 context?.let {
                     CollectionNameDialog.renameCollection(it, ScreenshotViewModel.get(this), collectionId)

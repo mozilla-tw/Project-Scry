@@ -304,7 +304,7 @@ class FullTextSearchFragment : androidx.fragment.app.Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             android.R.id.home -> {
-                searchEditText.clearFocus()
+                hideKeyboard(searchEditText)
                 getNavController()?.navigateUp()
             }
 

@@ -14,8 +14,8 @@ import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SimpleSQLiteQuery
 import androidx.sqlite.db.SupportSQLiteDatabase
-import kotlinx.coroutines.experimental.Dispatchers
-import kotlinx.coroutines.experimental.withContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.mozilla.scryer.R
 import org.mozilla.scryer.persistence.*
 import org.mozilla.scryer.util.launchIO

@@ -1,5 +1,4 @@
 import com.android.build.gradle.api.ApplicationVariant
-import dependencies.Versions
 
 apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
@@ -135,7 +134,7 @@ dependencies {
 
     // Mozilla
     implementation "org.mozilla.components:browser-search:${Versions.android_components}"
-    implementation "org.mozilla.components:service-telemetry:${Versions.android_components}"
+    implementation "org.mozilla.components:service-telemetry:${Versions.telemetry}"
     implementation project(':telemetry-annotation')
     kapt project(':telemetry-compiler')
 

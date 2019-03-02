@@ -9,15 +9,17 @@ import android.graphics.BitmapFactory
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.text.FirebaseVisionText
-import kotlinx.coroutines.experimental.Dispatchers
-import kotlinx.coroutines.experimental.isActive
-import kotlinx.coroutines.experimental.withContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.withContext
 import mozilla.components.support.base.log.Log
 import org.mozilla.scryer.ScryerApplication
 import org.mozilla.scryer.persistence.ScreenshotContentModel
 import org.mozilla.scryer.persistence.ScreenshotModel
 import java.io.File
-import kotlin.coroutines.experimental.suspendCoroutine
+import kotlin.coroutines.suspendCoroutine
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 class FirebaseVisionTextHelper {
     companion object {

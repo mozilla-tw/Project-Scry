@@ -1,5 +1,3 @@
-package dependencies
-
 object Versions {
     // Android
     val android_gradle_plugin = "3.2.1"
@@ -27,8 +25,8 @@ object Versions {
     val google_service_plugin = "4.2.0"
 
     // Kotlin
-    val kotlin = "1.2.71"
-    val kotlin_coroutine = "0.30.2"
+    val kotlin = "1.3.20"
+    val kotlin_coroutine = "1.1.1"
 
     // Test
     val junit = "4.12"
@@ -43,7 +41,8 @@ object Versions {
     val better_link_movement_method = "2.2.0"
 
     // Mozilla
-    val android_components = "0.27.0"
+    val android_components = "0.43.0"
+    val telemetry = "0.27.0"
 
     // Adjust
     val adjust = "4.15.1"

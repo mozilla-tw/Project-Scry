@@ -25,7 +25,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.ml.common.FirebaseMLException
 import com.google.firebase.ml.vision.text.FirebaseVisionText
 import kotlinx.android.synthetic.main.activity_detail_page.*
-import kotlinx.coroutines.experimental.*
+import kotlinx.coroutines.*
 import me.saket.bettermovementmethod.BetterLinkMovementMethod
 import mozilla.components.browser.search.SearchEngineManager
 import mozilla.components.browser.search.provider.AssetsSearchEngineProvider
@@ -44,7 +44,7 @@ import org.mozilla.scryer.sortingpanel.SortingPanelActivity
 import org.mozilla.scryer.telemetry.TelemetryWrapper
 import org.mozilla.scryer.ui.ScryerToast
 import org.mozilla.scryer.viewmodel.ScreenshotViewModel
-import kotlin.coroutines.experimental.CoroutineContext
+import kotlin.coroutines.CoroutineContext
 
 class DetailPageActivity : AppCompatActivity(), CoroutineScope {
 

@@ -197,7 +197,7 @@
     <!-- String displayed with an illustration to introduce a new feature -->
     <string name="onboarding_ocr_title_more">Take Action on Text</string>
     <!-- String displayed to give examples of what the new feature can do -->
-    <string name="onboarding_ocr_content_examples">Search the web for products, copy coupon codes, and share quotes in your screenshots.</string>
+    <string name="onboarding_ocr_content_examples">Copy the text in your screenshot for web search, share or more.</string>
     <!-- Onboarding: strings displayed with an illustration to introduce users the new search feature, Refer to UX spec 5-1 https://mozilla.invisionapp.com/share/24N3MMQB986#/310133925_5-1_Search -->
     <string name="onboarding_search_title_search">Finding screenshots is now easier</string>
     <!-- String displayed to instruct users to type words to search -->

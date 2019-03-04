@@ -104,7 +104,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/common_padding_8dp"
-            android:color="@color/grey90"
+            android:textColor="@color/grey90"
             android:text="@string/search_error_title_noresult" />
 
         <TextView
@@ -113,7 +113,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/common_padding_4dp"
-            android:color="@color/grey50"
+            android:textColor="@color/grey50"
             android:text="@string/search_error_content_try" />
     </LinearLayout>
 

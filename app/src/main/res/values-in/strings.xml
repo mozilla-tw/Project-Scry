@@ -114,8 +114,8 @@
   <string name="onboarding_search_action_agree">Ya</string>
   <string name="onboarding_search_action_disagree">Tidak</string>
   <string name="onboarding_search_content_feedback">Terima kasih atas umpan balik Anda!</string>
-  <string name="onboarding_ocr_title_more">Lakukan lebih banyak dengan tangkapan layar</string>
-  <string name="onboarding_ocr_content_examples">Cari produk, salin kode kupon, dan bagikan penawaran di tangkapan layar Anda</string>
+  <string name="onboarding_ocr_title_more">Ambil Tindakan pada Teks</string>
+  <string name="onboarding_ocr_content_examples">Salin teks di tangkapan layar Anda untuk pencarian web, bagikan atau lebih.</string>
   <string name="onboarding_search_title_search">Menemukan tangkapan layar sekarang lebih mudah</string>
   <string name="onboarding_search_content_typeword">Cukup ketik untuk mencari kata dalam tangkapan layar</string>
   <string name="onboarding_search_caption_battery">Untuk mewujudkan ini, kami akan mengenali tangkapan layar Anda terlebih dahulu. Mungkin menghabiskan lebih banyak baterai, tetapi tidak akan lama!</string>

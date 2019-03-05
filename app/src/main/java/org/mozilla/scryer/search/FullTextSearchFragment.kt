@@ -25,6 +25,7 @@ import org.mozilla.scryer.persistence.CollectionModel
 import org.mozilla.scryer.persistence.LoadingViewModel
 import org.mozilla.scryer.persistence.ScreenshotModel
 import org.mozilla.scryer.persistence.SuggestCollectionHelper
+import org.mozilla.scryer.scan.ContentScanner
 import org.mozilla.scryer.setSupportActionBar
 import org.mozilla.scryer.telemetry.TelemetryWrapper
 import org.mozilla.scryer.ui.InnerSpaceDecoration
@@ -262,13 +263,17 @@ class FullTextSearchFragment : androidx.fragment.app.Fragment() {
         enterTimeMillis = System.currentTimeMillis()
 
         if (ScryerApplication.getContentScanner().isScanning()) {
-            ScryerApplication.getContentScanner().getProgress().observe(
+            ScryerApplication.getContentScanner().getProgressState().observe(
                     this@FullTextSearchFragment,
                     org.mozilla.scryer.Observer {
-                        if (it.first != it.second) {
-                            onIndexProgress(it.first, it.second)
-                        } else {
-                            onIndexEnd()
+                        if (it is ContentScanner.ProgressState.Unavailable) {
+                            // TODO: ML model is unavailable
+                        } else if (it is ContentScanner.ProgressState.Progress) {
+                            if (it.current != it.total) {
+                                onIndexProgress(it.current, it.total)
+                            } else {
+                                onIndexEnd()
+                            }
                         }
                     })
         }

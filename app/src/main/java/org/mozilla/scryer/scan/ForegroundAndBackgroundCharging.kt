@@ -4,10 +4,12 @@
 
 package org.mozilla.scryer.scan
 
-import androidx.lifecycle.*
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.work.*
 import mozilla.components.support.base.log.Log
-import org.mozilla.scryer.ScryerApplication
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -44,16 +46,8 @@ class ForegroundAndBackgroundCharging : ContentScanner.Plan {
         foregroundScanner.onDestroy()
     }
 
-    override fun getProgress(): LiveData<Pair<Int, Int>> {
-//        val contentData = ScryerApplication.getScreenshotRepository().getScreenshotContent()
-//        val screenshotData = ScryerApplication.getScreenshotRepository().getScreenshots()
-//
-//        return Transformations.switchMap(contentData) { contentList ->
-//            Transformations.map(screenshotData) { screenshotList ->
-//                Pair(contentList.size, screenshotList.size)
-//            }
-//        }
-        return foregroundScanner.getProgress()
+    override fun getProgressState(): LiveData<ContentScanner.ProgressState> {
+        return foregroundScanner.getProgressState()
     }
 
     override fun isScanning(): Boolean {

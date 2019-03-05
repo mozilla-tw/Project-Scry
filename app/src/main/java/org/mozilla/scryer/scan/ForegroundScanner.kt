@@ -7,7 +7,7 @@ package org.mozilla.scryer.scan
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import androidx.lifecycle.Transformations
+import com.google.firebase.ml.common.FirebaseMLException
 import kotlinx.coroutines.experimental.CoroutineScope
 import kotlinx.coroutines.experimental.Dispatchers
 import kotlinx.coroutines.experimental.Job
@@ -27,8 +27,8 @@ class ForegroundScanner : CoroutineScope {
         scheduleForegroundScan()
     }
 
-    private val progressLiveData = MutableLiveData<Pair<Int, Int>>().apply {
-        value = Pair(0, 0)
+    private val progressState = MutableLiveData<ContentScanner.ProgressState>().apply {
+        value = ContentScanner.ProgressState.Progress(0, 0)
     }
 
     private val parentJob = Job()
@@ -55,8 +55,8 @@ class ForegroundScanner : CoroutineScope {
         parentJob.cancel()
     }
 
-    fun getProgress(): LiveData<Pair<Int, Int>> {
-        return Transformations.map(progressLiveData) { it }
+    fun getProgressState(): LiveData<ContentScanner.ProgressState> {
+        return progressState
     }
 
     fun isScanning(): Boolean {
@@ -73,15 +73,36 @@ class ForegroundScanner : CoroutineScope {
                 capacity = Channel.CONFLATED
         ) {
             for (msg in channel) {
-                isScanning = true
-                FirebaseVisionTextHelper.scanAndSave { a, b ->
-                    launch (Dispatchers.Main) {
-                        progressLiveData.value = Pair(a, b)
-                    }
-                }
-                isScanning = false
+                scan()
             }
         }
+    }
+
+    private suspend fun scan() {
+        try {
+            isScanning = true
+            updateProgressData(current = 0, total = 0)
+            FirebaseVisionTextHelper.scanAndSave { current, total ->
+                updateProgressData(current = current, total = total)
+            }
+            isScanning = false
+        } catch (e: FirebaseMLException) {
+            updateProgressData(isUnavailable = true)
+        }
+    }
+
+
+    private fun updateProgressData(
+            isUnavailable: Boolean = false,
+            current: Int = 0,
+            total: Int = 0
+    ) = launch(Dispatchers.Main) {
+        val state = when {
+            isUnavailable -> ContentScanner.ProgressState.Unavailable
+            isScanning -> ContentScanner.ProgressState.Progress(current, total)
+            else -> ContentScanner.ProgressState.Progress(current, total)
+        }
+        progressState.value = state
     }
 
     private fun cancelScan() {

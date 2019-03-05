@@ -20,6 +20,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import org.mozilla.scryer.notification.ScryerMessagingService
 import org.mozilla.scryer.permission.PermissionViewModel
 import org.mozilla.scryer.preference.PreferenceWrapper
+import org.mozilla.scryer.scan.ContentScanner
 import org.mozilla.scryer.telemetry.TelemetryWrapper
 
 class MainActivity : AppCompatActivity() {
@@ -61,16 +62,9 @@ class MainActivity : AppCompatActivity() {
 
         if (BuildConfig.DEBUG) {
             scan_progress_bar.visibility = View.VISIBLE
-            ScryerApplication.getContentScanner().getProgress().observe(this, Observer {
-                scan_progress_bar.progress = if (it.first == it.second) {
-                    100
-                } else {
-                    (100 * it.first / it.second.toFloat()).toInt()
-                }
-                scan_progress_bar.visibility = if (scan_progress_bar.progress == 100) {
-                    View.GONE
-                } else {
-                    View.VISIBLE
+            ScryerApplication.getContentScanner().getProgressState().observe(this, Observer {
+                if (it is ContentScanner.ProgressState.Progress) {
+                    updateDebugProgress(it)
                 }
             })
         }
@@ -99,6 +93,19 @@ class MainActivity : AppCompatActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         ViewModelProviders.of(this).get(PermissionViewModel::class.java)
                 .permissionRequest.notify(grantResults)
+    }
+
+    private fun updateDebugProgress(progress: ContentScanner.ProgressState.Progress) {
+        scan_progress_bar.progress = if (progress.current == progress.total) {
+            100
+        } else {
+            (100 * progress.current / progress.total.toFloat()).toInt()
+        }
+        scan_progress_bar.visibility = if (scan_progress_bar.progress == 100) {
+            View.GONE
+        } else {
+            View.VISIBLE
+        }
     }
 }
 

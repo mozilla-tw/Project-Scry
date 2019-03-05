@@ -6,6 +6,7 @@ package org.mozilla.scryer.scan
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import com.google.firebase.ml.common.FirebaseMLException
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.text.FirebaseVisionText
@@ -68,7 +69,10 @@ class FirebaseVisionTextHelper {
                 BitmapFactory.decodeFile(screenshot.absolutePath)?.let {
                     extractText(it).text
                 } ?: ""
-            } catch (e: Error) {
+            } catch (e: Throwable) {
+                if (isModelUnavailableException(e)) {
+                    throw e
+                }
                 ""
             }
         }
@@ -100,6 +104,10 @@ class FirebaseVisionTextHelper {
             if (fileExisted && recordExist) {
                 ScryerApplication.getScreenshotRepository().updateScreenshotContent(model)
             }
+        }
+
+        private fun isModelUnavailableException(e: Throwable): Boolean {
+            return (e as? FirebaseMLException)?.code == FirebaseMLException.UNAVAILABLE
         }
     }
 }

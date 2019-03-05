@@ -9,10 +9,7 @@ import androidx.concurrent.futures.ResolvableFuture
 import androidx.work.ListenableWorker
 import androidx.work.WorkerParameters
 import com.google.common.util.concurrent.ListenableFuture
-import kotlinx.coroutines.experimental.CoroutineScope
-import kotlinx.coroutines.experimental.Dispatchers
-import kotlinx.coroutines.experimental.Job
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.experimental.*
 import kotlin.coroutines.experimental.CoroutineContext
 
 class BackgroundScanner(
@@ -23,7 +20,7 @@ class BackgroundScanner(
     private val workerJob = Job()
 
     override val coroutineContext: CoroutineContext
-        get() = Dispatchers.Default + workerJob
+        get() = Dispatchers.Default + workerJob + CoroutineExceptionHandler { _, _ -> }
 
     override fun startWork(): ListenableFuture<Result> {
         val future = ResolvableFuture.create<Result>()
@@ -32,6 +29,7 @@ class BackgroundScanner(
             FirebaseVisionTextHelper.scanAndSave()
         }.invokeOnCompletion {
             future.set(Result.success())
+            workerJob.cancel()
         }
 
         return future

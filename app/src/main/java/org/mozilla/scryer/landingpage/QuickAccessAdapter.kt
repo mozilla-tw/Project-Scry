@@ -10,6 +10,8 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.item_quick_access.view.*
@@ -96,6 +98,9 @@ class QuickAccessAdapter(
 
     private fun createMoreHolder(parent: ViewGroup): RecyclerView.ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_quick_access_more, parent, false)
+        view.background = DrawableCompat.wrap(view.background).apply {
+            setTint(ContextCompat.getColor(view.context, R.color.primaryTeal))
+        }
         val holder = object : RecyclerView.ViewHolder(view) {
         }
         view.setOnClickListener {

@@ -183,22 +183,20 @@ class ScreenshotDatabaseRepository(private val database: ScreenshotDatabase) : S
                 queryText: String,
                 database: ScreenshotDatabase
         ): LiveData<List<ScreenshotModel>> {
-            return database.screenshotDao().searchScreenshots(
-                    queryText
-                            .split("[ \"\\-*]".toRegex())
-                            .joinToString(" ", "", "*")
-            )
+            return database.screenshotDao().searchScreenshots(processQuery(queryText))
         }
 
         override fun searchList(
                 queryText: String,
                 database: ScreenshotDatabase
         ): List<ScreenshotModel> {
-            return database.screenshotDao().searchScreenshotList(
-                    queryText
-                            .split("[ \"-]".toRegex())
-                            .joinToString(" ", "*", "*")
-            )
+            return database.screenshotDao().searchScreenshotList(processQuery(queryText))
+        }
+
+        private fun processQuery(queryText: String): String {
+            return queryText
+                    .split("[ \"\\-*]".toRegex())
+                    .joinToString(" ", "", "*")
         }
     }
 

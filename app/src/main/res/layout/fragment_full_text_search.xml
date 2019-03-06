@@ -104,8 +104,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/common_padding_8dp"
-            android:textColor="@color/grey90"
-            android:text="@string/search_error_title_noresult" />
+            android:text="@string/search_error_title_noresult"
+            android:textColor="@color/grey90" />
 
         <TextView
             style="@style/Body2"
@@ -113,8 +113,41 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/common_padding_4dp"
-            android:textColor="@color/grey50"
-            android:text="@string/search_error_content_try" />
+            android:text="@string/search_error_content_try"
+            android:textColor="@color/grey50" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/errorView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="84dp"
+        android:background="@color/home_background"
+        android:orientation="vertical"
+        android:paddingStart="40dp"
+        android:paddingEnd="40dp"
+        android:visibility="gone"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar">
+
+        <TextView
+            style="@style/Body1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="@string/detail_ocr_error_module"
+            android:textAlignment="center"
+            android:textColor="@color/grey90" />
+
+        <TextView
+            android:id="@+id/connectButton"
+            style="@style/ContainedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/common_padding_16dp"
+            android:text="@string/detail_ocr_error_action_connect" />
     </LinearLayout>
 
     <View

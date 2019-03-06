@@ -55,6 +55,7 @@ import org.mozilla.scryer.persistence.SuggestCollectionHelper
 import org.mozilla.scryer.preference.PreferenceWrapper
 import org.mozilla.scryer.promote.PromoteRatingHelper
 import org.mozilla.scryer.promote.PromoteShareHelper
+import org.mozilla.scryer.scan.ContentScanner
 import org.mozilla.scryer.setting.SettingsActivity
 import org.mozilla.scryer.sortingpanel.SortingPanelActivity
 import org.mozilla.scryer.telemetry.TelemetryWrapper
@@ -482,12 +483,16 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate, CoroutineScope {
                         R.id.action_navigate_to_full_text_search,
                         Bundle())
 
-                ScryerApplication.getContentScanner().getProgress().observeOnce(
+                ScryerApplication.getContentScanner().getProgressState().observeOnce(
                         org.mozilla.scryer.Observer {
-                            val progress: Int = if (it.second != 0) {
-                                (it.first / (it.second.toFloat()) * 100).toInt()
+                            val progress: Int = if (it is ContentScanner.ProgressState.Progress) {
+                                if (it.total != 0) {
+                                    (it.current / (it.total.toFloat()) * 100).toInt()
+                                } else {
+                                    100
+                                }
                             } else {
-                                100
+                                0
                             }
                             TelemetryWrapper.startSearch(progress)
                         })

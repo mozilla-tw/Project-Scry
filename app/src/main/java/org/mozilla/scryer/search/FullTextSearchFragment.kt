@@ -1,8 +1,10 @@
 package org.mozilla.scryer.search
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.provider.Settings
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.*
@@ -46,6 +48,7 @@ class FullTextSearchFragment : androidx.fragment.app.Fragment() {
 
     private var actionModeMenu: Menu? = null
     private var isIndexing: Boolean = false
+    private var isIndexError: Boolean = false
     private var enterTimeMillis: Long = 0
 
     private val selectActionModeCallback: ActionMode.Callback = object : ActionMode.Callback {
@@ -195,7 +198,12 @@ class FullTextSearchFragment : androidx.fragment.app.Fragment() {
                     } else {
                         View.VISIBLE
                     }
-                    emptyView.visibility = if (screenshots.isEmpty() && s?.isNotEmpty() == true && !isIndexing) {
+                    emptyView.visibility = if (screenshots.isEmpty() && s?.isNotEmpty() == true && !isIndexing && !isIndexError) {
+                        View.VISIBLE
+                    } else {
+                        View.GONE
+                    }
+                    errorView.visibility = if (isIndexError && screenshots.isEmpty()) {
                         View.VISIBLE
                     } else {
                         View.GONE
@@ -242,6 +250,10 @@ class FullTextSearchFragment : androidx.fragment.app.Fragment() {
             }
             screenshotAdapter.notifyDataSetChanged()
         }
+
+        connectButton.setOnClickListener {
+            startActivity(Intent(Settings.ACTION_WIRELESS_SETTINGS))
+        }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -262,21 +274,19 @@ class FullTextSearchFragment : androidx.fragment.app.Fragment() {
         }
         enterTimeMillis = System.currentTimeMillis()
 
-        if (ScryerApplication.getContentScanner().isScanning()) {
-            ScryerApplication.getContentScanner().getProgressState().observe(
-                    this@FullTextSearchFragment,
-                    org.mozilla.scryer.Observer {
-                        if (it is ContentScanner.ProgressState.Unavailable) {
-                            // TODO: ML model is unavailable
-                        } else if (it is ContentScanner.ProgressState.Progress) {
-                            if (it.current != it.total) {
-                                onIndexProgress(it.current, it.total)
-                            } else {
-                                onIndexEnd()
-                            }
+        ScryerApplication.getContentScanner().getProgressState().observe(
+                this@FullTextSearchFragment,
+                org.mozilla.scryer.Observer {
+                    if (it is ContentScanner.ProgressState.Unavailable) {
+                        onIndexError()
+                    } else if (it is ContentScanner.ProgressState.Progress) {
+                        if (it.current != it.total) {
+                            onIndexProgress(it.current, it.total)
+                        } else {
+                            onIndexEnd()
                         }
-                    })
-        }
+                    }
+                })
 
         setHasOptionsMenu(true)
         setupActionBar()
@@ -293,8 +303,9 @@ class FullTextSearchFragment : androidx.fragment.app.Fragment() {
                 emptyView.visibility = View.GONE
             }
         }
-
+        errorView.visibility = View.GONE
         isIndexing = true
+        isIndexError = false
     }
 
     private fun onIndexEnd() {
@@ -303,7 +314,16 @@ class FullTextSearchFragment : androidx.fragment.app.Fragment() {
                 && searchEditText.text?.isNotEmpty() == true) {
             emptyView.visibility = View.VISIBLE
         }
+        errorView.visibility = View.GONE
         isIndexing = false
+        isIndexError = false
+    }
+
+    private fun onIndexError() {
+        screenshotAdapter.showLoadingView(null)
+        errorView.visibility = View.VISIBLE
+        isIndexing = false
+        isIndexError = true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

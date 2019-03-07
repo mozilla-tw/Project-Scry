@@ -8,12 +8,14 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.net.Uri
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.graphics.drawable.DrawableCompat
 import org.mozilla.scryer.R
 import org.mozilla.scryer.telemetry.TelemetryWrapper
 import org.mozilla.scryer.ui.ScryerToast
@@ -31,6 +33,18 @@ class TextSelectionCallback(
     override fun onPrepareActionMode(mode: android.view.ActionMode, menu: Menu): Boolean {
         menu.clear()
         MenuInflater(view.context).inflate(R.menu.menu_detailpage_text_selection, menu)
+
+        (0 until menu.size()).map {
+            menu.getItem(it)
+        }.forEach { item ->
+            item.icon = DrawableCompat.wrap(item.icon).mutate().apply {
+                DrawableCompat.setTint(this, Color.WHITE)
+            }
+            item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+        }
+
+        mode.title = ""
+
         return true
     }
 

@@ -5,15 +5,20 @@
 
 package org.mozilla.scryer.sortingpanel
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProviders
@@ -23,6 +28,7 @@ import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.withContext
 import org.mozilla.scryer.Observer
 import org.mozilla.scryer.R
+import org.mozilla.scryer.collectionview.showShareScreenshotDialog
 import org.mozilla.scryer.persistence.CollectionModel
 import org.mozilla.scryer.persistence.ScreenshotModel
 import org.mozilla.scryer.persistence.SuggestCollectionHelper
@@ -135,6 +141,7 @@ class SortingPanelActivity : AppCompatActivity() {
 
         loadCollectionColorList()
         loadScreenshots(intent, this::onLoadScreenshotsSuccess)
+        initActionBar()
         initSortingPanel()
     }
 
@@ -187,6 +194,41 @@ class SortingPanelActivity : AppCompatActivity() {
             } else {
                 TelemetryWrapper.cancelSorting(MULTIPLE)
             }
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_sorting_panel, menu)
+
+        if (menu != null) {
+            menu.findItem(R.id.action_share)?.let {
+                val wrapped = DrawableCompat.wrap(it.icon).mutate()
+                DrawableCompat.setTint(wrapped, ContextCompat.getColor(this, R.color.white))
+            }
+        }
+
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        when (item?.itemId) {
+            R.id.action_share -> {
+                currentScreenshot?.let { showShareScreenshotDialog(this, it) }
+                TelemetryWrapper.shareScreenshot(TelemetryWrapper.ExtraValue.SINGLE, 1)
+            }
+            else -> return super.onOptionsItemSelected(item)
+        }
+
+        return true
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private fun initActionBar() {
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        setSupportActionBar(toolbar)
+
+        supportActionBar?.apply {
+            setDisplayShowTitleEnabled(false)
         }
     }
 

@@ -254,6 +254,11 @@ class FullTextSearchFragment : androidx.fragment.app.Fragment() {
         connectButton.setOnClickListener {
             startActivity(Intent(Settings.ACTION_WIRELESS_SETTINGS))
         }
+
+        screenshotListView.setOnTouchListener { _, _ ->
+            hideKeyboard(searchEditText)
+            false
+        }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

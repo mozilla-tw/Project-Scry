@@ -79,8 +79,9 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
 
         enableAddToCollectionButton.isChecked = settingsRepository.addToCollectionEnable
         enableAddToCollectionButton.onPreferenceChangeListener = this
-        settingsRepository.addToCollectionEnableObservable.observe(this, Observer {
-            enableAddToCollectionButton.isChecked = it
+        settingsRepository.addToCollectionEnableObservable.observe(this, Observer { enabled ->
+            enableAddToCollectionButton.isChecked = enabled
+            context?.takeIf { enabled }?.let { PreferenceWrapper(it).resetPanelCancelCount() }
         })
 
         enableSendUsageDataButton.summary = getString(R.string.settings_detail_mozilla, getString(R.string.app_full_name))

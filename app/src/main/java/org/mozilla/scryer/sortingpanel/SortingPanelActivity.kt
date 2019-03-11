@@ -22,16 +22,15 @@ import androidx.core.graphics.drawable.DrawableCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProviders
-import kotlinx.coroutines.experimental.Dispatchers
-import kotlinx.coroutines.experimental.GlobalScope
-import kotlinx.coroutines.experimental.launch
-import kotlinx.coroutines.experimental.withContext
+import kotlinx.coroutines.experimental.*
 import org.mozilla.scryer.Observer
 import org.mozilla.scryer.R
+import org.mozilla.scryer.ScryerApplication
 import org.mozilla.scryer.collectionview.showShareScreenshotDialog
 import org.mozilla.scryer.persistence.CollectionModel
 import org.mozilla.scryer.persistence.ScreenshotModel
 import org.mozilla.scryer.persistence.SuggestCollectionHelper
+import org.mozilla.scryer.preference.PreferenceWrapper
 import org.mozilla.scryer.promote.Promoter
 import org.mozilla.scryer.telemetry.TelemetryWrapper
 import org.mozilla.scryer.telemetry.TelemetryWrapper.ExtraValue.MULTIPLE
@@ -44,14 +43,18 @@ import org.mozilla.scryer.util.launchIO
 import org.mozilla.scryer.viewmodel.ScreenshotViewModel
 import java.io.File
 import java.util.*
+import kotlin.coroutines.experimental.CoroutineContext
+import kotlin.coroutines.experimental.suspendCoroutine
 
-class SortingPanelActivity : AppCompatActivity() {
+class SortingPanelActivity : AppCompatActivity(), CoroutineScope {
     companion object {
         const val EXTRA_PATH = "path"
         const val EXTRA_SCREENSHOT_ID = "screenshot_id"
         const val EXTRA_SCREENSHOT_IDS = "screenshot_ids"
         const val EXTRA_COLLECTION_ID = "collection_id"
         const val EXTRA_SHOW_ADD_TO_COLLECTION = "collection_id"
+
+        private const val MAX_SORTING_PANEL_CANCEL_COUNT = 2
 
         fun sortCollection(context: Context, collectionId: String): Intent {
             val intent = Intent(context, SortingPanelActivity::class.java)
@@ -86,6 +89,11 @@ class SortingPanelActivity : AppCompatActivity() {
             } ?: false
         }
     }
+
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.Main + activityJob
+
+    private val activityJob = Job()
 
     private val sortingPanel: SortingPanel by lazy { findViewById<SortingPanel>(R.id.sorting_panel) }
 
@@ -187,7 +195,10 @@ class SortingPanelActivity : AppCompatActivity() {
                     unsortedScreenshots.size + 1)
             dialog.asAlertDialog().show()
         } else {
-            super.onBackPressed()
+            launch(Dispatchers.Main.immediate) {
+                showNoMoreDialogIfNeeded()
+                super.onBackPressed()
+            }
 
             if (isSortingSingleScreenshot) {
                 TelemetryWrapper.cancelSorting(SINGLE)
@@ -220,6 +231,11 @@ class SortingPanelActivity : AppCompatActivity() {
         }
 
         return true
+    }
+
+    override fun onDestroy() {
+        activityJob.cancel()
+        super.onDestroy()
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -426,8 +442,12 @@ class SortingPanelActivity : AppCompatActivity() {
             if (isSortingUncategorized || isSortingNewScreenshot(intent)) {
                 showAddedToast(unsortedCollection, unsortedScreenshots.isNotEmpty())
             }
-            onNewModelAvailable()
-            panelModel.onNextScreenshot()
+
+            launch(Dispatchers.Main.immediate) {
+                showNoMoreDialogIfNeeded()
+                onNewModelAvailable()
+                panelModel.onNextScreenshot()
+            }
 
             if (screenshots.size == 1) {
                 TelemetryWrapper.cancelSorting(SINGLE)
@@ -498,6 +518,10 @@ class SortingPanelActivity : AppCompatActivity() {
     }
 
     private fun onScreenshotSorted() {
+        if (isSortingNewScreenshot(intent)) {
+            PreferenceWrapper(this).resetPanelCancelCount()
+        }
+
         if (hasNotifiedPromoter) {
             return
         }
@@ -529,6 +553,41 @@ class SortingPanelActivity : AppCompatActivity() {
         val path = intent.getStringExtra(EXTRA_PATH)
         val file = File(path)
         return if (file.exists()) file.absolutePath else ""
+    }
+
+    private suspend fun showNoMoreDialogIfNeeded() = suspendCoroutine<Unit> { cont ->
+        val pref = PreferenceWrapper(this@SortingPanelActivity)
+        if (shouldShowCollectionPanel && isSortingNewScreenshot(intent)) {
+            val count = pref.getPanelCancelCount()
+            pref.increasePanelCancelCount()
+            if ((count + 1) == MAX_SORTING_PANEL_CANCEL_COUNT) {
+                showNoMoreDialog {
+                    cont.resume(Unit)
+                }
+            } else {
+                cont.resume(Unit)
+            }
+        } else {
+            cont.resume(Unit)
+        }
+    }
+
+    private fun showNoMoreDialog(onFinished: () -> Unit) {
+        val dialog = ConfirmationDialog.build(this,
+                "No more sorting?",
+                "STOP",
+                DialogInterface.OnClickListener { _, _ ->
+                    ScryerApplication.getSettingsRepository().addToCollectionEnable = false
+                    onFinished.invoke()
+                },
+                "ASK TO SORT",
+                DialogInterface.OnClickListener { _, _ ->
+                    PreferenceWrapper(this).resetPanelCancelCount()
+                    onFinished.invoke()
+                })
+        dialog.viewHolder.message?.text = "No more sorting?"
+        dialog.viewHolder.subMessage?.visibility = View.VISIBLE
+        dialog.asAlertDialog().show()
     }
 }
 

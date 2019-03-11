@@ -22,6 +22,9 @@ class PreferenceWrapper(context: Context) {
     private val isOcrOnboardingShown = PrefConfig("ocr_onboarding_shown", false)
     private val isSearchOnboardingShown = PrefConfig("search_onboarding_shown", false)
 
+    /* The number of times user cancels the sorting panel after capturing via FAB */
+    private val sortingPanelCancelCount = PrefConfig("cancel_sorting_panel_count", 0)
+
     private val pref: SharedPreferences by lazy {
         context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
     }
@@ -62,6 +65,19 @@ class PreferenceWrapper(context: Context) {
 
     fun setSearchOnboardingShown() {
         pref.edit().putBoolean(isSearchOnboardingShown.key, true).apply()
+    }
+
+    fun getPanelCancelCount(): Int {
+        return pref.getInt(sortingPanelCancelCount.key, 0)
+    }
+
+    fun increasePanelCancelCount() {
+        val count = getPanelCancelCount()
+        pref.edit().putInt(sortingPanelCancelCount.key, count + 1).apply()
+    }
+
+    fun resetPanelCancelCount() {
+        pref.edit().putInt(sortingPanelCancelCount.key, 0).apply()
     }
 }
 

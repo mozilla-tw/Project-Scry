@@ -899,6 +899,7 @@ class TelemetryWrapper {
             super.update(configuration)
 
             addCustomPing(configuration, ScreenshotCountMeasurement())
+            addCustomPing(configuration, IndexedScreenshotWithTextCountMeasurement())
         }
 
 
@@ -937,6 +938,30 @@ class TelemetryWrapper {
 
         companion object {
             private const val MEASUREMENT_SCREENSHOT_COUNT = "screenshot_count"
+        }
+    }
+
+    private class IndexedScreenshotWithTextCountMeasurement : TelemetryMeasurement(MEASUREMENT_INDEXED_SCREENSHOT_WITH_TEXT_COUNT) {
+
+        override fun flush(): Any {
+            if ("main" == Thread.currentThread().name) {
+                throw RuntimeException("Call from main thread exception")
+            }
+
+            return try {
+                val list = ScryerApplication.getScreenshotRepository().getScreenshotList()
+                val indexedList = list.filter {
+                    val contextText = ScryerApplication.getScreenshotRepository().getContentText(it)
+                    contextText != null && contextText.length >= 10
+                }
+                return ((indexedList.size / list.size.toFloat()) * 100).toInt()
+            } catch (e: Exception) {
+                -1
+            }
+        }
+
+        companion object {
+            private const val MEASUREMENT_INDEXED_SCREENSHOT_WITH_TEXT_COUNT = "indexable_screenshots"
         }
     }
 

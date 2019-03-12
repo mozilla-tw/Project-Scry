@@ -60,6 +60,8 @@ class MainAdapter(private val fragment: Fragment?): RecyclerView.Adapter<Recycle
     var collectionList: List<CollectionModel> = emptyList()
     var coverList: Map<String, ScreenshotModel> = HashMap()
 
+    private var uncategorizedCount = 0
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         when (viewType) {
             TYPE_SECTION_NAME ->
@@ -137,6 +139,7 @@ class MainAdapter(private val fragment: Fragment?): RecyclerView.Adapter<Recycle
         itemHolder.title = itemView.findViewById(R.id.title)
         itemHolder.image = itemView.findViewById(R.id.image)
         itemHolder.overlay = itemView.findViewById(R.id.overlay)
+        itemHolder.badge = itemView.findViewById(R.id.badge)
 
         itemView.setOnClickListener {
             itemHolder.getValidPosition { position: Int ->
@@ -218,10 +221,17 @@ class MainAdapter(private val fragment: Fragment?): RecyclerView.Adapter<Recycle
             path = getCoverPathForUnsortedCollection()
             holder.overlay?.background = ContextCompat.getDrawable(holder.itemView.context,
                     R.drawable.unsorted_collection_item_bkg)
+            holder.badge?.visibility = if (uncategorizedCount > 0) {
+                View.VISIBLE
+            } else {
+                View.INVISIBLE
+            }
+            holder.badge?.count = uncategorizedCount
         } else {
             path = coverList[model.id]?.absolutePath
             holder.overlay?.background = ContextCompat.getDrawable(holder.itemView.context,
                     R.drawable.sorted_collection_item_bkg)
+            holder.badge?.visibility = View.INVISIBLE
         }
 
         if (!path.isNullOrEmpty() && File(path).exists()) {
@@ -248,6 +258,11 @@ class MainAdapter(private val fragment: Fragment?): RecyclerView.Adapter<Recycle
         }
     }
 
+    fun updateUnsortedCount(newCount: Int) {
+        this.uncategorizedCount = newCount
+        notifyItemChanged(PREFIX_ITEM_COUNT)
+    }
+
 
     class StaticHolder(itemView: View): RecyclerView.ViewHolder(itemView)
 
@@ -261,6 +276,7 @@ class MainAdapter(private val fragment: Fragment?): RecyclerView.Adapter<Recycle
         var image: ImageView? = null
         var title: TextView? = null
         var overlay: View? = null
+        var badge: NewScreenshotBadge? = null
 
         init {
             itemView.setOnCreateContextMenuListener(this)

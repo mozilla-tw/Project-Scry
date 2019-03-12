@@ -245,6 +245,21 @@ class CollectionFragment : Fragment() {
         setupWindowInsets()
     }
 
+    override fun onStop() {
+        launchIO {
+            val model = ScreenshotViewModel.get(this@CollectionFragment)
+            model.getScreenshotList(listOf(CollectionModel.UNCATEGORIZED)).filter {
+                it.collectionId == CollectionModel.UNCATEGORIZED
+            }.apply {
+                forEach {
+                    it.collectionId = CollectionModel.CATEGORY_NONE
+                }
+                model.updateScreenshots(this@apply)
+            }
+        }
+        super.onStop()
+    }
+
     private fun setupWindowInsets() {
         val rootView = view ?: return
         ViewCompat.setOnApplyWindowInsetsListener(rootView) { view, insets ->

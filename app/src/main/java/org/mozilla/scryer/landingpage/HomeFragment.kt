@@ -338,21 +338,14 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate, CoroutineScope {
         storagePermissionView?.visibility = View.GONE
 
         launch(Dispatchers.Main) {
-            val newScreenshots = checkNewScreenshots()
+            checkNewScreenshots()
             yield() // Skip the following UI work if the fragmentJob is already cancelled
 
             mainAdapter?.notifyDataSetChanged()
 
-            val showNewScreenshotDialog = newScreenshots.isNotEmpty()
-                    && isDialogAllowed(PREF_SHOW_NEW_SCREENSHOT_DIALOG)
-                    && !isFirstTimeLaunched()
             val showEnableServiceDialog = shouldPromptEnableService()
                     && isDialogAllowed(PREF_SHOW_ENABLE_SERVICE_DIALOG)
-
-            if (showNewScreenshotDialog) {
-                showNewScreenshotsDialog(newScreenshots)
-
-            } else if (showEnableServiceDialog) {
+            if (showEnableServiceDialog) {
                 showEnableServiceDialog()
             }
         }
@@ -594,6 +587,12 @@ class HomeFragment : Fragment(), PermissionFlow.ViewDelegate, CoroutineScope {
                 mainAdapter?.coverList = newData
                 mainAdapter?.notifyDataSetChanged()
             }
+        })
+
+        viewModel.getScreenshots().observe(this.viewLifecycleOwner, Observer { screenshots ->
+            mainAdapter?.updateUnsortedCount(screenshots.filter {
+                it.collectionId == CollectionModel.UNCATEGORIZED
+            }.size)
         })
     }
 

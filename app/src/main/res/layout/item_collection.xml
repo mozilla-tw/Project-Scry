@@ -49,6 +49,18 @@
             style="@style/ButtonText"
             tools:text="Title" />
 
+        <org.mozilla.scryer.landingpage.NewScreenshotBadge
+            android:id="@+id/badge"
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:gravity="center"
+            android:visibility="invisible"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            style="@style/HomeCollectionItemBadge" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.cardview.widget.CardView>

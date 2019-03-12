@@ -130,7 +130,7 @@
     <string name="sheet_unsorted_action_sort">Sort</string>
     <string name="sheet_action_no">No thanks</string>
     <!-- String displayed to ask users to save or delete the screenshot -->
-    <string name="sheet_saveordelete_content_screenshot">This screenshot can be saved or deleted.</string>
+    <string name="sheet_saveordelete_content_screenshot">Save or delete this screenshot?</string>
     <!-- String to save the screenshot -->
     <string name="sheet_saveordelete_action_save">Save</string>
 

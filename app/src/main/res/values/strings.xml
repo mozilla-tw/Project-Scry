@@ -102,8 +102,8 @@
     <string name="dialogue_skipsorting_action_skip">Skip all</string>
     <!-- Dialogue: String displayed when users always skip sorting panel after taking a screenshot -->
     <string name="dialogue_stopasking_title_stop">Stop asking to sort?</string>
-    <!-- Dialogue: String displayed to explain when users stop prompting sorting panel -->
-    <string name="dialogue_stopasking_content_stop">Go button will save all your screenshots to the Unsorted collection. This can be configured in Settings.</string>
+    <!-- Dialogue: String displayed to explain when users stop prompting sorting panel and the placeholder %1$s is "GO" from the product name -->
+    <string name="dialogue_stopasking_content_stop">%1$s button will save all your screenshots to the Unsorted collection. This can be configured in Settings.</string>
     <!-- String to keep prompting sorting panel after taking a screenshot -->
     <string name="dialogue_stopasking_action_alwaysask">Always ask</string>
     

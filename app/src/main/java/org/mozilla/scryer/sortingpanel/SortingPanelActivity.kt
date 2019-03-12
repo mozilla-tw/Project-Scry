@@ -560,7 +560,7 @@ class SortingPanelActivity : AppCompatActivity(), CoroutineScope {
         if (shouldShowCollectionPanel && isSortingNewScreenshot(intent)) {
             val count = pref.getPanelCancelCount()
             pref.increasePanelCancelCount()
-            if ((count + 1) == MAX_SORTING_PANEL_CANCEL_COUNT) {
+            if ((count + 1) >= MAX_SORTING_PANEL_CANCEL_COUNT) {
                 showNoMoreDialog {
                     cont.resume(Unit)
                 }
@@ -587,7 +587,13 @@ class SortingPanelActivity : AppCompatActivity(), CoroutineScope {
                 })
         dialog.viewHolder.message?.text = "No more sorting?"
         dialog.viewHolder.subMessage?.visibility = View.VISIBLE
-        dialog.asAlertDialog().show()
+        dialog.asAlertDialog().apply {
+            setOnCancelListener {
+                onFinished.invoke()
+            }
+            setCanceledOnTouchOutside(false)
+            show()
+        }
     }
 }
 

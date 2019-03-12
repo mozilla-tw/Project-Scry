@@ -100,7 +100,13 @@
     <string name="dialogue_skipsorting_content_count">%1$d remaining</string>
     <!-- String to allow users to skip sorting the remaining screenshots -->
     <string name="dialogue_skipsorting_action_skip">Skip all</string>
-
+    <!-- Dialogue: String displayed when users always skip sorting panel after taking a screenshot -->
+    <string name="dialogue_stopasking_title_stop">Stop asking to sort?</string>
+    <!-- Dialogue: String displayed to explain when users stop prompting sorting panel -->
+    <string name="dialogue_stopasking_content_stop">Go button will save all your screenshots to the Unsorted collection. This can be configured in Settings.</string>
+    <!-- String to keep prompting sorting panel after taking a screenshot -->
+    <string name="dialogue_stopasking_action_alwaysask">Always ask</string>
+    
     <!-- Menu: strings displayed when triggering the overflow menu in the top-right corner of each view -->
     <!-- String to allow users to multi-select screenshots -->
     <string name="menu_action_select">Select</string>
@@ -123,6 +129,10 @@
     <string name="sheet_box_ask">Don’t ask again</string>
     <string name="sheet_unsorted_action_sort">Sort</string>
     <string name="sheet_action_no">No thanks</string>
+    <!-- String displayed to ask users to save or delete the screenshot -->
+    <string name="sheet_saveordelete_content_screenshot">This screenshot can be saved or deleted.</string>
+    <!-- String to save the screenshot -->
+    <string name="sheet_saveordelete_action_save">Save</string>
 
     <!-- Snackbar: strings to provide confirmations for user’s actions -->
     <string name="snackbar_disable">Screenshot feature disabled</string>
@@ -139,8 +149,8 @@
     <string name="settings_detail_capture">Allows you to take a screenshot with one tap. Works with whatever is on your screen.</string>
     <!-- The string displayed to enable a floating button to take screenshot, and the placeholder %1$s is "GO" from the product name -->
     <string name="settings_list_fab">Use %1$s button</string>
-    <string name="settings_list_sorting">Prompt to sort</string>
-    <string name="settings_detail_sorting">Always prompt to add screenshot to a collection</string>
+    <string name="settings_list_sorting">Ask to sort</string>
+    <string name="settings_detail_sorting">After you take a screenshot, always ask you which collection to put it in.</string>
     <string name="settings_list_usagedata">Send usage data</string>
     <!-- Parameter %1$s is the app name, i.e. Firefox ScreenshotGo -->
     <string name="settings_detail_mozilla">Mozilla strives to collect only what we need to provide and improve %1$s for everyone.</string>

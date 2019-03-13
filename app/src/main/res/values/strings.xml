@@ -150,7 +150,7 @@
     <!-- The string displayed to enable a floating button to take screenshot, and the placeholder %1$s is "GO" from the product name -->
     <string name="settings_list_fab">Use %1$s button</string>
     <string name="settings_list_sorting">Ask to sort</string>
-    <string name="settings_detail_sorting">After you take a screenshot, always ask you which collection to put it in.</string>
+    <string name="settings_detail_sorting">After you take a screenshot, always ask which collection to put it in.</string>
     <string name="settings_list_usagedata">Send usage data</string>
     <!-- Parameter %1$s is the app name, i.e. Firefox ScreenshotGo -->
     <string name="settings_detail_mozilla">Mozilla strives to collect only what we need to provide and improve %1$s for everyone.</string>

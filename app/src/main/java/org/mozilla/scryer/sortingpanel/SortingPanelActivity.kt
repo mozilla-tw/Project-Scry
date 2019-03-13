@@ -627,18 +627,18 @@ class SortingPanelActivity : AppCompatActivity(), CoroutineScope {
 
     private fun showNoMoreDialog(onFinished: () -> Unit) {
         val dialog = ConfirmationDialog.build(this,
-                "No more sorting?",
-                "STOP",
+                getString(R.string.dialogue_stopasking_title_stop),
+                getString(R.string.notification_action_stop),
                 DialogInterface.OnClickListener { _, _ ->
                     ScryerApplication.getSettingsRepository().addToCollectionEnable = false
                     onFinished.invoke()
                 },
-                "ASK TO SORT",
+                getString(R.string.dialogue_stopasking_action_alwaysask),
                 DialogInterface.OnClickListener { _, _ ->
                     PreferenceWrapper(this).resetPanelCancelCount()
                     onFinished.invoke()
                 })
-        dialog.viewHolder.message?.text = "No more sorting?"
+        dialog.viewHolder.message?.text = getString(R.string.dialogue_stopasking_content_stop, getString(R.string.app_name_go))
         dialog.viewHolder.subMessage?.visibility = View.VISIBLE
         dialog.asAlertDialog().apply {
             setOnCancelListener {

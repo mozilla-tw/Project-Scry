@@ -19,12 +19,14 @@
         android:layout_width="match_parent"
         android:layout_height="128dp"
         android:background="@drawable/detailpage_toolbar_background"
+        android:visibility="gone"
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:visibility="gone"
         app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

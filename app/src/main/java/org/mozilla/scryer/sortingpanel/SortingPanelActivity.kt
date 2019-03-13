@@ -149,7 +149,9 @@ class SortingPanelActivity : AppCompatActivity(), CoroutineScope {
 
         loadCollectionColorList()
         loadScreenshots(intent, this::onLoadScreenshotsSuccess)
-        initActionBar()
+        if (isSortingNewScreenshot(intent)) {
+            initActionBar()
+        }
         initSortingPanel()
     }
 
@@ -240,7 +242,9 @@ class SortingPanelActivity : AppCompatActivity(), CoroutineScope {
 
     @SuppressLint("ClickableViewAccessibility")
     private fun initActionBar() {
+        findViewById<View>(R.id.toolbar_background).visibility = View.VISIBLE
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        toolbar.visibility = View.VISIBLE
         setSupportActionBar(toolbar)
 
         supportActionBar?.apply {

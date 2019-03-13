@@ -14,9 +14,11 @@ import android.os.Handler
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.lifecycle.Lifecycle
@@ -35,6 +37,7 @@ import org.mozilla.scryer.promote.Promoter
 import org.mozilla.scryer.telemetry.TelemetryWrapper
 import org.mozilla.scryer.telemetry.TelemetryWrapper.ExtraValue.MULTIPLE
 import org.mozilla.scryer.telemetry.TelemetryWrapper.ExtraValue.SINGLE
+import org.mozilla.scryer.ui.BottomDialogFactory
 import org.mozilla.scryer.ui.CollectionNameDialog
 import org.mozilla.scryer.ui.ConfirmationDialog
 import org.mozilla.scryer.ui.ScryerToast
@@ -247,9 +250,59 @@ class SortingPanelActivity : AppCompatActivity(), CoroutineScope {
         toolbar.visibility = View.VISIBLE
         setSupportActionBar(toolbar)
 
+        toolbar.setNavigationOnClickListener {
+            showDeleteScreenshotDialog(Runnable {
+                launch(Dispatchers.Main.immediate) {
+                    showAddedToast(unsortedCollection, unsortedScreenshots.isNotEmpty())
+                    showNoMoreDialogIfNeeded()
+                    finishAndRemoveTask()
+                    TelemetryWrapper.cancelSorting(SINGLE)
+                }
+            }, Runnable {
+                launchIO {
+                    currentScreenshot?.let {
+                        ScryerApplication.getScreenshotRepository().deleteScreenshot(it)
+                        File(it.absolutePath).delete()
+                    }
+                }
+                finishAndRemoveTask()
+                TelemetryWrapper.deleteScreenshot(TelemetryWrapper.ExtraValue.SINGLE, 1)
+            })
+        }
+
         supportActionBar?.apply {
             setDisplayShowTitleEnabled(false)
         }
+    }
+
+    private fun showDeleteScreenshotDialog(action: Runnable, negativeAction: Runnable) {
+        val dialog = BottomDialogFactory.create(this, R.layout.dialog_bottom)
+        dialog.findViewById<ConstraintLayout>(R.id.top_layout)?.minHeight = 0
+        dialog.findViewById<TextView>(R.id.title)?.visibility = View.GONE
+        dialog.findViewById<TextView>(R.id.subtitle)?.text = getString(R.string.sheet_saveordelete_content_screenshot)
+        dialog.findViewById<View>(R.id.dont_ask_again_checkbox)?.visibility = View.GONE
+
+        dialog.findViewById<TextView>(R.id.positive_button)?.apply {
+            setText(R.string.sheet_saveordelete_action_save)
+            setOnClickListener {
+                action.run()
+                dialog.dismiss()
+            }
+        }
+
+        dialog.findViewById<TextView>(R.id.negative_button)?.apply {
+            setText(R.string.action_delete)
+            setOnClickListener {
+                negativeAction.run()
+                dialog.dismiss()
+            }
+        }
+
+        dialog.setOnCancelListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
     }
 
     private fun flushToUnsortedCollection() {
@@ -429,11 +482,11 @@ class SortingPanelActivity : AppCompatActivity(), CoroutineScope {
         this.unsortedScreenshots.addAll(sorted.subList(currentIndex, screenshots.size))
 
         if (screenshots.size == 1) {
-            sortingPanel.setActionText(getString(if (isSortingNewScreenshot(intent)) {
-                R.string.action_later
+            if (isSortingNewScreenshot(intent)) {
+                sortingPanel.setActionTextVisibility(View.GONE)
             } else {
-                android.R.string.cancel
-            }))
+                sortingPanel.setActionText(getString(android.R.string.cancel))
+            }
             sortingPanel.setProgressVisibility(View.INVISIBLE)
             sortingPanel.setFakeLayerVisibility(View.INVISIBLE)
         } else {
@@ -446,12 +499,8 @@ class SortingPanelActivity : AppCompatActivity(), CoroutineScope {
             if (isSortingUncategorized || isSortingNewScreenshot(intent)) {
                 showAddedToast(unsortedCollection, unsortedScreenshots.isNotEmpty())
             }
-
-            launch(Dispatchers.Main.immediate) {
-                showNoMoreDialogIfNeeded()
-                onNewModelAvailable()
-                panelModel.onNextScreenshot()
-            }
+            onNewModelAvailable()
+            panelModel.onNextScreenshot()
 
             if (screenshots.size == 1) {
                 TelemetryWrapper.cancelSorting(SINGLE)

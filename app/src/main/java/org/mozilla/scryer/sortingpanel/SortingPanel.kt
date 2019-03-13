@@ -192,6 +192,10 @@ open class SortingPanel : FrameLayout, DefaultLifecycleObserver {
         actionButton.text = text
     }
 
+    fun setActionTextVisibility(visibility: Int) {
+        actionButton.visibility = visibility
+    }
+
     fun setActionCallback(callback: () -> Unit) {
         actionCallback = callback
     }

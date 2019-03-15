@@ -248,8 +248,9 @@ class CollectionFragment : Fragment() {
     override fun onStop() {
         launchIO {
             val model = ScreenshotViewModel.get(this@CollectionFragment)
-            model.getScreenshotList(listOf(CollectionModel.UNCATEGORIZED)).filter {
-                it.collectionId == CollectionModel.UNCATEGORIZED
+            model.getScreenshotList(listOf(CollectionModel.UNCATEGORIZED)).filter { screenshot ->
+                screenshot.collectionId == CollectionModel.UNCATEGORIZED &&
+                        screenshotAdapter.screenshotList.find { it.id == screenshot.id } != null
             }.apply {
                 forEach {
                     it.collectionId = CollectionModel.CATEGORY_NONE

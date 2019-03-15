@@ -597,7 +597,7 @@ class SortingPanelActivity : AppCompatActivity(), CoroutineScope {
 
     private fun createNewScreenshot(path: String): ScreenshotModel? {
         if (path.isNotEmpty()) {
-            return ScreenshotModel(path, System.currentTimeMillis(), CollectionModel.CATEGORY_NONE)
+            return ScreenshotModel(path, System.currentTimeMillis(), CollectionModel.UNCATEGORIZED)
         }
         return null
     }
@@ -610,7 +610,7 @@ class SortingPanelActivity : AppCompatActivity(), CoroutineScope {
 
     private suspend fun showNoMoreDialogIfNeeded() = suspendCoroutine<Unit> { cont ->
         val pref = PreferenceWrapper(this@SortingPanelActivity)
-        if (shouldShowCollectionPanel && isSortingNewScreenshot(intent)) {
+        if (shouldShowCollectionPanel && isSortingNewScreenshot(intent) && pref.isNoMoreSortingDialogEnabled()) {
             val count = pref.getPanelCancelCount()
             pref.increasePanelCancelCount()
             if ((count + 1) >= MAX_SORTING_PANEL_CANCEL_COUNT) {
@@ -635,7 +635,7 @@ class SortingPanelActivity : AppCompatActivity(), CoroutineScope {
                 },
                 getString(R.string.dialogue_stopasking_action_alwaysask),
                 DialogInterface.OnClickListener { _, _ ->
-                    PreferenceWrapper(this).resetPanelCancelCount()
+                    PreferenceWrapper(this).disableNoMoreSortingDialog()
                     onFinished.invoke()
                 })
         dialog.viewHolder.message?.text = getString(R.string.dialogue_stopasking_content_stop, getString(R.string.app_name_go))

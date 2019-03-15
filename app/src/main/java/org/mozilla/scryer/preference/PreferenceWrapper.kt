@@ -24,6 +24,7 @@ class PreferenceWrapper(context: Context) {
 
     /* The number of times user cancels the sorting panel after capturing via FAB */
     private val sortingPanelCancelCount = PrefConfig("cancel_sorting_panel_count", 0)
+    private val showNoMoreSortingDialog = PrefConfig("show_no_more_sorting_dialog", true)
 
     private val pref: SharedPreferences by lazy {
         context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
@@ -78,6 +79,14 @@ class PreferenceWrapper(context: Context) {
 
     fun resetPanelCancelCount() {
         pref.edit().putInt(sortingPanelCancelCount.key, 0).apply()
+    }
+
+    fun isNoMoreSortingDialogEnabled(): Boolean {
+        return pref.getBoolean(showNoMoreSortingDialog.key, true)
+    }
+
+    fun disableNoMoreSortingDialog() {
+        pref.edit().putBoolean(showNoMoreSortingDialog.key, false).apply()
     }
 }
 

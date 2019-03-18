@@ -8,6 +8,7 @@ package org.mozilla.scryer.overlay
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.content.Context
+import android.view.HapticFeedbackConstants
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import android.view.View
 import android.view.ViewGroup
@@ -99,12 +100,14 @@ class CaptureButtonController(private val context: Context) {
 
                 val isCollide = isCollideWithExitView(x, y)
                 if (isCollide && !isCollided) {
+                    exitCircleView.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
                     exitCircleView.animate()
                             .scaleX(EXIT_SCALE_RATIO)
                             .scaleY(EXIT_SCALE_RATIO)
                             .interpolator = interpolator
                     isCollided = true
                 } else if (!isCollide && isCollided) {
+                    exitCircleView.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
                     exitCircleView.animate()
                             .scaleX(1f)
                             .scaleY(1f)

@@ -57,9 +57,9 @@
   <string name="dialogue_skipsorting_content_moveto">Lewati cuplikan layar lainnya dan pindahkan ke kelompok “Belum Disortir?”</string>
   <string name="dialogue_skipsorting_content_count">%1$d lagi</string>
   <string name="dialogue_skipsorting_action_skip">Lewati semua</string>
-  <string name="dialogue_stopasking_title_stop">Berhenti bertanya untuk disortir?</string>
-  <string name="dialogue_stopasking_content_stop">Tombol %1$s akan menyimpan semua tangkapan layar Anda ke koleksi belum disortir. Ini dapat dikonfigurasi dalam Pengaturan.</string>
-  <string name="dialogue_stopasking_action_alwaysask">Selalu ditanyakan</string>
+  <string name="dialogue_stopasking_title_stop">Berhenti bertanya untuk diurutkan?</string>
+  <string name="dialogue_stopasking_content_stop">Tombol %1$s akan menyimpan semua cuplikan layar Anda ke dalam koleksi Belum Diurutkan. Hal ini bisa diatur dalam Setelan.</string>
+  <string name="dialogue_stopasking_action_alwaysask">Selalu tanya</string>
   <string name="menu_action_select">Pilih</string>
   <string name="menu_shot_action_move">Pindahkan ke…</string>
   <string name="menu_action_rename">Ubah nama</string>
@@ -74,7 +74,7 @@
   <string name="sheet_box_ask">Jangan tanya lagi</string>
   <string name="sheet_unsorted_action_sort">Sortir</string>
   <string name="sheet_action_no">Tidak, terima kasih</string>
-  <string name="sheet_saveordelete_content_screenshot">Simpan atau hapus tangkapan layar ini?</string>
+  <string name="sheet_saveordelete_content_screenshot">Simpan atau hapus cuplikan layar ini?</string>
   <string name="sheet_saveordelete_action_save">Simpan</string>
   <string name="snackbar_disable">Layanan pencuplik layar dinonaktifkan</string>
   <string name="snackbar_enable">Layanan pencuplik layar diaktifkan</string>
@@ -83,8 +83,8 @@
   <string name="settings_list_capture">Aktifkan fitur mencuplik layar</string>
   <string name="settings_detail_capture">Memungkinkan Anda mencuplik layar dengan sekali ketuk. Bekerja dengan apa pun yang ada di layar Anda.</string>
   <string name="settings_list_fab">Pakai tombol %1$s</string>
-  <string name="settings_list_sorting">Tanya apakah disortir</string>
-  <string name="settings_detail_sorting">Setelah Anda mengambil tangkapan layar, selalu tanyakan koleksi mana yang akan Anda masukkan.</string>
+  <string name="settings_list_sorting">Tanyakan untuk menyortir</string>
+  <string name="settings_detail_sorting">Setelah Anda mengambil cuplikan layar, selalu tanyakan akan dimasukkan ke koleksi yang mana.</string>
   <string name="settings_list_usagedata">Kirim data penggunaan</string>
   <string name="settings_detail_mozilla">Mozilla berusaha untuk mengumpulkan hanya apa yang kami perlu untuk sediakan dan meningkatkan %1$s untuk setiap orang.</string>
   <string name="settings_action_learnmore">Pelajari lebih lanjut</string>
